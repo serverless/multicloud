@@ -1,0 +1,43 @@
+{
+  "name": "crosscloud-library",
+  "version": "1.0.0",
+  "description": "general dependencies and configurations",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint aws && eslint azure && eslint common",
+    "lint-aws": "eslint aws",
+    "lint-azure": "eslint azure",
+    "lint-common": "eslint common"
+  },
+  "lint-staged": {
+    "**/*.js": [
+        "eslint --fix",
+        "prettier-eslint --write",
+        "git add",
+        "jest --bail --findRelatedTests"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.termn.us/service-apis/7now/crosscloud-library.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint": "5.16.0",
+    "eslint-plugin-jest": "22.6.4",
+    "eslint-plugin-node": "9.1.0",
+    "husky": "2.4.1",
+    "lint-staged": "8.2.1",
+    "prettier-eslint-cli": "4.7.1"
+  },
+  "husky": {
+    "hooks": {
+        "pre-commit": "lint-staged"
+    }
+  }
+}
