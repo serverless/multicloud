@@ -2,16 +2,21 @@
 
 ```
 ├── aws
-|   ├── utils
+|   ├── src
+|   |   ├── storage.test.js
 |   |   └── storage.js
-|   └── package.json
+|   ├── package.json
+|   └── tsconfig.json
 ├── azure
-|   ├── utils
+|   ├── src
+|   |   ├── storage.test.js
 |   |   └── storage.js
-|   └── package.json
-├── common
-|   ├── utils
-|   └── package.json
+|   ├── package.json
+|   └── tsconfig.json
+├── core
+|   ├── src
+|   ├── package.json
+|   └── tsconfig.json
 └── readme.md
 ```
 
@@ -19,4 +24,4 @@
 
 -   **azure** folder: contains the general library files which adapt Azure Functions provider to a generic provider to make the business services agnostic from the cloud provider. The utils folder contains the adapters to read request input and write a response as output.
 
--   **common** folder: contains the general library files which adapt any provider to a generic provider to make the business services agnostic from the cloud provider. The utils folder contains the adapters to read request input and write a response as output.
+-   **core** folder: contains the general library files which adapt any provider to a generic provider to make the business services agnostic from the cloud provider. The utils folder contains the adapters to read request input and write a response as output.

@@ -38,7 +38,7 @@ The project configuration it us is the next one:
 root = true
 [*]
 indent_style = space
-indent_size = 4
+indent_size = 2
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true

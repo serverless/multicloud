@@ -9,31 +9,21 @@
 
 ### Installation
 
-#### Windows Set Up
-
-Download and install the [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfigTeam.EditorConfig) Extension. For more details click [here](docs/editor-config.md).
-
-##### Step 1
+Inside the folder that you want to install, execute the following commands:
 
 ```
-git config core.eol lf
-git config core.autocrlf input
+npm install
 ```
 
-##### Step 2
-
-Delete the delete all the files and directories inside the repository folder, except the git configurations.
-
-##### Step 3
-
 ```
-git reset --hard BranchName
+npm run build
 ```
 
 ### Configuration
 
 -   [EditorConfig](docs/editor-config.md)
 -   [ESLint](docs/eslint.md)
+-   [TypeScript](docs/typescript.md)
 
 ## Running the tests
 
@@ -49,21 +39,21 @@ In addition, this command can be executed using some of the following [options](
 
 ```
 ├── aws
-|   ├── utils
-|   |   ├── __tests__
-|   |   |   └── storage.js
+|   ├── src
+|   |   ├── storage.test.js
 |   |   └── storage.js
-|   └── package.json
+|   ├── package.json
+|   └── tsconfig.json
 ├── azure
-|   ├── utils
-|   |   ├── __tests__
-|   |   |   └── storage.js
+|   ├── src
+|   |   ├── storage.test.js
 |   |   └── storage.js
-|   └── package.json
-├── common
-|   ├── utils
-|   |   ├── __tests__
-|   └── package.json
+|   ├── package.json
+|   └── tsconfig.json
+├── core
+|   ├── src
+|   ├── package.json
+|   └── tsconfig.json
 └── readme.md
 ```
 
