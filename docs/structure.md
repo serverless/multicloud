@@ -17,7 +17,8 @@
 |   ├── src
 |   ├── package.json
 |   └── tsconfig.json
-└── readme.md
+├── readme.md
+└── tsconfig.json
 ```
 
 -   **aws** folder: contains the general library files which adapt AWS lambda provider to a generic provider to make business services agnostic from the cloud provider. The utils folder contains the adapters to read request input and write a response as output.

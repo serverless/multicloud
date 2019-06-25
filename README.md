@@ -1,4 +1,4 @@
-# Multi-Cloud
+# MultiCloud Middleware
 
 ## Getting Started
 
@@ -9,15 +9,24 @@
 
 ### Installation
 
-Inside the folder that you want to install, execute the following commands:
+- *IMPORTANT:* **Open this project from the root folder** (There are dependencies between the aws, azure and core folder)
+
+- **Install dependencies and compile the code** (There is a package.json file in each folder, so is necessary to do it in each one)
+
+Beginning  from the root folder, **execute the following commands**:
 
 ```
-npm install
+cd core && npm install && npm run build && cd ..
 ```
 
 ```
-npm run build
+cd azure && npm install && npm run build && cd ..
 ```
+
+```
+cd aws && npm install && npm run build && cd ..
+```
+
 
 ### Configuration
 
@@ -54,7 +63,8 @@ In addition, this command can be executed using some of the following [options](
 |   ├── src
 |   ├── package.json
 |   └── tsconfig.json
-└── readme.md
+├── readme.md
+└── tsconfig.json
 ```
 
 [(more details)](docs/structure.md)
