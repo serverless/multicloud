@@ -1,6 +1,8 @@
 # TypeScript
 
-In this project there are installed typescript with tslint.
+TypeScript is an object-oriented programming language developed and maintained by the Microsoft Corporation. It is a superset of JavaScript and contains all of its elements. [More Info](https://www.typescriptlang.org/)
+
+For working with it we need a configuration file which will build the javascript files coded in typescript.
 
 # How to run typescript
 
@@ -12,41 +14,36 @@ npm run tsc
 
 ## Configurations
 
-We are using the default options of both configuration files `tsconfig.json` and `tslint.json`.
-
 ### tsconfig.json [more info](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+
+We are using the following configuration in `tsconfig.json` file in **aws**, **azure** and **core** folders.
+
+```
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src"
+  },
+  "include": [
+    "./src"
+  ]
+}
+```
+
+We are using the following configuration in `tsconfig.json` file at **root** level.
 
 ```
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
     "target": "es6",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "lib",
+    "downlevelIteration": true,
+    "strict": false,
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist"
-  },
-  "include": [
-    "aws/**/*",
-    "azure/**/*",
-    "common/**/*"
-  ],
-  "lib": ["es2015"]
-}
-```
-
-### tslint.json [more info](https://palantir.github.io/tslint/usage/configuration/)
-
-```
-{
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended"
-    ],
-    "jsRules": {},
-    "rules": {
-      "no-console": false
-    },
-    "rulesDirectory": []
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
 }
 ```
