@@ -1,5 +1,5 @@
 {
-  "name": "lib",
+  "name": "aws",
   "version": "1.0.0",
   "description": "aws middleware",
   "main": "index.js",

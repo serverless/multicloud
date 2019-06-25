@@ -1,5 +1,5 @@
 {
-  "name": "lib",
+  "name": "azure",
   "version": "1.0.0",
   "description": "azure middleware",
   "main": "index.js",
