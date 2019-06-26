@@ -1,0 +1,30 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+# CI should only run when PRs are opened against dev/master. When integrating AZDo repos with
+# AZDo pipelines, the only way to do this is through `build validations` - branch-specific
+# integrations that can only be configured via AzDO UI.
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  displayName: 'Use Node 10.x'
+  inputs:
+    versionSpec: 10.x
+
+- task: npmAuthenticate@0
+  displayName: 'npm Authenticate core/.npmrc'
+  inputs:
+    workingFile: core/.npmrc
+
+- task: Bash@3
+  displayName: 'Build sls-core'
+  inputs:
+    targetType: filePath
+    filePath: ./core/build.sh
+    workingDirectory: core

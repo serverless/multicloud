@@ -1,7 +1,7 @@
 {
-  "name": "core",
-  "version": "1.0.0",
-  "description": "core",
+  "name": "@multicloud/sls-core",
+  "version": "0.0.1",
+  "description": "Core middleware and components for multi-cloud serverless.",
   "main": "index.js",
   "scripts": {
     "start": "npm run test -- --watch",
@@ -12,8 +12,11 @@
     "test:ci": "npm run test -- --ci",
     "test:coverage": "npm run test -- --coverage",
     "prebuild": "shx rm -rf lib/ && npm run test",
-    "build": "tsc"
+    "build": "npx tsc"
   },
+  "files":[
+    "lib/"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -26,9 +29,10 @@
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "shx": "^0.3.2",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.2"
   },
   "engines": {
-    "node": ">= 6.5.0"
+    "node": ">=10.14.2",
+    "npm": ">=6.4.1"
   }
 }
