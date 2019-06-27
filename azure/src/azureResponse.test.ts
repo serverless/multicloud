@@ -23,16 +23,13 @@ describe("test of response", () => {
 
     const azureContext = {
       res: {
-        status: 0
-      },
-      done: jest.fn()
+      }
     };
 
     const sut = new AzureResponse(azureContext);
     sut.send({});
 
     expect(defaultStatusValue).toEqual(sut.context.res.status);
-    expect(azureContext.done).toHaveBeenCalled();
     done();
   });
 
@@ -41,16 +38,13 @@ describe("test of response", () => {
 
     const azureContext = {
       res: {
-        status: 0
-      },
-      done: jest.fn()
+      }
     };
 
     const sut = new AzureResponse(azureContext);
     sut.send({}, expectedStatusStatus);
 
     expect(expectedStatusStatus).toEqual(sut.context.res.status);
-    expect(azureContext.done).toHaveBeenCalled();
     done();
   });
 
@@ -64,15 +58,13 @@ describe("test of response", () => {
     const azureContext = {
       res: {
         body: null
-      },
-      done: jest.fn()
+      }
     };
 
     const sut = new AzureResponse(azureContext);
     sut.send(body);
 
     expect(body).toEqual(sut.context.res.body.message);
-    expect(azureContext.done).toHaveBeenCalled();
     done();
   });
 
@@ -99,15 +91,13 @@ describe("test of response", () => {
     };
 
     const azureContext = {
-      res: {},
-      done: jest.fn()
+      res: {}
     };
 
     const sut = new AzureResponse(azureContext);
     sut.send({});
 
     expect(expectedObject).toEqual(sut.context.res);
-    expect(azureContext.done).toHaveBeenCalled();
     done();
   });
 });

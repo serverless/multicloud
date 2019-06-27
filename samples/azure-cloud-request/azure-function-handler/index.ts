@@ -6,7 +6,7 @@ const httpTrigger: AzureFunction = async function(
   context: Context
 ): Promise<void> {
   const azureContext = new AzureContext(context);
-  return azureContext.res.send("Hello Gabriel", 200);
+  return azureContext.send("Hello Gabriel");
 };
 
 export default httpTrigger;

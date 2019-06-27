@@ -8,4 +8,5 @@ export interface CloudContext {
   res?: CloudResponse;
   storage?: CloudStorage;
   // queue?: CloudQueue;
+  send: (body: any, status: number) => void;
 }

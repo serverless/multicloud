@@ -9,21 +9,15 @@ export class AzureResponse implements CloudResponse {
     this.context = context;
   }
 
-  public send(body: any, status: number = 200): Promise<void> {
-    return new Promise(() => {
-      const { context } = this;
-
-      context.res = {
-        status: status,
-        body: {
-          message: body
-        },
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
-
-      context.done();
-    });
+  public send(body: any, status: number = 200): void {
+    this.context.res = {
+      status: status,
+      body: {
+        message: body
+      },
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
   }
 }
