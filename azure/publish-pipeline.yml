@@ -12,7 +12,7 @@ trigger:
     - master
   paths:
     include:
-    - /core/*
+    - /azure/*
   tags:
     include:
     - '*' # trigger on any tag
@@ -27,13 +27,13 @@ steps:
     versionSpec: 10.x
 
 - task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
+  displayName: 'npm Authenticate azure/.npmrc'
   inputs:
-    workingFile: core/.npmrc
+    workingFile: azure/.npmrc
 
 - task: Bash@3
-  displayName: 'Publish sls-core to AzDO NPM'
+  displayName: 'Publish sls-azure to AzDO NPM'
   inputs:
     targetType: filePath
     filePath: ../scripts/publish.sh
-    workingDirectory: core
+    workingDirectory: azure

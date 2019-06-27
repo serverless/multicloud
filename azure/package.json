@@ -1,7 +1,7 @@
 {
-  "name": "azure",
-  "version": "1.0.0",
-  "description": "azure middleware",
+  "name": "@multicloud/sls-azure",
+  "version": "0.0.1",
+  "description": "Microsoft Azure specific middleware and components for multi-cloud serverless.",
   "main": "index.js",
   "scripts": {
     "start": "npm run test -- --watch",
@@ -12,12 +12,14 @@
     "test:ci": "npm run test -- --ci",
     "test:coverage": "npm run test -- --coverage",
     "prebuild": "shx rm -rf lib/ && npm run test",
-    "build": "tsc"
+    "build": "npx tsc"
   },
+  "files":[
+    "lib/"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.476.0",
     "core": "file:../core"
   },
   "devDependencies": {
@@ -30,7 +32,7 @@
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "shx": "^0.3.2",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.2"
   },
   "engines": {
     "node": ">= 6.5.0"

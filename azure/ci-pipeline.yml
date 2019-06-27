@@ -18,13 +18,13 @@ steps:
     versionSpec: 10.x
 
 - task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
+  displayName: 'npm Authenticate azure/.npmrc'
   inputs:
-    workingFile: core/.npmrc
+    workingFile: azure/.npmrc
 
 - task: Bash@3
-  displayName: 'Build sls-core'
+  displayName: 'Build sls-azure'
   inputs:
     targetType: filePath
     filePath: ../scripts/build.sh
-    workingDirectory: core
+    workingDirectory: azure
