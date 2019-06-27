@@ -1,27 +1,23 @@
 {
-  "name": "@multicloud/sls-azure",
-  "version": "0.0.1",
-  "description": "Microsoft Azure specific middleware and components for multi-cloud serverless.",
+  "name": "azure-storage",
+  "version": "1.0.0",
+  "description": "azure middleware",
   "main": "index.js",
   "scripts": {
     "start": "npm run test -- --watch",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:ci": "npm run test -- --ci",
     "test:coverage": "npm run test -- --coverage",
     "prebuild": "shx rm -rf lib/ && npm run test",
-    "build": "npx tsc"
+    "build": "tsc"
   },
-  "files":[
-    "lib/"
-  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@azure/storage-blob": "10.3.0",
-    "core": "file:../core"
+    "azure": "file:../../azure"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
@@ -33,7 +29,7 @@
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "shx": "^0.3.2",
-    "typescript": "^3.5.2"
+    "typescript": "^3.4.5"
   },
   "engines": {
     "node": ">= 6.5.0"
