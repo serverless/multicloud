@@ -1,0 +1,40 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+# Only publish to AzDO NPM when a tag is pushed to master.
+# NOTE: a PR needs to be opened from dev --> master, which includes version bump.
+# If needs be, we can eventually automate.
+trigger:
+  branches:
+    include:
+    - dev
+  paths:
+    include:
+    - /azure/*
+  tags:
+    include:
+    - '*' # trigger on any tag
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  displayName: 'Use Node 10.x'
+  inputs:
+    versionSpec: 10.x
+
+- task: npmAuthenticate@0
+  displayName: 'npm Authenticate azure/.npmrc'
+  inputs:
+    workingFile: azure/.npmrc
+
+- task: Bash@3
+  displayName: 'Publish sls-azure to AzDO NPM'
+  inputs:
+    targetType: filePath
+    filePath: ./scripts/publish.sh
+    arguments: 'prerelease'
+    workingDirectory: azure
