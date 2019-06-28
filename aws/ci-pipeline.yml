@@ -18,13 +18,13 @@ steps:
     versionSpec: 10.x
 
 - task: npmAuthenticate@0
-  displayName: 'npm Authenticate azure/.npmrc'
+  displayName: 'npm Authenticate aws/.npmrc'
   inputs:
-    workingFile: azure/.npmrc
+    workingFile: aws/.npmrc
 
 - task: Bash@3
-  displayName: 'Build sls-azure'
+  displayName: 'Build sls-aws'
   inputs:
     targetType: filePath
     filePath: ./scripts/build.sh
-    workingDirectory: azure
+    workingDirectory: aws

@@ -1,4 +1,4 @@
-import { CloudResponse } from "core/src/cloudResponse";
+import { CloudResponse } from "@multicloud/sls-core";
 
 export class AzureResponse implements CloudResponse {
   public headers?: { [key: string]: any };

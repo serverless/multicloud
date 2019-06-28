@@ -5,6 +5,6 @@ export interface ReadBlobOptions {
   path: string;
 }
 
-export default interface CloudStorage {
+export interface CloudStorage {
   read: (opts: ReadBlobOptions) => Promise<Stream>;
 }

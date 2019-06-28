@@ -1,7 +1,7 @@
 import { AzureRequest } from "./azureRequest";
 import { AzureResponse } from "./azureResponse";
-import { CloudContext } from "core/src/cloudContext";
-import CloudStorage from "core/src/cloudStorage";
+import { CloudContext } from "@multicloud/sls-core";
+import { CloudStorage } from "@multicloud/sls-core";
 
 export class AzureContext implements CloudContext {
   private context: any;

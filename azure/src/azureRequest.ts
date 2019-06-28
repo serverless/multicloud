@@ -1,4 +1,4 @@
-import { CloudRequest } from "core/src/cloudRequest";
+import { CloudRequest } from "@multicloud/sls-core";
 
 export class AzureRequest implements CloudRequest {
   public body?: any;

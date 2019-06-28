@@ -4,7 +4,7 @@ import {Aborter,
   StorageURL,
   SharedKeyCredential,
   ContainerURL}  from "@azure/storage-blob";
-import CloudStorage, { ReadBlobOptions } from "core/src/CloudStorage";
+import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
 
 export class AzureBlobStorage implements CloudStorage {
   private service: ServiceURL;

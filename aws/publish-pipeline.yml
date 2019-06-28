@@ -12,7 +12,7 @@ trigger:
     - master
   paths:
     include:
-    - /core/*
+    - /aws/*
   tags:
     include:
     - '*' # trigger on any tag
@@ -27,13 +27,13 @@ steps:
     versionSpec: 10.x
 
 - task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
+  displayName: 'npm Authenticate aws/.npmrc'
   inputs:
-    workingFile: core/.npmrc
+    workingFile: aws/.npmrc
 
 - task: Bash@3
-  displayName: 'Publish sls-core to AzDO NPM'
+  displayName: 'Publish sls-aws to AzDO NPM'
   inputs:
     targetType: filePath
     filePath: ./scripts/publish.sh
-    workingDirectory: core
+    workingDirectory: aws

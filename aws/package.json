@@ -1,7 +1,11 @@
 {
-  "name": "aws",
-  "version": "1.0.0",
-  "description": "aws middleware",
+  "name": "@multicloud/sls-aws",
+  "version": "0.0.1",
+  "description": "Amazon AWS specific middleware and components for multi-cloud serverless.",
+  "repository": {
+    "type": "git",
+    "url": "https://dev.azure.com/711digital/ServerlessApps/_git/common-library"
+  },
   "main": "index.js",
   "scripts": {
     "start": "npm run test -- --watch",
@@ -12,13 +16,16 @@
     "test:ci": "npm run test -- --ci",
     "test:coverage": "npm run test -- --coverage",
     "prebuild": "shx rm -rf lib/ && npm run test",
-    "build": "tsc"
+    "build": "npx tsc"
   },
+  "files": [
+    "lib/"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.476.0",
-    "core": "file:../core"
+    "aws-sdk": "2.476.0",
+    "@multicloud/sls-core": "file:../core"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
@@ -30,9 +37,10 @@
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "shx": "^0.3.2",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.2"
   },
   "engines": {
-    "node": ">= 6.5.0"
+    "node": ">=8.16.0",
+    "npm": ">=6.4.1"
   }
 }

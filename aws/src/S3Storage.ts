@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import CloudStorage, { ReadBlobOptions } from "core/src/cloudStorage";
+import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
 import { Stream } from "stream";
 
 export class S3Storage implements CloudStorage {

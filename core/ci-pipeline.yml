@@ -26,5 +26,5 @@ steps:
   displayName: 'Build sls-core'
   inputs:
     targetType: filePath
-    filePath: ../scripts/build.sh
+    filePath: ./scripts/build.sh
     workingDirectory: core

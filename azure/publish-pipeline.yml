@@ -35,5 +35,5 @@ steps:
   displayName: 'Publish sls-azure to AzDO NPM'
   inputs:
     targetType: filePath
-    filePath: ../scripts/publish.sh
+    filePath: ./scripts/publish.sh
     workingDirectory: azure

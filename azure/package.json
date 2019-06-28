@@ -2,6 +2,10 @@
   "name": "@multicloud/sls-azure",
   "version": "0.0.1",
   "description": "Microsoft Azure specific middleware and components for multi-cloud serverless.",
+  "repository": {
+    "type": "git",
+    "url": "https://dev.azure.com/711digital/ServerlessApps/_git/common-library"
+  },
   "main": "index.js",
   "scripts": {
     "start": "npm run test -- --watch",
@@ -14,14 +18,14 @@
     "prebuild": "shx rm -rf lib/ && npm run test",
     "build": "npx tsc"
   },
-  "files":[
+  "files": [
     "lib/"
   ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "10.3.0",
-    "core": "file:../core"
+    "@multicloud/sls-core": "file:../core"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
@@ -36,6 +40,7 @@
     "typescript": "^3.5.2"
   },
   "engines": {
-    "node": ">= 6.5.0"
+    "node": ">=8.16.0",
+    "npm": ">=6.4.1"
   }
 }
