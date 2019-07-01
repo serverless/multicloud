@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eo pipefail
 
-./build.sh
+# NOTE: build and publish are always executed in a package (e.g core) working directory
+$(pwd)/../scripts/build.sh
 
 ## configure npm to sign commit
 npm config set sign-git-tag true
