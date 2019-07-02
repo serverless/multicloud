@@ -1,6 +1,6 @@
 {
   "name": "@multicloud/sls-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Core middleware and components for multi-cloud serverless.",
   "repository": {
     "type": "git",
