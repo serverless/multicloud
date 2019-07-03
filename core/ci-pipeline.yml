@@ -28,3 +28,5 @@ steps:
     targetType: filePath
     filePath: ./scripts/build.sh
     workingDirectory: core
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)

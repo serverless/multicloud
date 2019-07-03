@@ -7,15 +7,12 @@
 # NOTE: a PR needs to be opened from dev --> master, which includes version bump.
 # If needs be, we can eventually automate.
 trigger:
-  branches:
-    include:
-    - dev
   paths:
     include:
-    - /aws/*
+    - aws/*
   tags:
     include:
-    - '*' # trigger on any tag
+    - 'v*' # trigger on any tag
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -38,3 +35,5 @@ steps:
     filePath: ./scripts/publish.sh
     arguments: 'prerelease'
     workingDirectory: aws
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)

@@ -1,12 +1,13 @@
 {
   "name": "@multicloud/sls-azure",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Microsoft Azure specific middleware and components for multi-cloud serverless.",
   "repository": {
     "type": "git",
     "url": "https://dev.azure.com/711digital/ServerlessApps/_git/common-library"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "start": "npm run test -- --watch",
     "lint": "eslint src/**/*.ts",
@@ -25,7 +26,7 @@
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "10.3.0",
-    "@multicloud/sls-core": "file:../core"
+    "@multicloud/sls-core": "0.0.4"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",

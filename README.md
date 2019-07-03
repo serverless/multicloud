@@ -6,10 +6,11 @@
 
 -   [Visual Studio Code](https://code.visualstudio.com/download)
 -   [Node.js](https://nodejs.org/es/download/)
+-   [Configure NPM](NPM.md) to be able to fetch common packages from a private NPM server.
 
 ### Installation
 
-- *IMPORTANT:* **Open this project from the root folder** (There are dependencies between the aws, azure and core folder)
+- *IMPORTANT:* **Open this project from the root folder**
 
 - **Install dependencies and compile the code** (There is a package.json file in each folder, so is necessary to do it in each one)
 

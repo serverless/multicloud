@@ -28,3 +28,5 @@ steps:
     targetType: filePath
     filePath: ./scripts/build.sh
     workingDirectory: aws
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)

@@ -1,13 +1,13 @@
 {
   "name": "@multicloud/sls-core",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Core middleware and components for multi-cloud serverless.",
   "repository": {
     "type": "git",
     "url": "https://dev.azure.com/711digital/ServerlessApps/_git/common-library"
   },
-  "main": "index.js",
-  "types": "src/index.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "start": "npm run test -- --watch",
     "lint": "eslint src/**/*.ts",
