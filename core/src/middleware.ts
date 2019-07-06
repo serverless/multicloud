@@ -1,15 +1,22 @@
 import { CloudContext } from ".";
-
-export interface ContainerResolver {
-  resolve<T>(...args: any[]): T;
-}
+import {
+  ContainerResolver,
+  ComponentType,
+  ContainerRegister,
+  CoreModule
+} from "./cloudContainer";
 
 export class App {
-  public constructor(private containerResolver: ContainerResolver) {}
+  public constructor(
+    private container: ContainerResolver & ContainerRegister,
+  ) {}
 
   public use(middlewares: Middleware[], handler: Handler): Function {
     return async (...args: any[]) => {
-      const context = this.containerResolver.resolve<CloudContext>(args);
+      this.container.registerModule(new CoreModule(args));
+      const context = this.container.resolve<CloudContext>(
+        ComponentType.CloudContext
+      );
       let index = 0;
 
       const next = async () => {
@@ -26,5 +33,8 @@ export class App {
   }
 }
 
-export type Middleware = (context: CloudContext, next: Function) => Promise<void> | void;
+export type Middleware = (
+  context: CloudContext,
+  next: Function
+) => Promise<void> | void;
 export type Handler = (Context: CloudContext) => Promise<void> | void;

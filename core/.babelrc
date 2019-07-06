@@ -1,4 +1,7 @@
 {
+  "plugins": [
+    "babel-plugin-transform-typescript-metadata"
+  ],
   "presets": [
     [
       "react-app",

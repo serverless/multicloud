@@ -1,5 +1,10 @@
-import { App, ContainerResolver } from "./middleware";
+import { App } from "./middleware";
 import { CloudContext } from "./cloudContext";
+import {
+  ContainerRegister,
+  ContainerResolver,
+  CloudModule
+} from "./cloudContainer";
 
 const middlewareFoo = (spy: Function) => async (
   _: CloudContext,
@@ -10,7 +15,8 @@ const middlewareFoo = (spy: Function) => async (
 };
 
 const errorMiddleware = (spy: Function) => async (
-  context: CloudContext): Promise<void> => {
+  context: CloudContext
+): Promise<void> => {
   spy();
   context.send({ error: "Boh!!!!!" }, 400);
 };
@@ -20,11 +26,14 @@ const handler = (spy: Function) => (): Promise<void> => {
   return Promise.resolve();
 };
 
-const resolver: ContainerResolver = {
-  resolve: <T>(...args: any[]): T => {
+const resolver: ContainerResolver & ContainerRegister = {
+  resolve: <T>(): T => {
     return ({
       send: jest.fn()
     } as unknown) as T;
+  },
+  registerModule: () => {
+    return jest.fn();
   }
 };
 

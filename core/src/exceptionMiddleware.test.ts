@@ -1,6 +1,11 @@
-import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";
-import { CloudContext } from "./cloudContext";
-import { App, ContainerResolver } from "./middleware";
+import {
+  ResolveContext,
+  CloudContext,
+  ExceptionMiddleware,
+  ExceptionOptions,
+  App
+} from ".";
+import { ContainerResolver, ContainerRegister } from "./cloudContainer";
 
 describe("Tests of ExceptionMiddleware should", () => {
   let options: ExceptionOptions = {
@@ -16,11 +21,12 @@ describe("Tests of ExceptionMiddleware should", () => {
     res: {}
   };
 
-  let resolver: ContainerResolver = {
+  const resolver: ContainerResolver & ContainerRegister = {
     resolve: <T>(): T => {
-      return ({
-        send: context.send
-      } as unknown) as T;
+      return (context as unknown) as T;
+    },
+    registerModule: () => {
+      return jest.fn();
     }
   };
   const errorStatus = 500;
