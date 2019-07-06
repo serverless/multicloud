@@ -8,17 +8,22 @@
     "prestart": "npm run build && func extensions install",
     "start:host": "func start",
     "start": "npm-run-all --parallel start:host watch",
-    "test": "echo \"No tests yet...\""
+    "test": "jest"
   },
   "description": "",
   "dependencies": {
-    "azure": "file:../../azure"
+    "@hapi/joi": "15.1.0",
+    "@multicloud/sls-azure": "0.0.2",
+    "@multicloud/sls-core": "0.0.4"
   },
   "devDependencies": {
     "@types/node": "10.0.3",
+    "@types/joi": "14.3.3",
     "@azure/functions": "^1.0.1-beta1",
     "npm-run-all": "^4.1.5",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "babel-jest": "^24.8.0",
+    "babel-preset-react-app": "^9.0.0"
   },
   "engines": {
     "node": ">= 6.5.0"
