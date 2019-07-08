@@ -1,16 +1,33 @@
 import { AzureResponse } from "./azureResponse";
+import { AzureContext } from "./azureContext";
 
 describe("test of response", () => {
+  const defaultParams: any[] = [
+    {
+      req: {
+        body: null
+      },
+      res: {}
+    }
+  ];
+
+  const createAzureContext = (args): AzureContext => {
+    return new AzureContext(args);
+  };
+
   it("should passthrough headers value withouth modifications", done => {
-    const azureContext = {
-      res: {
-        headers: {
-          firstKey: "body",
-          secondKey: 123,
-          thirdKey: {}
+    const azureContext = createAzureContext([
+      {
+        req: {},
+        res: {
+          headers: {
+            firstKey: "body",
+            secondKey: 123,
+            thirdKey: {}
+          }
         }
       }
-    };
+    ]);
 
     const sut = new AzureResponse(azureContext);
 
@@ -21,30 +38,23 @@ describe("test of response", () => {
   it("should have status = 200", done => {
     const defaultStatusValue = 200;
 
-    const azureContext = {
-      res: {
-      }
-    };
+    const azureContext = createAzureContext(defaultParams);
 
     const sut = new AzureResponse(azureContext);
     sut.send({});
 
-    expect(defaultStatusValue).toEqual(sut.context.res.status);
+    expect(defaultStatusValue).toEqual(sut.runtime.res.status);
     done();
   });
 
   it("should have status = 400", done => {
     const expectedStatusStatus = 400;
 
-    const azureContext = {
-      res: {
-      }
-    };
-
+    const azureContext = createAzureContext(defaultParams);
     const sut = new AzureResponse(azureContext);
     sut.send({}, expectedStatusStatus);
 
-    expect(expectedStatusStatus).toEqual(sut.context.res.status);
+    expect(expectedStatusStatus).toEqual(sut.runtime.res.status);
     done();
   });
 
@@ -55,28 +65,19 @@ describe("test of response", () => {
       thirdKey: {}
     };
 
-    const azureContext = {
-      res: {
-        body: null
-      }
-    };
+    const azureContext = createAzureContext(defaultParams);
 
     const sut = new AzureResponse(azureContext);
     sut.send(body);
 
-    expect(body).toEqual(sut.context.res.body.message);
+    expect(body).toEqual(sut.runtime.res.body.message);
     done();
   });
 
-  it("should have headers value empty object", done => {
-    const azureContext = {
-      res: {}
-    };
-
+  it("should have headers value empty object", () => {
+    const azureContext = createAzureContext(defaultParams);
     const sut = new AzureResponse(azureContext);
-
-    expect(sut.headers).toEqual({});
-    done();
+    expect(sut.headers).toEqual({ "Content-Type": "application/json" });
   });
 
   it("should create res object", done => {
@@ -90,14 +91,12 @@ describe("test of response", () => {
       status: 200
     };
 
-    const azureContext = {
-      res: {}
-    };
+    const azureContext = createAzureContext(defaultParams);
 
     const sut = new AzureResponse(azureContext);
     sut.send({});
 
-    expect(expectedObject).toEqual(sut.context.res);
+    expect(expectedObject).toEqual(sut.runtime.res);
     done();
   });
 });

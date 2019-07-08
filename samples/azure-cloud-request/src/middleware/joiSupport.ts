@@ -1,5 +1,5 @@
-import { ValidationOptions, ValidationResult } from "../validationMiddleware";
-import { CloudContext } from "../cloudContext";
+import { ValidationOptions, ValidationResult } from "@multicloud/sls-core";
+import { CloudContext } from "@multicloud/sls-core";
 import * as Joi from "joi";
 
 export class InternalValidationResult implements ValidationResult {

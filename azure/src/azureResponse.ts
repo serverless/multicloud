@@ -1,16 +1,22 @@
-import { CloudResponse } from "@multicloud/sls-core";
+import "reflect-metadata";
+import { inject, injectable } from "inversify";
+import { CloudResponse, ComponentType } from "@multicloud/sls-core";
+import { AzureContext } from "./azureContext";
 
+@injectable()
 export class AzureResponse implements CloudResponse {
   public headers?: { [key: string]: any };
-  public context: any;
+  public runtime: any;
 
-  public constructor(context: any) {
-    this.headers = context.res.headers || {};
-    this.context = context;
+  public constructor(
+    @inject(ComponentType.CloudContext) context: AzureContext
+  ) {
+    this.runtime = context.runtime;
+    this.headers = context.runtime.res.headers || {};
   }
 
   public send(body: any, status: number = 200): void {
-    this.context.res = {
+    this.runtime.res = {
       status: status,
       body: {
         message: body

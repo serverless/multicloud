@@ -1,40 +1,42 @@
 import { AzureContext } from "./azureContext";
 import { AzureResponse } from "./azureResponse";
 
-
 jest.mock("./azureResponse");
 
-const mockResponse = {
-  context:{},
-  send: jest.fn()
+const done: Function = jest.fn();
+const runtimeArgs = [
+  {
+    req: {},
+    res: {},
+    done
+  }
+];
+
+const createAzureContext = (args): AzureContext => {
+  return new AzureContext(args);
 };
 
 describe("Azure context", () => {
+  let sut: AzureContext = undefined;
   beforeEach(() => {
-    (AzureResponse as jest.Mock<AzureResponse>).mockImplementation(() => mockResponse);
+    sut = createAzureContext(runtimeArgs);
   });
 
-  test("when done() calls response.send() on httpTrigger", () => {
-    const context = {
-      req: {},
-      res: {},
-      done: jest.fn()
-    };
+  test("when send() calls response.send() on httpTrigger", () => {
     const body = { message: "Hello World" };
-    const sut = new AzureContext(context);
     sut.send(body);
-    expect(mockResponse.send).toHaveBeenCalledWith(body, 200);
+    expect(sut.res.send).toHaveBeenCalledWith(body, 200);
   });
 
-  test("when done() calls response.send() on httpTrigger with custom status", () => {
-    const context = {
-      req: {},
-      res: {},
-      done: jest.fn()
-    };
+  test("when send() calls response.send() on httpTrigger with custom status", () => {
     const body = { message: "oh Crap!" };
-    const sut = new AzureContext(context);
     sut.send(body, 400);
-    expect(mockResponse.send).toHaveBeenCalledWith(body, 400);
+    expect(sut.res.send).toHaveBeenCalledWith(body, 400);
+  });
+
+  test("when send() calls runtime done()", () => {
+    const body = { message: "oh Crap!" };
+    sut.send(body, 400);
+    expect(done).toHaveBeenCalledWith();
   });
 });

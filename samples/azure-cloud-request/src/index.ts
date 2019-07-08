@@ -7,9 +7,13 @@ import {
 
 import { createJoiQueryValidationOptions } from "./middleware";
 
-import { AzureContext } from "@multicloud/sls-azure/lib/azureContext";
+import { CloudContainer } from "@multicloud/sls-core";
 
 import * as Joi from "@hapi/joi";
+import { AzureModule } from "@multicloud/sls-azure/lib/AzureModule";
+
+const container = new CloudContainer();
+container.registerModule(new AzureModule());
 
 const schema: Joi.AnySchema = Joi.object({
   hi: Joi.string().required()
@@ -23,14 +27,7 @@ const handler: Handler = context => {
   context.send(`Hello ${context.req.query.hi}`, 200);
 };
 
-const resolver: ContainerResolver = {
-  resolve: <T>(...args: any[]): T => {
-    const context = new AzureContext(args[0][0]);
-    return (context as unknown) as T;
-  }
-};
-
-const app = new App(resolver);
+const app = new App(container);
 const httpTrigger = app.use([validationMiddleware], handler);
 
 export default httpTrigger;

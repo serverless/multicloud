@@ -1,6 +1,6 @@
 {
   "name": "@multicloud/sls-azure",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Microsoft Azure specific middleware and components for multi-cloud serverless.",
   "repository": {
     "type": "git",
@@ -26,7 +26,9 @@
   "license": "ISC",
   "dependencies": {
     "@azure/storage-blob": "10.3.0",
-    "@multicloud/sls-core": "0.0.4"
+    "@multicloud/sls-core": "0.0.5",
+    "inversify": "5.0.1",
+    "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
@@ -35,6 +37,7 @@
     "@typescript-eslint/parser": "^1.9.0",
     "babel-jest": "^24.8.0",
     "babel-preset-react-app": "^9.0.0",
+    "babel-plugin-transform-typescript-metadata": "0.2.2",
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "shx": "^0.3.2",

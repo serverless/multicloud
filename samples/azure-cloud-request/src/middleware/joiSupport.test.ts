@@ -3,8 +3,7 @@ import {
   createJoiQueryValidationOptions,
   InternalValidationResult
 } from "./joiSupport";
-import { CloudContext } from "../cloudContext";
-import { CloudRequest } from "../cloudRequest";
+import { CloudContext,CloudRequest } from "@multicloud/sls-core";
 import * as Joi from "@hapi/joi";
 
 describe("Joi validation option", () => {
