@@ -1,14 +1,15 @@
 # MultiCloud Middleware
 
-## Getting Started
+- [Prerequisites](#Prerequisites)
+- [Installation](#Installation)
+- [Running Tests](#Running-Tests)
 
-### Prerequisites
+## Prerequisites
+[Configure NPM](NPM.md) to be able to fetch common packages from a private NPM server.
 
--   [Visual Studio Code](https://code.visualstudio.com/download)
--   [Node.js](https://nodejs.org/es/download/)
--   [Configure NPM](NPM.md) to be able to fetch common packages from a private NPM server.
+[New Developer instructions](https://dev.azure.com/711digital/ServerlessApps/_git/wiki?_a=contents&path=%2FNewDevOnboarding.md&version=GBmaster)
 
-### Installation
+## Installation
 
 - *IMPORTANT:* **Open this project from the root folder**
 
@@ -28,14 +29,21 @@ cd azure && npm install && npm run build && cd ..
 cd aws && npm install && npm run build && cd ..
 ```
 
+If for any reason you notice that the dependencies are not linked in VS Code
 
-### Configuration
+```
+cd core && npm link
+```
 
--   [EditorConfig](docs/editor-config.md)
--   [ESLint](docs/eslint.md)
--   [TypeScript](docs/typescript.md)
+```
+cd aws && npm link@multicloud/sls-core
+```
 
-## Running the tests
+```
+cd azure && npm link@multicloud/sls-core
+```
+
+## Running tests
 
 In the terminal, execute the following command
 
@@ -44,40 +52,3 @@ npm run test
 ```
 
 In addition, this command can be executed using some of the following [options](https://jestjs.io/docs/en/cli)
-
-## Project Structure
-
-```
-├── aws
-|   ├── src
-|   |   ├── storage.test.js
-|   |   └── storage.js
-|   ├── package.json
-|   └── tsconfig.json
-├── azure
-|   ├── src
-|   |   ├── storage.test.js
-|   |   └── storage.js
-|   ├── package.json
-|   └── tsconfig.json
-├── core
-|   ├── src
-|   ├── package.json
-|   └── tsconfig.json
-├── readme.md
-└── tsconfig.json
-```
-
-[(more details)](docs/structure.md)
-
-## Contributing
-
-TDB
-
-## Authors
-
-TDB
-
-## License
-
-TDB
