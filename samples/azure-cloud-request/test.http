@@ -1,1 +1,1 @@
-GET http://localhost:7071/api/src?hi=Gab
+GET http://localhost:7071/api/azure-function-handler?hi=Gab
