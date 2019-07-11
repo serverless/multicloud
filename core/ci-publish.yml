@@ -23,7 +23,8 @@ steps:
     workingFile: core/.npmrc
 
 - bash: |
-    echo $(SOURCE_BRANCH_NAME)
+    echo Hi
+    echo $(Build.SourceBranchName)
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
     NPM_VERSION=$("npm version prerelease")
