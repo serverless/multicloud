@@ -38,7 +38,7 @@ steps:
     
     # Since there isn't a package.json at the root of repo 
     # we need to manually commit and tag
-    git commit -m Bumping NPM prerelease to version ${NPM_VERSION} ***NO_CI***"
+    git commit -m "Bumping NPM prerelease to version ${NPM_VERSION} ***NO_CI***"
     git tag ${NPM_VERSION}
     git push origin ${SOURCE_BRANCH_NAME} --tags
   name: BumpNpmVersion
