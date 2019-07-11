@@ -1,0 +1,34 @@
+# Bumps NPM prerelease version on dev branch
+
+trigger:
+  branches:
+    include:
+    - dev
+  paths:
+    include:
+    - aws/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  clean: true
+  persistCredentials: true
+  fetchDepth: 1
+
+- task: npmAuthenticate@0
+  displayName: 'npm Authenticate core/.npmrc'
+  inputs:
+    workingFile: core/.npmrc
+
+- bash: |
+    git config --local user.email "Azure Pipelines"
+    git config --local user.name "azuredevops@microsoft.com"
+    npm version prerelease
+    git add .
+    git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
+    git push origin HEAD:dev
+  name: BumpNpmVersion
+  displayName: Bump NPM Prerelease Version
+  workingDirectory: aws/
