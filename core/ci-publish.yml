@@ -33,7 +33,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: ./scripts/version.sh
-    arguments: '@multicloud/sls-core $(SOURCE_BRANCH)'
+    arguments: '@multicloud/sls-core'
     workingDirectory: core
   env:
     NPM_TOKEN: $(NPM_TOKEN)

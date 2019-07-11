@@ -1,12 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-SOURCE_BRANCH_NAME=${$2/refs\/head\/}
-echo ${SOURCE_BRANCH_NAME}
+# Get full branch name excluding refs/head from the env var SOURCE_BRANCH
+SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
+
+# Configure git to commit as Azure Dev Ops
 git config --local user.email "Azure Pipelines"
 git config --local user.name "azuredevops@microsoft.com"
 NPM_VERSION=`npm version prerelease`
 
+# Stage update to package.json files
 git add package.json
 git add package-lock.json
 
