@@ -24,6 +24,7 @@ steps:
 
 - bash: |
     echo Hi
+    echo $(Build.SourceBranch)
     echo $(Build.SourceBranchName)
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
