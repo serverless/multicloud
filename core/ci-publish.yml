@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-    - dev
+    - wabrez/commit-prerelease
   paths:
     include:
     - core/*
