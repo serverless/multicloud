@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-    - wabrez/commit-prerelease
+    - dev
   paths:
     include:
     - core/*
@@ -28,7 +28,7 @@ steps:
     npm version prerelease
     git add .
     git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
-    git push origin HEAD:wabrez/commit-prerelease
+    git push origin HEAD:dev
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
   workingDirectory: core/
