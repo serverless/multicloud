@@ -27,23 +27,14 @@ steps:
   inputs:
     workingFile: core/.npmrc
 
-- bash: |
-    SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
-    git config --local user.email "Azure Pipelines"
-    git config --local user.name "azuredevops@microsoft.com"
-    NPM_VERSION=`npm version prerelease`
-    
-    git add package.json
-    git add package-lock.json
-    
-    # Since there isn't a package.json at the root of repo 
-    # we need to manually commit and tag
-    git commit -m "Bumping NPM prerelease to version ${NPM_VERSION} ***NO_CI***"
-    git tag @multicloud/sls-core-${NPM_VERSION}
-    git push origin HEAD:${SOURCE_BRANCH_NAME} --tags
+- task: Bash@3
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
-  workingDirectory: core/
+  inputs:
+    targetType: filePath
+    filePath: ./scripts/version.sh
+    arguments: '@multicloud/sls-core $(SOURCE_BRANCH)'
+    workingDirectory: core
   env:
     NPM_TOKEN: $(NPM_TOKEN)
     SOURCE_BRANCH: $(Build.SourceBranch)
