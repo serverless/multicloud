@@ -23,12 +23,11 @@ steps:
     workingFile: core/.npmrc
 
 - bash: |
-    echo Hi
-    echo $(Build.SourceBranch)
-    echo $(Build.SourceBranchName)
+    SOURCE_BRANCH_NAME=${Build.SourceBranch/refs\/head\/}
+    echo ${SOURCE_BRANCH_NAME}
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
-    NPM_VERSION=$("npm version prerelease")
+    NPM_VERSION=`npm version prerelease`
     git add package.json
     git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
     git tag $(NPM_VERSION)
@@ -38,4 +37,3 @@ steps:
   workingDirectory: core/
   env:
     NPM_TOKEN: $(NPM_TOKEN)
-    SOURCE_BRANCH_NAME: $(Build.SourceBranchName)
