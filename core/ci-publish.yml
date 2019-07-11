@@ -23,12 +23,14 @@ steps:
     workingFile: core/.npmrc
 
 - bash: |
+    echo $(BUILD_SOURCEBRANCHNAME)
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
-    npm version prerelease
+    NPM_VERSION=$("npm version prerelease")
     git add package.json
     git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
-    git push origin HEAD:dev
+    git tag $(NPM_VERSION)
+    git push origin HEAD:$(BUILD_SOURCEBRANCHNAME) --tags
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
   workingDirectory: core/
