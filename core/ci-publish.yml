@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-    - dev
+    - wabrez/commit-prerelease
   paths:
     include:
     - core/*
@@ -23,12 +23,19 @@ steps:
     workingFile: core/.npmrc
 
 - bash: |
+    SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
+    echo Hi
+    echo ${SOURCE_BRANCH_NAME}
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
-    npm version prerelease
+    NPM_VERSION=`npm version prerelease`
     git add package.json
     git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
-    git push origin HEAD:dev
+    git tag ${NPM_VERSION}
+    git push origin HEAD:${SOURCE_BRANCH_NAME} --tags
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
   workingDirectory: core/
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)
+    SOURCE_BRANCH: $(Build.SourceBranch)
