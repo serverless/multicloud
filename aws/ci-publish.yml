@@ -12,28 +12,29 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: NodeTool@0
+  displayName: 'Use Node 10.x'
+  inputs:
+    versionSpec: 10.x
+
 - checkout: self
   clean: true
   persistCredentials: true
   fetchDepth: 1
 
 - task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
+  displayName: 'npm Authenticate aws/.npmrc'
   inputs:
-    workingFile: core/.npmrc
+    workingFile: aws/.npmrc
 
-- bash: |
-    SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
-    git config --local user.email "Azure Pipelines"
-    git config --local user.name "azuredevops@microsoft.com"
-    NPM_VERSION=`npm version prerelease`
-    git add package.json
-    git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
-    git tag ${NPM_VERSION}
-    git push origin HEAD:${SOURCE_BRANCH_NAME} --tags
+- task: Bash@3
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
-  workingDirectory: aws/
+  inputs:
+    targetType: filePath
+    filePath: ./scripts/version.sh
+    arguments: '@multicloud/sls-aws'
+    workingDirectory: aws
   env:
     NPM_TOKEN: $(NPM_TOKEN)
     SOURCE_BRANCH: $(Build.SourceBranch)
