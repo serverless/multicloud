@@ -12,6 +12,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: NodeTool@0
+  displayName: 'Use Node 10.x'
+  inputs:
+    versionSpec: 10.x
+
 - checkout: self
   clean: true
   persistCredentials: true
