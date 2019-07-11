@@ -3,7 +3,7 @@
 trigger:
   branches:
     include:
-    - dev
+    - wabrez/commit-prerelease
   paths:
     include:
     - core/*
@@ -32,10 +32,15 @@ steps:
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
     NPM_VERSION=`npm version prerelease`
+    
     git add package.json
-    git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
+    git add package-lock.json
+    
+    # Since there isn't a package.json at the root of repo 
+    # we need to manually commit and tag
+    git commit -m Bumping NPM prerelease to version ${NPM_VERSION} ***NO_CI***"
     git tag ${NPM_VERSION}
-    git push origin HEAD:${SOURCE_BRANCH_NAME} --tags
+    git push origin ${SOURCE_BRANCH_NAME} --tags
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
   workingDirectory: core/
