@@ -26,7 +26,7 @@ steps:
     git config --local user.email "Azure Pipelines"
     git config --local user.name "azuredevops@microsoft.com"
     npm version prerelease
-    git add .
+    git add package.json
     git commit -m "Auto bumping NPM prerelease version ***NO_CI***"
     git push origin HEAD:dev
   name: BumpNpmVersion
