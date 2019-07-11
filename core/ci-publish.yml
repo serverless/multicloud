@@ -39,8 +39,8 @@ steps:
     # Since there isn't a package.json at the root of repo 
     # we need to manually commit and tag
     git commit -m "Bumping NPM prerelease to version ${NPM_VERSION} ***NO_CI***"
-    git tag ${NPM_VERSION}
-    git push origin ${SOURCE_BRANCH_NAME} --tags
+    git tag @multicloud/sls-core-${NPM_VERSION}
+    git push origin HEAD:${SOURCE_BRANCH_NAME} --tags
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
   workingDirectory: core/
