@@ -10,7 +10,7 @@ SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
 # Configure git to commit as Azure Dev Ops
 git config --local user.email "Azure Pipelines"
 git config --local user.name "azuredevops@microsoft.com"
-git pull
+git pull origin ${SOURCE_BRANCH_NAME}
 
 echo v=${NPM_VERSION}
 
