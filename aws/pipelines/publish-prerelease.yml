@@ -7,12 +7,12 @@
 # NOTE: a PR needs to be opened from dev --> master, which includes version bump.
 # If needs be, we can eventually automate.
 trigger:
-  paths:
+  branches:
     include:
-    - azure/*
+    - dev
   tags:
     include:
-    - '@multicloud/*' # trigger on any tag
+    - '@multicloud/sls-aws*' # trigger on any tag
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -24,16 +24,16 @@ steps:
     versionSpec: 10.x
 
 - task: npmAuthenticate@0
-  displayName: 'npm Authenticate azure/.npmrc'
+  displayName: 'npm Authenticate aws/.npmrc'
   inputs:
-    workingFile: azure/.npmrc
+    workingFile: aws/.npmrc
 
 - task: Bash@3
-  displayName: 'Publish sls-azure to AzDO NPM'
+  displayName: 'Publish sls-aws to AzDO NPM'
   inputs:
     targetType: filePath
     filePath: ./scripts/publish.sh
     arguments: 'prerelease'
-    workingDirectory: azure
+    workingDirectory: aws
   env:
     NPM_TOKEN: $(NPM_TOKEN)

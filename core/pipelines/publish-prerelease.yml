@@ -7,12 +7,12 @@
 # NOTE: a PR needs to be opened from dev --> master, which includes version bump.
 # If needs be, we can eventually automate.
 trigger:
-  paths:
+  branches:
     include:
-    - core/*
+    - dev
   tags:
     include:
-    - '@multicloud/*' # trigger on any tag
+    - '@multicloud/sls-core*' # trigger on any tag
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -33,6 +33,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: ./scripts/publish.sh
+    arguments: 'prerelease'
     workingDirectory: core
   env:
     NPM_TOKEN: $(NPM_TOKEN)
