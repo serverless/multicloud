@@ -7,6 +7,10 @@ NPM_RELEASE_TYPE=${2-"prerelease"}
 # Get full branch name excluding refs/head from the env var SOURCE_BRANCH
 SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
 
+git remote -v
+
+echo Checking out ${SOURCE_BRANCH_NAME}
+
 # Configure git to commit as Azure Dev Ops
 git config --local user.email "Azure Pipelines"
 git config --local user.name "azuredevops@microsoft.com"
@@ -15,7 +19,7 @@ git pull
 
 NPM_VERSION=`npm version ${NPM_RELEASE_TYPE}`
 
-echo ${NPM_VERSION}
+echo Setting NPM version to ${NPM_VERSION}
 
 # Stage update to package.json files
 git add package.json
