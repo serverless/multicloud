@@ -23,6 +23,6 @@ git add package-lock.json
 # Since there isn't a package.json at the root of repo
 # and we have multiple packages within same repo
 # we need to manually commit and tag in order to create unique tag names
-git commit -m "Bumping NPM package ${PACKAGE_NAME} prerelease to version ${NPM_VERSION} **NO_CI**"
+git commit -m "Bumping NPM package ${PACKAGE_NAME} prerelease to version ${NPM_VERSION} ***NO_CI***"
 git tag ${PACKAGE_NAME}-${NPM_VERSION}
 git push origin HEAD:${SOURCE_BRANCH_NAME} --tags
