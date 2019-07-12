@@ -29,6 +29,6 @@ git commit -m "Bumping NPM package ${PACKAGE_NAME} prerelease to version ${NPM_V
 SHA=`git rev-parse HEAD`
 
 git tag ${PACKAGE_NAME}-${NPM_VERSION}
-git push --tags
+git push origin ${SOURCE_BRANCH_NAME} --tags
 
 echo Pushed new tag: ${PACKAGE_NAME}-${NPM_VERSION} @ SHA: ${SHA:0:8}
