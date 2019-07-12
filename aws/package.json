@@ -1,6 +1,6 @@
 {
   "name": "@multicloud/sls-aws",
-  "version": "0.0.3-1",
+  "version": "0.0.3-2",
   "description": "Amazon AWS specific middleware and components for multi-cloud serverless.",
   "repository": {
     "type": "git",
