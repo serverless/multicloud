@@ -12,13 +12,9 @@ git config --local user.email "Azure Pipelines"
 git config --local user.name "azuredevops@microsoft.com"
 git pull origin ${SOURCE_BRANCH_NAME}
 
-echo v=${NPM_VERSION}
-
 if ["$NPM_VERSION" == ""]; then
-    echo Version was not passed
     NPM_VERSION=`npm version prerelease`
 else
-    echo Version ${NPM_VERSION} was passed
     NPM_VERSION=`npm version ${NPM_VERSION}`
 fi
 
