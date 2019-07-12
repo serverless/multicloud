@@ -12,7 +12,7 @@ trigger:
     - azure/*
   tags:
     include:
-    - 'v*' # trigger on any tag
+    - '@multicloud/*' # trigger on any tag
 
 pool:
   vmImage: 'ubuntu-latest'
