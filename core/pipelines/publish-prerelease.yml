@@ -10,9 +10,9 @@ trigger:
   branches:
     include:
     - dev
-  tags:
+  paths:
     include:
-    - '@multicloud/sls-core*' # trigger on any tag
+    - core/*
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -23,10 +23,27 @@ steps:
   inputs:
     versionSpec: 10.x
 
+- checkout: self
+  clean: true
+  persistCredentials: true
+  fetchDepth: 1
+
 - task: npmAuthenticate@0
   displayName: 'npm Authenticate core/.npmrc'
   inputs:
     workingFile: core/.npmrc
+
+- task: Bash@3
+  name: BumpNpmVersion
+  displayName: Bump NPM Prerelease Version
+  inputs:
+    targetType: filePath
+    filePath: ./scripts/version.sh
+    arguments: '@multicloud/sls-core'
+    workingDirectory: core
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)
+    SOURCE_BRANCH: $(Build.SourceBranch)
 
 - task: Bash@3
   displayName: 'Publish sls-core to AzDO NPM'

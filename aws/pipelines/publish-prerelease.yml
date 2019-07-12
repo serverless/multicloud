@@ -10,9 +10,9 @@ trigger:
   branches:
     include:
     - dev
-  tags:
+  paths:
     include:
-    - '@multicloud/sls-aws*' # trigger on any tag
+    - aws/*
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -23,10 +23,27 @@ steps:
   inputs:
     versionSpec: 10.x
 
+- checkout: self
+  clean: true
+  persistCredentials: true
+  fetchDepth: 1
+
 - task: npmAuthenticate@0
   displayName: 'npm Authenticate aws/.npmrc'
   inputs:
     workingFile: aws/.npmrc
+
+- task: Bash@3
+  name: BumpNpmVersion
+  displayName: Bump NPM Prerelease Version
+  inputs:
+    targetType: filePath
+    filePath: ./scripts/version.sh
+    arguments: '@multicloud/sls-aws'
+    workingDirectory: aws
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)
+    SOURCE_BRANCH: $(Build.SourceBranch)
 
 - task: Bash@3
   displayName: 'Publish sls-aws to AzDO NPM'

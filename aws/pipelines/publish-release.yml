@@ -6,13 +6,7 @@
 # Only publish to AzDO NPM when a tag is pushed to master.
 # NOTE: a PR needs to be opened from dev --> master, which includes version bump.
 # If needs be, we can eventually automate.
-trigger:
-  branches:
-    include:
-    - master
-  tags:
-    include:
-    - '@multicloud/sls-aws*' # trigger on any tag
+trigger: none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -23,10 +17,27 @@ steps:
   inputs:
     versionSpec: 10.x
 
+- checkout: self
+  clean: true
+  persistCredentials: true
+  fetchDepth: 1
+
 - task: npmAuthenticate@0
   displayName: 'npm Authenticate aws/.npmrc'
   inputs:
     workingFile: aws/.npmrc
+
+- task: Bash@3
+  name: BumpNpmVersion
+  displayName: Bump NPM Prerelease Version
+  inputs:
+    targetType: filePath
+    filePath: ./scripts/version.sh
+    arguments: '@multicloud/sls-aws $(NPM_RELEASE_TYPE)'
+    workingDirectory: aws
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)
+    SOURCE_BRANCH: $(Build.SourceBranch)
 
 - task: Bash@3
   displayName: 'Publish sls-aws to AzDO NPM'
