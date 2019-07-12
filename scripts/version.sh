@@ -7,7 +7,7 @@ NPM_RELEASE_TYPE=${2-"prerelease"}
 echo SOURCE_BRANCH=${SOURCE_BRANCH}
 
 # Get full branch name excluding refs/head from the env var SOURCE_BRANCH
-SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
+SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/heads\/}
 
 echo SOURCE_BRANCH_NAME=${SOURCE_BRANCH_NAME}
 
