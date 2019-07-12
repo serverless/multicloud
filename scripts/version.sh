@@ -4,9 +4,13 @@ set -euo pipefail
 PACKAGE_NAME=$1
 NPM_RELEASE_TYPE=${2-"prerelease"}
 
+# Get full branch name excluding refs/head from the env var SOURCE_BRANCH
+SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/head\/}
+
 # Configure git to commit as Azure Dev Ops
 git config --local user.email "Azure Pipelines"
 git config --local user.name "azuredevops@microsoft.com"
+git checkout ${SOURCE_BRANCH_NAME}
 git pull
 
 NPM_VERSION=`npm version ${NPM_RELEASE_TYPE}`
