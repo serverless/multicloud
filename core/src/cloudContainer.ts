@@ -22,7 +22,9 @@ export enum ComponentType {
   RuntimeArgs = "RuntimeArgs",
   CloudContext = "CloudContext",
   CloudRequest = "CloudRequest",
-  CloudResponse = "CloudResponse"
+  CloudResponse = "CloudResponse",
+  CloudService = "CloudService",
+  CloudStorage = "CloudStorage"
 }
 
 export class CloudContainer implements ContainerResolver, ContainerRegister {

@@ -6,3 +6,5 @@ export * from "./cloudContainer";
 export * from "./middleware";
 export * from "./exceptionMiddleware";
 export * from "./validationMiddleware";
+export * from "./cloudService";
+export * from "./cloudServiceOptions";
