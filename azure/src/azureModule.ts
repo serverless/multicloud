@@ -14,17 +14,14 @@ export class AzureModule implements CloudModule {
   public init(container: Container) {
     container
       .bind<CloudContext>(ComponentType.CloudContext)
-      .to(AzureContext)
-      .inSingletonScope();
+      .to(AzureContext);
 
     container
       .bind<CloudRequest>(ComponentType.CloudRequest)
-      .to(AzureRequest)
-      .inSingletonScope();
+      .to(AzureRequest);
 
     container
       .bind<CloudResponse>(ComponentType.CloudResponse)
-      .to(AzureResponse)
-      .inSingletonScope();
+      .to(AzureResponse);
   }
 }

@@ -41,6 +41,9 @@ export class CloudContainer implements ContainerResolver, ContainerRegister {
 export class CoreModule implements CloudModule {
   public constructor(private args: any[]) {}
   public init(container: Container) {
-    container.bind(ComponentType.RuntimeArgs).toConstantValue(this.args);
+    if(!container.isBound(ComponentType.RuntimeArgs))
+      container.bind(ComponentType.RuntimeArgs).toConstantValue(this.args);
+    else
+      container.rebind(ComponentType.RuntimeArgs).toConstantValue(this.args);
   }
 }

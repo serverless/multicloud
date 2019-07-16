@@ -103,6 +103,12 @@ describe("Core Module", () => {
 
     expect(response).toBeInstanceOf(TestResponse);
   });
+
+  it("allow multiple registration when its invoked twice", () => {
+    sut.registerModule(new CoreModule(params));
+    sut.registerModule(new CoreModule(params));
+    sut.registerModule(new CoreModule(params));
+  });
 });
 
 describe("Cloud container", () => {

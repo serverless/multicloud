@@ -19,14 +19,22 @@ export class App {
       );
       let index = 0;
 
-      const next = async () => {
+      const next = () => {
         const middleware = middlewares[index];
+        let result = null;
+
         if (middleware) {
           index++;
-          await middleware(context, next);
+          result = middleware(context, next);
         } else {
-          await handler(context);
+          result = handler(context);
         }
+
+        if (result && result.then) {
+          return result;
+        }
+
+        return Promise.resolve();
       };
       await next();
     };
