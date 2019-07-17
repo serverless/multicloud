@@ -1,4 +1,5 @@
 import { AzureRequest } from "./azureRequest";
+import { AzureResponse } from "./azureResponse";
 import { AzureContext } from "./azureContext";
 import { create } from "domain";
 
@@ -13,7 +14,10 @@ describe("test of request", () => {
   ];
 
   const createAzureContext = (args): AzureContext => {
-    return new AzureContext(args);
+    const context = new AzureContext(args);
+    context.req = new AzureRequest(context);
+    context.res = new AzureResponse(context);
+    return context;
   };
 
   it("should passthrough body value without modifications", () => {

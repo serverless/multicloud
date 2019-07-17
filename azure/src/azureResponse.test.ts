@@ -1,4 +1,5 @@
 import { AzureResponse } from "./azureResponse";
+import { AzureRequest } from "./azureRequest";
 import { AzureContext } from "./azureContext";
 
 describe("test of response", () => {
@@ -12,7 +13,10 @@ describe("test of response", () => {
   ];
 
   const createAzureContext = (args): AzureContext => {
-    return new AzureContext(args);
+    const context = new AzureContext(args);
+    context.req = new AzureRequest(context);
+    context.res = new AzureResponse(context);
+    return context;
   };
 
   it("should passthrough headers value withouth modifications", done => {

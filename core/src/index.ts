@@ -11,3 +11,4 @@ export * from "./cloudServiceOptions";
 export * from "./logger"
 export * from "./loggingServiceMiddleware"
 export * from "./requestLoggingMiddleware"
+export * from "./httpBindingMiddleware"

@@ -1,4 +1,5 @@
 import { AzureContext } from "./azureContext";
+import { AzureRequest } from "./azureRequest";
 import { AzureResponse } from "./azureResponse";
 
 jest.mock("./azureResponse");
@@ -20,6 +21,8 @@ describe("Azure context", () => {
   let sut: AzureContext = undefined;
   beforeEach(() => {
     sut = createAzureContext(runtimeArgs);
+    sut.req = new AzureRequest(sut);
+    sut.res = new AzureResponse(sut);
   });
 
   test("when send() calls response.send() on httpTrigger", () => {

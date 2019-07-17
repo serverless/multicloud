@@ -11,6 +11,7 @@ export interface CloudContext {
   storage?: CloudStorage;
   logger?: Logger;
   service?: CloudService;
+  runtime?: any;
   // queue?: CloudQueue;
   send: (body: any, status: number) => void;
 }
