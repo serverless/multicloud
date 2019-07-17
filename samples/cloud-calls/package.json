@@ -1,0 +1,13 @@
+{
+  "name": "",
+  "version": "",
+  "description": "",
+  "scripts": {
+    "start": "func host start --build"
+  },
+  "author": "",
+  "dependencies": {
+    "@multicloud/sls-azure": "0.0.8-2",
+    "@multicloud/sls-core": "0.0.11-3"
+  }
+}
