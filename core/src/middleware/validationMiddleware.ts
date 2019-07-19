@@ -1,5 +1,4 @@
-import { CloudContext } from ".";
-import { Middleware } from "./middleware";
+import { CloudContext, Middleware } from "..";
 
 export interface ValidationResult {
   hasError(): boolean;
@@ -14,7 +13,7 @@ export interface ValidationOptions {
 export const createValidationMiddleware = (options: ValidationOptions): Middleware => async (context: CloudContext, next: Function): Promise<void> => {
   const result = await options.validate(context);
 
-  if(result.hasError()) {
+  if (result.hasError()) {
     await result.send();
     return;
   }

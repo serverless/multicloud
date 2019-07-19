@@ -1,52 +1,26 @@
-import {
-  ResolveContext,
-  CloudContext,
-  ExceptionMiddleware,
-  ExceptionOptions,
-  App
-} from ".";
-import { ContainerResolver, ContainerRegister } from "./cloudContainer";
+import { CloudContext, App, CloudModule, ComponentType } from "..";
+import { ExceptionMiddleware, ExceptionOptions } from "../middleware";
+import { ContainerModule } from "inversify";
+import MockFactory from "../test/mockFactory";
 
 describe("Tests of ExceptionMiddleware should", () => {
   let options: ExceptionOptions = {
     log: jest.fn()
   };
 
-  const context: CloudContext = {
-    providerType: "providerType",
-    req: {
-      method: "method"
-    },
-    send: jest.fn(),
-    res: {}
-  };
+  const handler = jest.fn();
+  const context = MockFactory.createMockCloudContext();
+  const testModule: CloudModule = {
+    create: () => new ContainerModule((bind) => {
+      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
+    })
+  }
 
-  const resolver: ContainerResolver & ContainerRegister = {
-    resolve: <T>(): T => {
-      return (context as unknown) as T;
-    },
-    registerModule: () => {
-      return jest.fn();
-    }
-  };
   const errorStatus = 500;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  const middlewareFoo = (spy: Function) => async (
-    _: CloudContext,
-    next: Function
-  ): Promise<void> => {
-    spy();
-    await next();
-  };
-
-  const handler = (spy: Function) => (): Promise<void> => {
-    spy();
-    return Promise.resolve();
-  };
 
   it("catch exception and log error", async done => {
     const errorMessage = "Fail";
@@ -72,15 +46,12 @@ describe("Tests of ExceptionMiddleware should", () => {
 
   it("call next middleware after exceptionMiddleware using App", async () => {
     const spyMiddleware = jest.fn();
-    const spyHandler = jest.fn();
+    const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
 
-    const sut = new App(resolver);
-    await sut.use(
-      [ExceptionMiddleware(options), middlewareFoo(spyMiddleware)],
-      handler(spyHandler)
-    )(context);
+    const app = new App(testModule);
+    await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
     expect(spyMiddleware).toHaveBeenCalled();
-    expect(spyHandler).toHaveBeenCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it("call next middleware and receive error, call exception and log error", async () => {
@@ -90,13 +61,10 @@ describe("Tests of ExceptionMiddleware should", () => {
     const failNext = () => {
       throw error;
     };
-    const spyHandler = jest.fn();
+    const mockMiddleware = MockFactory.createMockMiddleware(failNext);
 
-    const sut = new App(resolver);
-    await sut.use(
-      [ExceptionMiddleware(options), middlewareFoo(failNext)],
-      handler(spyHandler)
-    )(context);
+    const app = new App(testModule);
+    await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
     expect(context.send).toHaveBeenCalledWith(error, errorStatus);
     expect(options.log).toHaveBeenCalledWith(error);
   });

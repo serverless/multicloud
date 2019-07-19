@@ -1,10 +1,10 @@
-import { CloudContext } from "./cloudContext";
+import { Middleware } from "..";
 import {
   createValidationMiddleware,
   ValidationOptions,
   ValidationResult
 } from "./validationMiddleware";
-import { Middleware } from "./middleware";
+import MockFactory from "../test/mockFactory";
 
 describe("Validation Middleware", () => {
   const successValidation: ValidationResult = {
@@ -23,48 +23,36 @@ describe("Validation Middleware", () => {
     validate: jest.fn()
   };
 
-  const context: CloudContext = {
-    providerType: "provider",
-    req: {
-      body: {
-        username: "foo",
-        password: "bar"
-      },
-      method: "get"
-    },
-    res: {
-      send: jest.fn()
-    },
-    send: jest.fn()
-  };
+  const context = MockFactory.createMockCloudContext();
 
-  let sut: Middleware = undefined;
+  let middleware: Middleware = undefined;
   beforeEach(() => {
-    sut = createValidationMiddleware(options);
+    jest.clearAllMocks();
+    middleware = createValidationMiddleware(options);
   });
 
   it("call validate", async () => {
     options.validate = jest.fn().mockResolvedValue(successValidation);
-    await sut(context, next);
-    expect(options.validate).toHaveBeenCalledWith(context);
+    await middleware(context, next);
+    expect(options.validate).toBeCalledWith(context);
   });
 
   it("call send on error", async () => {
     options.validate = jest.fn().mockResolvedValue(failValidation);
-    await sut(context, next);
-    expect(failValidation.send).toHaveBeenCalled();
+    await middleware(context, next);
+    expect(failValidation.send).toBeCalled();
   });
 
-  it.skip("dont call next on error", async () => {
+  it("don't call next on error", async () => {
     options.validate = jest.fn().mockResolvedValue(failValidation);
-    await sut(context, next);
-    expect(next).toHaveBeenCalledTimes(0);
+    await middleware(context, next);
+    expect(next).not.toBeCalled();
   });
 
   it("when success call next", async () => {
     options.validate = jest.fn().mockResolvedValue(successValidation);
-    await sut(context, next);
-    expect(successValidation.send).toHaveBeenCalledTimes(0);
-    expect(next).toHaveBeenCalled();
+    await middleware(context, next);
+    expect(successValidation.send).not.toBeCalled();
+    expect(next).toBeCalled();
   });
 });

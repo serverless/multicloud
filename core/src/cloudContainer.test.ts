@@ -1,18 +1,13 @@
-import {
-  CloudContainer,
-  CloudModule,
-  CoreModule,
-  ComponentType
-} from "./cloudContainer";
+import { CloudContainer, CloudModule, ComponentType } from ".";
 
-import { Container, injectable, inject } from "inversify";
+import { injectable, inject, ContainerModule } from "inversify";
 import { CloudContext } from "./cloudContext";
 import { CloudRequest } from "./cloudRequest";
 import { CloudResponse } from "./cloudResponse";
 
 @injectable()
 export class TestCloudContext implements CloudContext {
-  public constructor(@inject("RuntimeArgs") public args: any[]) {}
+  public constructor(@inject("RuntimeArgs") public args: any[]) { }
 
   public providerType: string = "AzureCustom";
 
@@ -25,7 +20,7 @@ export class TestCloudContext implements CloudContext {
 export class TestRequest implements CloudRequest {
   public constructor(
     @inject(ComponentType.CloudContext) private context: CloudContext
-  ) {}
+  ) { }
 
   public body?: any;
   public headers?: { [key: string]: any };
@@ -37,7 +32,7 @@ export class TestRequest implements CloudRequest {
 export class TestResponse implements CloudResponse {
   public constructor(
     @inject(ComponentType.CloudContext) private context: CloudContext
-  ) {}
+  ) { }
   public headers?: { [key: string]: any };
   public send: (
     body: any,
@@ -48,24 +43,23 @@ export class TestResponse implements CloudResponse {
 
 const createTestModule = (): CloudModule => {
   return {
-    init: (container: Container) => {
-      container
-        .bind<CloudContext>(ComponentType.CloudContext)
-        .to(TestCloudContext)
-        .inSingletonScope();
+    create: () => {
+      return new ContainerModule((bind) => {
+        bind<CloudContext>(ComponentType.CloudContext)
+          .to(TestCloudContext)
+          .inSingletonScope();
 
-      container
-        .bind<CloudRequest>(ComponentType.CloudRequest)
-        .to(TestRequest)
-        .inSingletonScope();
+        bind<CloudRequest>(ComponentType.CloudRequest)
+          .to(TestRequest)
+          .inSingletonScope();
 
-      container
-        .bind<CloudResponse>(ComponentType.CloudResponse)
-        .to(TestResponse)
-        .inSingletonScope();
+        bind<CloudResponse>(ComponentType.CloudResponse)
+          .to(TestResponse)
+          .inSingletonScope();
+      });
     }
   };
-};
+}
 
 describe("Core Module", () => {
   let sut: CloudContainer = undefined;
@@ -77,8 +71,8 @@ describe("Core Module", () => {
   ];
   beforeEach(() => {
     sut = new CloudContainer();
+    sut.bind(ComponentType.RuntimeArgs).toConstantValue(params);
     sut.registerModule(createTestModule());
-    sut.registerModule(new CoreModule(params));
     context = sut.resolve<CloudContext>(
       ComponentType.CloudContext
     ) as TestCloudContext;
@@ -103,12 +97,6 @@ describe("Core Module", () => {
 
     expect(response).toBeInstanceOf(TestResponse);
   });
-
-  it("allow multiple registration when its invoked twice", () => {
-    sut.registerModule(new CoreModule(params));
-    sut.registerModule(new CoreModule(params));
-    sut.registerModule(new CoreModule(params));
-  });
 });
 
 describe("Cloud container", () => {
@@ -120,19 +108,25 @@ describe("Cloud container", () => {
 
   it("call module init with container", () => {
     const mock: CloudModule = {
-      init: jest.fn()
+      create: jest.fn(() => {
+        return new ContainerModule(() => {
+          // Register Components
+        });
+      })
     };
 
     sut.registerModule(mock);
-    expect(mock.init).toHaveBeenCalled();
+    expect(mock.create).toHaveBeenCalled();
   });
 
   it("retrieves instance", () => {
     const object = { hello: "world" };
 
     const mockModule: CloudModule = {
-      init: (container: Container) => {
-        container.bind("test").toConstantValue(object);
+      create: () => {
+        return new ContainerModule((bind) => {
+          bind("test").toConstantValue(object);
+        });
       }
     };
 

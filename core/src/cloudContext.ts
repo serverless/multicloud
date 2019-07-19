@@ -1,11 +1,13 @@
 import { CloudRequest } from "./cloudRequest";
 import { CloudResponse } from "./cloudResponse";
-import { CloudStorage } from "./cloudStorage";
-import { Logger } from "./logger";
-import { CloudService } from "./cloudService";
+import { CloudStorage } from "./services/cloudStorage";
+import { Logger } from "./services/logger";
+import { CloudService } from "./services/cloudService";
+import { CloudContainer } from "./cloudContainer";
 
 export interface CloudContext {
   providerType: string;
+  container?: CloudContainer;
   req?: CloudRequest;
   res?: CloudResponse;
   storage?: CloudStorage;

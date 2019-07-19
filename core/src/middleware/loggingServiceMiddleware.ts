@@ -1,6 +1,5 @@
-import { CloudContext } from "./cloudContext";
-import { Middleware } from "./middleware";
-import { Logger, ConsoleLogger } from "./logger"
+import { CloudContext, Middleware } from "..";
+import { Logger, ConsoleLogger } from "../services"
 
 export const LoggingServiceMiddleware = (logger: Logger): Middleware => async (
   context: CloudContext,
