@@ -1,38 +1,57 @@
-import { Container } from "inversify";
-import { AzureModule } from "./azureModule";
-import {
-  ComponentType,
-  CloudContext,
-  CloudRequest,
-  CloudResponse
-} from "@multicloud/sls-core";
-import { AzureContext } from "./azureContext";
-import { AzureRequest } from "./azureRequest";
-import { AzureResponse } from "./azureResponse";
+import { AzureModule, AzureContext, AzureRequest, AzureResponse } from ".";
+import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer } from "@multicloud/sls-core";
 
 describe("Azure Cloud Module", () => {
-  const params: any[] = [{ req: {}, res: {} }];
-  const container = new Container();
-  const sut = new AzureModule();
+  const params: any[] = [
+    {
+      invocationId: expect.any(String),
+      req: {},
+      res: {}
+    }];
+  const azureModule = new AzureModule();
+  let container = new CloudContainer();
 
-  beforeAll(() => {
-    container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
-    sut.init(container);
+  describe("when azure request", () => {
+    beforeAll(() => {
+      container = new CloudContainer();
+      container.registerModule(azureModule);
+      container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
+    });
+
+    it("resolves context", () => {
+      const context = container.resolve<CloudContext>(ComponentType.CloudContext);
+      expect(context).toBeInstanceOf(AzureContext);
+      expect(context.providerType).toBe("azure");
+    });
+
+    it("resolves request", () => {
+      const request = container.resolve<CloudRequest>(ComponentType.CloudRequest);
+      expect(request).toBeInstanceOf(AzureRequest);
+    });
+
+    it("resolves response", () => {
+      const response = container.resolve<CloudResponse>(ComponentType.CloudResponse);
+      expect(response).toBeInstanceOf(AzureResponse);
+    });
   });
 
-  it("resolves context", () => {
-    const context = container.get<CloudContext>(ComponentType.CloudContext);
-    expect(context).toBeInstanceOf(AzureContext);
-    expect(context.providerType).toBe("azure");
-  });
+  describe("when non-azure request", () => {
+    beforeAll(() => {
+      container = new CloudContainer();
+      container.registerModule(azureModule);
+      container.bind(ComponentType.RuntimeArgs).toConstantValue([{}]);
+    });
 
-  it("resolves request", () => {
-    const request = container.get<CloudRequest>(ComponentType.CloudRequest);
-    expect(request).toBeInstanceOf(AzureRequest);
-  });
+    it("does not resolve context", () => {
+      expect(() => container.resolve<CloudContext>(ComponentType.CloudContext)).toThrowError();
+    });
 
-  it("resolves response", () => {
-    const response = container.get<CloudResponse>(ComponentType.CloudResponse);
-    expect(response).toBeInstanceOf(AzureResponse);
-  });
+    it("does not resolve request", () => {
+      expect(() => container.resolve<CloudContext>(ComponentType.CloudRequest)).toThrowError();
+    });
+
+    it("does not resolve response", () => {
+      expect(() => container.resolve<CloudContext>(ComponentType.CloudResponse)).toThrowError();
+    });
+  })
 });

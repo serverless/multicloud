@@ -1,18 +1,6 @@
-import { AzureRequest } from "./azureRequest";
-import { AzureResponse } from "./azureResponse";
-import { AzureContext } from "./azureContext";
-import { create } from "domain";
+import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 describe("test of request", () => {
-  const defaultParams: any[] = [
-    {
-      req: {
-        body: null
-      },
-      res: {}
-    }
-  ];
-
   const createAzureContext = (args): AzureContext => {
     const context = new AzureContext(args);
     context.req = new AzureRequest(context);

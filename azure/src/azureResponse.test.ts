@@ -1,6 +1,4 @@
-import { AzureResponse } from "./azureResponse";
-import { AzureRequest } from "./azureRequest";
-import { AzureContext } from "./azureContext";
+import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 describe("test of response", () => {
   const defaultParams: any[] = [

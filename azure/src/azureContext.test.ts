@@ -1,12 +1,11 @@
-import { AzureContext } from "./azureContext";
-import { AzureRequest } from "./azureRequest";
-import { AzureResponse } from "./azureResponse";
+import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 jest.mock("./azureResponse");
 
 const done: Function = jest.fn();
 const runtimeArgs = [
   {
+    invocationId: expect.any(String),
     req: {},
     res: {},
     done

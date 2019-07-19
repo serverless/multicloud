@@ -1,8 +1,10 @@
-import {AzureBlobStorage} from "./AzureBlobStorage";
-import {BlobURL,
+import { AzureBlobStorage } from ".";
+import {
+  BlobURL,
   StorageURL,
   SharedKeyCredential,
-  ContainerURL}  from "@azure/storage-blob";
+  ContainerURL
+} from "@azure/storage-blob";
 
 jest.mock("@azure/storage-blob");
 

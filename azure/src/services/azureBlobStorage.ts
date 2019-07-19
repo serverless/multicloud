@@ -1,9 +1,11 @@
-import {Aborter,
+import {
+  Aborter,
   BlobURL,
   ServiceURL,
   StorageURL,
   SharedKeyCredential,
-  ContainerURL}  from "@azure/storage-blob";
+  ContainerURL
+} from "@azure/storage-blob";
 import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
 
 export class AzureBlobStorage implements CloudStorage {

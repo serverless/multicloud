@@ -1,6 +1,5 @@
 import "reflect-metadata";
-import { AzureRequest } from "./azureRequest";
-import { AzureResponse } from "./azureResponse";
+import { AzureRequest, AzureResponse } from ".";
 import { CloudContext, ComponentType } from "@multicloud/sls-core";
 import { CloudStorage } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
