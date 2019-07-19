@@ -1,4 +1,4 @@
-import { S3Storage } from "./S3Storage";
+import { S3Storage } from ".";
 import AWS from "aws-sdk";
 
 jest.mock("aws-sdk");
@@ -6,7 +6,7 @@ jest.mock("aws-sdk");
 describe("aws storage when initialize should", () => {
 
   it("creates s3 instance", () => {
-    const sut = new S3Storage();
+    new S3Storage();
     expect(AWS.S3).toHaveBeenCalled();
   });
 });

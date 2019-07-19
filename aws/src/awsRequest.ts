@@ -1,13 +1,16 @@
-import { CloudRequest } from "@multicloud/sls-core";
-import { AWSContext } from "./awsContext";
+import "reflect-metadata";
+import { CloudRequest, ComponentType } from "@multicloud/sls-core";
+import { AwsContext } from ".";
+import { injectable, inject } from "inversify";
 
-export class AWSRequest implements CloudRequest {
+@injectable()
+export class AwsRequest implements CloudRequest {
   public body?: any;
   public headers?: { [key: string]: any };
   public method: string;
   public query?: { [key: string]: any };
 
-  public constructor(context: AWSContext) {
+  public constructor(@inject(ComponentType.CloudContext) context: AwsContext) {
     this.body = context.params.event.body || null;
     this.headers = context.params.event.headers || {};
     this.method = context.params.event.httpMethod;
