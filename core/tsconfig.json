@@ -1,16 +1,12 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
     "outDir": "lib",
-    "lib": ["es6"],                        /* Redirect output structure to the directory. */
+    "lib": ["es6"] /* Redirect output structure to the directory. */,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-      "**/*.test.ts"
-  ]
+  "include": ["./src"],
+  "exclude": ["**/*.test.ts"]
 }

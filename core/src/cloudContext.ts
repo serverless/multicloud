@@ -3,6 +3,7 @@ import { CloudResponse } from "./cloudResponse";
 import { CloudStorage } from "./services/cloudStorage";
 import { Logger } from "./services/logger";
 import { CloudService } from "./services/cloudService";
+import { TelemetryService } from "./services/telemetry";
 import { CloudContainer } from "./cloudContainer";
 
 export interface CloudContext {
@@ -15,6 +16,6 @@ export interface CloudContext {
   logger?: Logger;
   service?: CloudService;
   runtime?: any;
-  // queue?: CloudQueue;
+  telemetry?: TelemetryService;
   send: (body: any, status: number) => void;
 }
