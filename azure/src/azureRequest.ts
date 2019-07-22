@@ -9,6 +9,7 @@ export class AzureRequest implements CloudRequest {
   public headers?: { [key: string]: any };
   public method: string;
   public query?: { [key: string]: any };
+  public pathParams?: { [key: string]: any };
 
   public constructor(
     @inject(ComponentType.CloudContext) private context: AzureContext
@@ -17,5 +18,6 @@ export class AzureRequest implements CloudRequest {
     this.headers = this.context.runtime.req.headers || {};
     this.method = this.context.runtime.req.method || "";
     this.query = this.context.runtime.req.query || {};
+    this.pathParams = this.context.runtime.req.params || {};
   }
 }
