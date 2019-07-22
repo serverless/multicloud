@@ -7,4 +7,7 @@ export interface CloudRequest {
   query?: {
     [key: string]: any;
   };
+  pathParams?: {
+    [key: string]: any;
+  };
 }
