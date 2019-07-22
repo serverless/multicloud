@@ -140,4 +140,27 @@ describe("Cloud container", () => {
     expect(() => sut.resolve("")).toThrow(err);
     expect(() => sut.resolve(undefined)).toThrow(err);
   });
+
+  it("can rebind component registrations that previously exist", () => {
+    const runtimeArgs1 = [
+      "arg1",
+      "arg2",
+    ];
+
+    sut.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs1);
+    const result1 = sut.resolve(ComponentType.RuntimeArgs);
+
+    expect(result1).toEqual(runtimeArgs1);
+
+    const runtimeArgs2 = [
+      "arg1",
+      "arg2",
+      "arg3",
+    ];
+
+    sut.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs2);
+    const result2 = sut.resolve(ComponentType.RuntimeArgs);
+
+    expect(result2).toEqual(runtimeArgs2);
+  });
 });

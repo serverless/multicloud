@@ -45,8 +45,11 @@ export class CloudContainer implements ContainerResolver, ContainerRegister {
     return this.container.get<T>(serviceIdentifier);
   }
 
-  public bind<T>(serviceIdentifier) {
+  public bind<T>(serviceIdentifier): interfaces.BindingToSyntax<T> {
     Guard.empty(serviceIdentifier, "serviceIdentifier", "service identifier cannot be empty or undefined");
-    return this.container.bind<T>(serviceIdentifier);
+
+    return this.container.isBound(serviceIdentifier)
+      ? this.container.rebind<T>(serviceIdentifier)
+      : this.container.bind(serviceIdentifier);
   }
 }

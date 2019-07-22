@@ -53,4 +53,23 @@ describe("App", () => {
     expect(spyError).toBeCalled();
     expect(handler).not.toBeCalled();
   });
+
+  it("can accept multiple requests and rebind arguments", async () => {
+    const app = new App(testModule);
+    const runtimeArgs1 = [
+      "arg1",
+      "arg2",
+    ];
+
+    const runtimeArgs2 = [
+      "arg1",
+      "arg2",
+      "arg3",
+    ];
+
+    await app.use([], handler)(runtimeArgs1[0], runtimeArgs1[1]);
+    await app.use([], handler)(runtimeArgs2[0], runtimeArgs2[1], runtimeArgs2[2]);
+
+    expect(handler).toBeCalledTimes(2);
+  });
 });
