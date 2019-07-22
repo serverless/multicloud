@@ -9,7 +9,7 @@ export class AwsModule implements CloudModule {
    */
   private isAwsRequest(req: interfaces.Request) {
     const runtimeArgs = req.parentContext.container.get(ComponentType.RuntimeArgs);
-    return runtimeArgs && runtimeArgs[0].awsRequestId;
+    return runtimeArgs && runtimeArgs[1].awsRequestId;
   };
 
   public create() {

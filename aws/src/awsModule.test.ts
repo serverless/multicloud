@@ -3,8 +3,8 @@ import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContaine
 
 describe("Aws Cloud Module", () => {
   const params: any[] = [
-    { awsRequestId: expect.any(String) },
     {},
+    { awsRequestId: expect.any(String) },
     jest.fn()
   ];
   const azureModule = new AwsModule();
