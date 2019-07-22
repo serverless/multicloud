@@ -21,6 +21,7 @@ export default class MockFactory {
   public static createMockCloudContext(): CloudContext {
     return {
       providerType: "providerType",
+      id: "12345",
       req: MockFactory.createMockCloudRequest(),
       res: MockFactory.createMockCloudResponse(),
       send: jest.fn(),

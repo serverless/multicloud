@@ -7,6 +7,7 @@ import { CloudContainer } from "./cloudContainer";
 
 export interface CloudContext {
   providerType: string;
+  id: string;
   container?: CloudContainer;
   req?: CloudRequest;
   res?: CloudResponse;
