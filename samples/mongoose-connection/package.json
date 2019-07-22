@@ -1,0 +1,34 @@
+{
+  "name": "azure-function-handler",
+  "version": "",
+  "scripts": {
+    "build": "tsc",
+    "build:production": "npm run prestart && npm prune --production",
+    "watch": "tsc --w",
+    "prestart": "npm run build && func extensions install",
+    "start:host": "func start",
+    "start": "npm-run-all --parallel start:host watch",
+    "test": "jest"
+  },
+  "description": "",
+  "dependencies": {
+    "@hapi/joi": "15.1.0",
+    "@multicloud/sls-azure": "0.0.8-6",
+    "@multicloud/sls-core": "0.0.11-7",
+    "mongoose": "5.6.4"
+  },
+  "devDependencies": {
+    "@azure/functions": "^1.0.1-beta1",
+    "@types/jest": "24.0.15",
+    "@types/joi": "14.3.3",
+    "@types/node": "10.0.3",
+    "babel-jest": "^24.8.0",
+    "babel-preset-react-app": "^9.0.0",
+    "jest": "24.8.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^3.5.2"
+  },
+  "engines": {
+    "node": ">=8.16.0"
+  }
+}

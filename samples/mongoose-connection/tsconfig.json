@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "./lib"
+  },
+  "files": [
+    "src/types/custom.d.ts"
+  ],
+  "include": ["./"],
+  "lib": ["es2015"]
+}
