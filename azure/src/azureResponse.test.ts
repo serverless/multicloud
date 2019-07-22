@@ -72,21 +72,20 @@ describe("test of response", () => {
     const sut = new AzureResponse(azureContext);
     sut.send(body);
 
-    expect(body).toEqual(sut.runtime.res.body.message);
+    expect(body).toEqual(sut.runtime.res.body);
     done();
   });
 
   it("should have headers value empty object", () => {
     const azureContext = createAzureContext(defaultParams);
     const sut = new AzureResponse(azureContext);
+    sut.headers["Content-Type"] = "application/json";
     expect(sut.headers).toEqual({ "Content-Type": "application/json" });
   });
 
   it("should create res object", done => {
     const expectedObject = {
-      body: {
-        message: {}
-      },
+      body: {},
       headers: {
         "Content-Type": "application/json"
       },
@@ -96,6 +95,7 @@ describe("test of response", () => {
     const azureContext = createAzureContext(defaultParams);
 
     const sut = new AzureResponse(azureContext);
+    sut.headers["Content-Type"] = "application/json";
     sut.send({});
 
     expect(expectedObject).toEqual(sut.runtime.res);

@@ -18,12 +18,8 @@ export class AzureResponse implements CloudResponse {
   public send(body: any, status: number = 200): void {
     this.runtime.res = {
       status: status,
-      body: {
-        message: body
-      },
-      headers: {
-        "Content-Type": "application/json"
-      }
+      body: body,
+      headers: this.headers,
     };
   }
 }
