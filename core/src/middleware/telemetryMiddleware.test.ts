@@ -1,4 +1,4 @@
-import { TelemetryOptions, TelemetryService } from "../services/telemetry";
+import { TelemetryOptions, TelemetryService } from "../services";
 import { CloudContext, App, CloudModule, ComponentType } from "..";
 import { TelemetryServiceMiddleware } from "./telemetryMiddleware";
 import os from "os";
@@ -194,7 +194,7 @@ describe("TelemetryServiceMiddleware should", () => {
 
     const expectedConsumeCpuIdle = 90;
     const expectedConsumeCpuTick = 450;
-    const expectedMemConsumedByChain = 300;
+    const expectedmemoryConsume = 300;
 
     const next = jest.fn();
     await TelemetryServiceMiddleware(options)(context, next);
@@ -207,8 +207,7 @@ describe("TelemetryServiceMiddleware should", () => {
       JSON.parse(options.telemetryService.analyticsData.stats).consumeCpuTick
     ).toEqual(expectedConsumeCpuTick);
     expect(
-      JSON.parse(options.telemetryService.analyticsData.stats)
-        .memConsumedByChain
-    ).toEqual(expectedMemConsumedByChain);
+      JSON.parse(options.telemetryService.analyticsData.stats).memoryConsume
+    ).toEqual(expectedmemoryConsume);
   });
 });

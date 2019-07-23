@@ -1,6 +1,6 @@
 import { CloudContext } from "../cloudContext";
 import { Middleware } from "..";
-import { TelemetryOptions } from "../services/telemetry";
+import { TelemetryOptions } from "../services";
 import { cpus, totalmem, freemem } from "os";
 
 /**
@@ -13,24 +13,21 @@ export const TelemetryServiceMiddleware = (
   context: CloudContext,
   next: Function
 ): Promise<void> => {
-  const timeStart = new Date().getTime();
   const initialCpuAverage = CpuAverage();
   const usedMemBeforeChain = GetUsedMemory();
 
   context.telemetry = options.telemetryService;
   await next();
 
-  const durationOfExecution = new Date().getTime() - timeStart;
   const finalCpuAverage = CpuAverage();
   const consumeCpuIdle = finalCpuAverage.idle - initialCpuAverage.idle;
   const consumeCpuTick = finalCpuAverage.tick - initialCpuAverage.tick;
-  const memConsumedByChain = GetUsedMemory() - usedMemBeforeChain;
+  const memoryConsume = GetUsedMemory() - usedMemBeforeChain;
 
   const stats = {
-    durationOfExecution,
     consumeCpuIdle,
     consumeCpuTick,
-    memConsumedByChain
+    memoryConsume
   };
 
   context.telemetry.collect("stats", JSON.stringify(stats));
