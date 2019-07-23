@@ -2,15 +2,16 @@ import { AwsContext, AwsRequest } from ".";
 import awsEvent from "./test/events/defaultAwsEvent.json";
 
 describe("test of request", () => {
-    const context = {
+  const context = {
     requestId: "12345",
     req: {},
     res: {}
   }
 
   it("should pass-through event values without modifications", () => {
+    awsEvent.body = JSON.stringify(awsEvent.body);
     const sut = new AwsRequest(new AwsContext([awsEvent, context, null]));
-    expect(sut.body).toEqual(awsEvent.body);
+    expect(sut.body).toEqual(JSON.parse(awsEvent.body));
     expect(sut.headers).toEqual(awsEvent.headers);
     expect(sut.method).toEqual(awsEvent.httpMethod);
     expect(sut.query).toEqual(awsEvent.queryStringParameters);
@@ -29,8 +30,9 @@ describe("test of request", () => {
   it("should use default value for headers if not provided", () => {
     const noHeadersEvent = Object.assign({}, awsEvent);
     delete noHeadersEvent.headers;
+    noHeadersEvent.body = JSON.stringify(noHeadersEvent.body);
     const sut = new AwsRequest(new AwsContext([noHeadersEvent, context, null]));
-    expect(sut.body).toEqual(awsEvent.body);
+    expect(sut.body).toEqual(JSON.parse(noHeadersEvent.body));
     expect(sut.headers).toEqual({});
     expect(sut.method).toEqual(awsEvent.httpMethod);
     expect(sut.query).toEqual(awsEvent.queryStringParameters);
@@ -39,8 +41,9 @@ describe("test of request", () => {
   it("should use default value for query if not provided", () => {
     const noQueryEvent = Object.assign({}, awsEvent);
     delete noQueryEvent.queryStringParameters;
+    noQueryEvent.body = JSON.stringify(noQueryEvent.body);
     const sut = new AwsRequest(new AwsContext([noQueryEvent, context, null]));
-    expect(sut.body).toEqual(awsEvent.body);
+    expect(sut.body).toEqual(JSON.parse(noQueryEvent.body));
     expect(sut.headers).toEqual(awsEvent.headers);
     expect(sut.method).toEqual(awsEvent.httpMethod);
     expect(sut.query).toEqual({});

@@ -24,7 +24,8 @@ export class AwsRequest implements CloudRequest {
    * @param context Current CloudContext
    */
   public constructor(@inject(ComponentType.CloudContext) context: AwsContext) {
-    this.body = context.runtime.event.body || null;
+    let body = context.runtime.event.body ? (typeof context.runtime.event.body != "object" ? JSON.parse(context.runtime.event.body) : context.runtime.event.body) : null;
+    this.body = body || null;
     this.headers = context.runtime.event.headers || {};
     this.method = context.runtime.event.httpMethod;
     this.query = context.runtime.event.queryStringParameters || {};
