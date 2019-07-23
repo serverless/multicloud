@@ -163,4 +163,11 @@ describe("Cloud container", () => {
 
     expect(result2).toEqual(runtimeArgs2);
   });
+
+  it("resolves returns null if service identifier throw exception", () => {
+    const container = new CloudContainer();
+    const result = container.resolve("unknown");
+
+    expect(result).toBeNull();
+  });
 });

@@ -12,10 +12,10 @@ export class AwsRequest implements CloudRequest {
   public pathParams?: { [key: string]: any };
 
   public constructor(@inject(ComponentType.CloudContext) context: AwsContext) {
-    this.body = context.params.event.body || null;
-    this.headers = context.params.event.headers || {};
-    this.method = context.params.event.httpMethod;
-    this.query = context.params.event.queryStringParameters || {};
-    this.pathParams = context.params.event.pathParameters || {};
+    this.body = context.runtime.event.body || null;
+    this.headers = context.runtime.event.headers || {};
+    this.method = context.runtime.event.httpMethod;
+    this.query = context.runtime.event.queryStringParameters || {};
+    this.pathParams = context.runtime.event.pathParameters || {};
   }
 }

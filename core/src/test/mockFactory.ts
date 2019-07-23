@@ -9,21 +9,21 @@ export default class MockFactory {
    * @param spy The spy function to call
    */
   public static createMockMiddleware(spy: Function = jest.fn()): Middleware {
-    return async (context: CloudContext, next: Function) => {
+    return jest.fn(async (context: CloudContext, next: Function) => {
       spy(context, next);
       return await next();
-    }
+    });
   }
 
   /**
    * Creates a mock CloudContext to use in unit tests
    */
-  public static createMockCloudContext(): CloudContext {
+  public static createMockCloudContext(createHttpComponents: boolean = true): CloudContext {
     return {
       providerType: "providerType",
       id: "12345",
-      req: MockFactory.createMockCloudRequest(),
-      res: MockFactory.createMockCloudResponse(),
+      req: createHttpComponents ? MockFactory.createMockCloudRequest() : null,
+      res: createHttpComponents ? MockFactory.createMockCloudResponse() : null,
       send: jest.fn(),
     };
   }
