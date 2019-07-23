@@ -11,11 +11,8 @@ const errorMiddleware = (spy: Function) => async (
   context.send({ error: "Boh!!!!!" }, 400);
 };
 
-const handler = jest.fn();
-const context: CloudContext = {
-  providerType: "provider",
-  send: jest.fn()
-}
+const handler = MockFactory.createMockHandler();
+const context: CloudContext = MockFactory.createMockCloudContext(false);
 
 const testModule: CloudModule = {
   create: () => new ContainerModule((bind) => {
@@ -30,10 +27,9 @@ describe("App", () => {
 
   it("when use start middleware chain", async () => {
     const spyMiddleware = jest.fn();
-    const app = new App(testModule);
-
     const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
 
+    const app = new App(testModule);
     await app.use([mockMiddleware], handler)();
     expect(spyMiddleware).toBeCalled();
     expect(handler).toBeCalled();
@@ -71,5 +67,56 @@ describe("App", () => {
     await app.use([], handler)(runtimeArgs2[0], runtimeArgs2[1], runtimeArgs2[2]);
 
     expect(handler).toBeCalledTimes(2);
+  });
+
+  it("handler can run with callbacks", async () => {
+    const sendSpy = jest.spyOn(context, "send");
+    const spy = jest.fn();
+    const app = new App(testModule);
+
+    const handler = (context: CloudContext) => {
+      MockFactory.simulateCallback(null, () => {
+        MockFactory.simulateCallback(null, () => {
+          spy();
+          context.send("callback", 200);
+        });
+      })
+    };
+
+    await app.use([], handler)();
+    expect(spy).toBeCalled();
+    expect(sendSpy).toBeCalledWith("callback", 200);
+  });
+
+  it("handler can run with promises", async () => {
+    const sendSpy = jest.spyOn(context, "send");
+    const spy = jest.fn();
+    const app = new App(testModule);
+
+    const handler = async (context: CloudContext) => {
+      await MockFactory.simulatePromise();
+      await MockFactory.simulatePromise();
+      spy();
+      context.send("promise", 200);
+    };
+
+    await app.use([], handler)();
+    expect(spy).toBeCalled();
+    expect(sendSpy).toBeCalledWith("promise", 200);
+  });
+
+  it("handler can run and return void", async () => {
+    const sendSpy = jest.spyOn(context, "send");
+    const spy = jest.fn();
+    const app = new App(testModule);
+
+    const handler = async (context: CloudContext) => {
+      spy();
+      context.send("void", 200);
+    };
+
+    await app.use([], handler)();
+    expect(spy).toBeCalled();
+    expect(sendSpy).toBeCalledWith("void", 200);
   });
 });

@@ -3,6 +3,7 @@ import { CloudContext, App, CloudModule, ComponentType } from "..";
 import { TelemetryServiceMiddleware } from "./telemetryMiddleware";
 import os from "os";
 import { ContainerModule } from "inversify";
+import MockFactory from "../test/mockFactory";
 
 describe("TelemetryServiceMiddleware should", () => {
   jest.mock("os");
@@ -41,16 +42,7 @@ describe("TelemetryServiceMiddleware should", () => {
       })
   };
 
-  const context: CloudContext = {
-    providerType: "providerType",
-    req: {
-      method: "method"
-    },
-    send: jest.fn(),
-    res: {
-      send: jest.fn()
-    }
-  };
+  const context: CloudContext = MockFactory.createMockCloudContext(false);
 
   beforeEach(() => {
     options.shouldFlush = true;
@@ -68,9 +60,7 @@ describe("TelemetryServiceMiddleware should", () => {
     await next();
   };
 
-  const handler = () => (): Promise<void> => {
-    return Promise.resolve();
-  };
+  const handler = MockFactory.createMockHandler();
 
   it("save the telemetryService in context.telemetry", async () => {
     const next = jest.fn();
@@ -88,11 +78,8 @@ describe("TelemetryServiceMiddleware should", () => {
   it("call collect method from another middleware and don't call flush when shouldFlush is false", async () => {
     options.shouldFlush = false;
 
-    const sut = new App(testModule);
-    await sut.use(
-      [TelemetryServiceMiddleware(options), middlewareFoo()],
-      handler()
-    )(context);
+    const app = new App(testModule);
+    await app.use([TelemetryServiceMiddleware(options), middlewareFoo()], handler)(context);
 
     expect(context.telemetry.collect).toHaveBeenCalledWith(
       fooKey,
@@ -102,11 +89,8 @@ describe("TelemetryServiceMiddleware should", () => {
   });
 
   it("call collect method from another middleware and flush when shouldFlush is true", async () => {
-    const sut = new App(testModule);
-    await sut.use(
-      [TelemetryServiceMiddleware(options), middlewareFoo()],
-      handler()
-    )(context);
+    const app = new App(testModule);
+    await app.use([TelemetryServiceMiddleware(options), middlewareFoo()], handler)(context);
     expect(context.telemetry.collect).toHaveBeenCalledWith(
       fooKey,
       JSON.stringify(data)

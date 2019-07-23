@@ -17,7 +17,7 @@ describe("LoggingServiceMiddleware should", () => {
     public warn = jest.fn();
   }
 
-  const handler = jest.fn();
+  const handler = MockFactory.createMockHandler();
   const context = MockFactory.createMockCloudContext();
 
   const testModule: CloudModule = {

@@ -8,7 +8,7 @@ describe("Tests of ExceptionMiddleware should", () => {
     log: jest.fn()
   };
 
-  const handler = jest.fn();
+  const handler = MockFactory.createMockHandler();
   const context = MockFactory.createMockCloudContext();
   const testModule: CloudModule = {
     create: () => new ContainerModule((bind) => {
@@ -22,17 +22,18 @@ describe("Tests of ExceptionMiddleware should", () => {
     jest.clearAllMocks();
   });
 
-  it("catch exception and log error", async done => {
+  it("catch exception and log error", async () => {
     const errorMessage = "Fail";
     const error = new Error(errorMessage);
-    const failNext = () => {
-      throw error;
-    };
 
-    await ExceptionMiddleware(options)(context, failNext);
+    const failHandler = MockFactory.createMockHandler(() => {
+      throw error;
+    });
+
+    const app = new App(testModule);
+    await app.use([ExceptionMiddleware(options)], failHandler)();
     expect(options.log).toHaveBeenCalledWith(error);
     expect(context.send).toHaveBeenCalledWith(error, errorStatus);
-    done();
   });
 
   it("call next without calling exception or logging", async done => {

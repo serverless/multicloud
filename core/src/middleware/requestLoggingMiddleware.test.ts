@@ -22,7 +22,7 @@ describe("requestLoggingServiceMiddleware should", () => {
     public handlerName = "GET cartAPI";
   }
 
-  const handler = jest.fn();
+  const handler = MockFactory.createMockHandler();
   const context = MockFactory.createMockCloudContext();
 
   beforeEach(() => {

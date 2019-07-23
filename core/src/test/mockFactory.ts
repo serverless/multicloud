@@ -16,16 +16,30 @@ export default class MockFactory {
   }
 
   /**
+   * Creates a handler that executes the optional spy function
+   * @param spy The spy function to call
+   */
+  public static createMockHandler(spy: Function = jest.fn()): (context: CloudContext) => Promise<any> | void {
+    return jest.fn((context: CloudContext) => {
+      spy(context);
+      context.send("OK", 200);
+    });
+  }
+
+  /**
    * Creates a mock CloudContext to use in unit tests
    */
   public static createMockCloudContext(createHttpComponents: boolean = true): CloudContext {
-    return {
+    const context = {
       providerType: "providerType",
       id: "12345",
       req: createHttpComponents ? MockFactory.createMockCloudRequest() : null,
       res: createHttpComponents ? MockFactory.createMockCloudResponse() : null,
-      send: jest.fn(),
+      done: null,
+      send: jest.fn(() => context.done())
     };
+
+    return context;
   }
 
   /**
@@ -47,5 +61,24 @@ export default class MockFactory {
       headers,
       send: jest.fn(),
     };
+  }
+
+  /**
+ * Simulates a call to a promise.
+ */
+  public static simulatePromise(): Promise<void> {
+    return new Promise((resolve) => {
+      setImmediate(resolve);
+    });
+  }
+
+  /**
+   * Simulates a call as a callback
+  */
+  public static simulateCallback(err, callback): void {
+    if (err) {
+      throw err;
+    }
+    setImmediate(callback);
   }
 }

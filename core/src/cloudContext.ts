@@ -32,4 +32,6 @@ export interface CloudContext {
   telemetry?: TelemetryService;
   /** Send response */
   send: (body: any, status: number) => void;
+  /** Signals cloud provider runtime that requests has been completed */
+  done: () => void;
 }

@@ -1,6 +1,7 @@
 import { CloudContext } from ".";
 import { ComponentType, CloudContainer, CloudModule, } from "./cloudContainer";
 import Guard from "./common/guard";
+import { ensurePromise } from "./common/util";
 
 /**
  * Base level app. Handles registration for all cloud modules and
@@ -41,14 +42,13 @@ export class App {
           index++;
           result = middleware(context, next);
         } else {
-          result = handler(context);
+          result = new Promise((resolve) => {
+            context.done = resolve;
+            return ensurePromise(handler(context));
+          });
         }
 
-        if (result && result.then) {
-          return result;
-        }
-
-        return Promise.resolve();
+        return ensurePromise(result);
       };
 
       return await next();

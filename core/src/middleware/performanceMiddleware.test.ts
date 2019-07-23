@@ -5,7 +5,7 @@ import { ConsoleLogger } from "../services/consoleLogger";
 import MockFactory from "../test/mockFactory";
 
 describe("PerformanceMiddleware should", () => {
-  const handler = jest.fn();
+  const handler = MockFactory.createMockHandler();
   const context = MockFactory.createMockCloudContext();
   const consoleLogger = new ConsoleLogger();
   consoleLogger.log = jest.fn();

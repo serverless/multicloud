@@ -27,7 +27,7 @@ describe("HTTPBindingMiddleware should", () => {
 
   beforeEach(() => {
     app = new App(testModule);
-    handler = jest.fn();
+    handler = MockFactory.createMockHandler();
   })
 
   it("call next handler", async () => {
