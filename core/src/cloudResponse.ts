@@ -1,6 +1,16 @@
+/**
+ * Common HTTP Response for Serverless functions
+ */
 export interface CloudResponse {
+  /** Headers of response */
   headers?: {
     [key: string]: any;
   };
+  /**
+   * Send response
+   * @param body Body of response
+   * @param status Status code for response
+   * @param callback Callback to call with response
+   */
   send: (body: any, status: number, callback?: Function) => void;
 }

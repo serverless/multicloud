@@ -3,6 +3,10 @@ import { Middleware } from "..";
 import { TelemetryOptions } from "../services/telemetry";
 import { cpus, totalmem, freemem } from "os";
 
+/**
+ *
+ * @param options Options for Telemetry
+ */
 export const TelemetryServiceMiddleware = (
   options: TelemetryOptions
 ): Middleware => async (
