@@ -8,17 +8,24 @@ describe("AWS context", () => {
     requestId: "12345",
     req: {},
     res: {},
+  };
+
+  function createAwsContext(event, context, callback = jest.fn()) {
+    var awsContext = new AwsContext([event, context, callback]);
+    awsContext.done = jest.fn();
+
+    return awsContext;
   }
 
   it("context id should be set", async () => {
     const emptyAWSEvent = {};
-    const sut = new AwsContext([emptyAWSEvent, awsContext, null]);
+    const sut = createAwsContext(emptyAWSEvent, awsContext);
     expect(sut.id).toEqual(awsContext.requestId);
   });
 
   it("send() calls response.send() on httpTrigger", () => {
     const body = { message: "Hello World" };
-    const context = new AwsContext([awsEvent, awsContext, null]);
+    const context = createAwsContext(awsEvent, awsContext);
     context.res = new AwsResponse(context);
     context.res.send = jest.fn();
     context.send(body);
@@ -28,11 +35,18 @@ describe("AWS context", () => {
 
   it("send() calls response.send() on httpTrigger with custom status", () => {
     const body = { message: "oh Crap!" };
-    const context = new AwsContext([awsEvent, awsContext, null]);
+    const context = createAwsContext(awsEvent, awsContext);
     context.res = new AwsResponse(context);
     context.res.send = jest.fn();
     context.send(body, 400);
 
     expect(context.res.send).toHaveBeenCalledWith(body, 400);
+  });
+
+  it("send() calls context.done() to signal request is complete", () => {
+    const context = createAwsContext(awsEvent, awsContext);
+    context.send("test", 200);
+
+    expect(context.done).toBeCalled();
   });
 });

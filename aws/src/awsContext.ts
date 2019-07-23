@@ -39,6 +39,8 @@ export class AwsContext implements CloudContext {
     context: any;
     callback: Function;
   };
+  /** Signals to the framework that the request is complete */
+  public done: () => void;
 
   /**
    * Send response from AWS Lambda
@@ -49,5 +51,7 @@ export class AwsContext implements CloudContext {
     if (this.res) {
       this.res.send(body, status);
     }
+
+    this.done();
   }
 }
