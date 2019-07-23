@@ -8,7 +8,13 @@ const runtimeArgs = [
     invocationId: "12344",
     req: {},
     res: {},
-    done
+    done,
+    log: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+    trace: jest.fn(),
+    error: jest.fn ()
   }
 ];
 
@@ -44,5 +50,21 @@ describe("Azure context", () => {
     const body = { message: "oh Crap!" };
     sut.send(body, 400);
     expect(done).toHaveBeenCalledWith();
+  });
+
+  test("logging calls should be redirect to Azure context", () => {
+    console.log('hi');
+    console.warn('whoa');
+    console.error('crap');
+    console.trace('verbose');
+    console.debug('dbg');
+    console.info('A-okay');
+
+    expect(runtimeArgs[0].log).toHaveBeenCalled();
+    expect(runtimeArgs[0].warn).toHaveBeenCalled();
+    expect(runtimeArgs[0].error).toHaveBeenCalled();
+    expect(runtimeArgs[0].trace).toHaveBeenCalled();
+    expect(runtimeArgs[0].debug).toHaveBeenCalled();
+    expect(runtimeArgs[0].info).toHaveBeenCalled();
   });
 });

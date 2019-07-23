@@ -17,6 +17,17 @@ export class AzureContext implements CloudContext {
     this.runtime = args[0];
     this.providerType = "azure";
     this.id = this.runtime.invocationId;
+
+    // Azure Functions (JavaScript) expect developers to use `context.log`,
+    // instead of the usual console logging APIs. This effectively redirects
+    // console.* logging calls to use the Azure context.* logging equivalents
+    // https://github.com/Azure/azure-functions-host/issues/162
+    console.log = this.runtime.log;
+    console.info = this.runtime.info;
+    console.warn = this.runtime.warn;
+    console.error = this.runtime.error;
+    console.debug = this.runtime.debug;
+    console.trace = this.runtime.trace;
   }
 
   /** "azure" */
