@@ -27,7 +27,7 @@ describe("test of response", () => {
     expect(callback).toBeCalledWith(null, {
       headers: response.headers,
       body: httpBody,
-      status: httpStatus
+      statusCode: httpStatus
     });
   });
 
@@ -44,7 +44,7 @@ describe("test of response", () => {
     expect(callback).toBeCalledWith(null, {
       headers: response.headers,
       body: JSON.stringify(jsonBody),
-      status: 200,
+      statusCode: 200,
     });
   });
 });

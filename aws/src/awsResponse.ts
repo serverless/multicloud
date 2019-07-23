@@ -37,7 +37,7 @@ export class AwsResponse implements CloudResponse {
     this.callback(null, {
       headers: this.headers,
       body: body,
-      status: status
+      statusCode: status
     });
   }
 }
