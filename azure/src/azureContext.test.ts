@@ -5,7 +5,7 @@ jest.mock("./azureResponse");
 const done: Function = jest.fn();
 const runtimeArgs = [
   {
-    invocationId: expect.any(String),
+    invocationId: "12344",
     req: {},
     res: {},
     done
@@ -22,6 +22,10 @@ describe("Azure context", () => {
     sut = createAzureContext(runtimeArgs);
     sut.req = new AzureRequest(sut);
     sut.res = new AzureResponse(sut);
+  });
+
+  test("requestId should be set", () => {
+    expect(sut.id).toEqual(runtimeArgs[0].invocationId);
   });
 
   test("when send() calls response.send() on httpTrigger", () => {

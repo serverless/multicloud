@@ -11,9 +11,11 @@ export class AzureContext implements CloudContext {
   public constructor(@inject(ComponentType.RuntimeArgs) private args: any[]) {
     this.runtime = args[0];
     this.providerType = "azure";
+    this.id = this.runtime.invocationId;
   }
 
   public providerType: string;
+  public id: string;
   public req: AzureRequest;
   public res: AzureResponse;
   public storage: CloudStorage;

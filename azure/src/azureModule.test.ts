@@ -43,15 +43,15 @@ describe("Azure Cloud Module", () => {
     });
 
     it("does not resolve context", () => {
-      expect(() => container.resolve<CloudContext>(ComponentType.CloudContext)).toThrowError();
+      expect(container.resolve<CloudContext>(ComponentType.CloudContext)).toBeNull();
     });
 
     it("does not resolve request", () => {
-      expect(() => container.resolve<CloudContext>(ComponentType.CloudRequest)).toThrowError();
+      expect(container.resolve<CloudContext>(ComponentType.CloudRequest)).toBeNull();
     });
 
     it("does not resolve response", () => {
-      expect(() => container.resolve<CloudContext>(ComponentType.CloudResponse)).toThrowError();
+      expect(container.resolve<CloudContext>(ComponentType.CloudResponse)).toBeNull();
     });
   })
 });
