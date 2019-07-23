@@ -42,6 +42,8 @@ export class AzureContext implements CloudContext {
   public storage: CloudStorage;
   /** Original runtime context for Azure Function */
   public runtime: any;
+  /** Signals to the runtime that the request is complete */
+  public done: () => void;
 
   /**
    * Send response from Azure Function
@@ -53,5 +55,6 @@ export class AzureContext implements CloudContext {
       this.res.send(body, status);
     }
     this.runtime.done();
+    this.done();
   }
 }
