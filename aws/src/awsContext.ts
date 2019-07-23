@@ -8,7 +8,6 @@ import { injectable, inject } from "inversify";
  */
 @injectable()
 export class AwsContext implements CloudContext {
-
   /**
    * Initializes new AwsContext, injects runtime arguments of AWS Lambda.
    * Sets runtime parameters from original arguments
@@ -22,10 +21,14 @@ export class AwsContext implements CloudContext {
       context: args[1],
       callback: args[2],
     };
+
+    this.id = this.runtime.context.requestId;
   }
 
   /** "aws" */
   public providerType: string;
+  /** Unique identifier for request */
+  public id: string;
   /** HTTP Request */
   public req: AwsRequest;
   /** HTTP Response */

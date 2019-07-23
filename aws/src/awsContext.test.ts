@@ -4,12 +4,19 @@ import awsEvent from "./test/events/defaultAwsEvent.json";
 
 
 describe("AWS context", () => {
-  it("send() calls response.send() on httpTrigger", () => {
-    const awsContext = {
-      req: {},
-      res: {},
-    };
+  const awsContext = {
+    requestId: "12345",
+    req: {},
+    res: {},
+  }
 
+  it("context id should be set", async () => {
+    const emptyAWSEvent = {};
+    const sut = new AwsContext([emptyAWSEvent, awsContext, null]);
+    expect(sut.id).toEqual(awsContext.requestId);
+  });
+
+  it("send() calls response.send() on httpTrigger", () => {
     const body = { message: "Hello World" };
     const context = new AwsContext([awsEvent, awsContext, null]);
     context.res = new AwsResponse(context);
@@ -20,10 +27,6 @@ describe("AWS context", () => {
   });
 
   it("send() calls response.send() on httpTrigger with custom status", () => {
-    const awsContext = {
-      req: {},
-      res: {},
-    };
     const body = { message: "oh Crap!" };
     const context = new AwsContext([awsEvent, awsContext, null]);
     context.res = new AwsResponse(context);

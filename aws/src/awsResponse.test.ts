@@ -1,13 +1,14 @@
 import { AwsContext, AwsResponse } from ".";
 
 describe("test of response", () => {
-  it("should have headers value empty object", done => {
+    const context = {
+      requestId: "12345"
+    }
+
+  it("should have headers value empty object", async () => {
     const emptyAWSEvent = {};
-
-    const sut = new AwsResponse(new AwsContext([emptyAWSEvent, null, null]));
-
+    const sut = new AwsResponse(new AwsContext([emptyAWSEvent, context, null]));
     expect(sut.headers).toEqual({});
-    done();
   });
 
   it("should call AWS callback when send is called", async () => {
