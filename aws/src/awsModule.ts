@@ -2,7 +2,11 @@ import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType }
 import { ContainerModule, interfaces } from "inversify";
 import { AwsContext, AwsRequest, AwsResponse } from ".";
 
+/**
+ * AWS Module that can be registered in IoC container
+ */
 export class AwsModule implements CloudModule {
+
   /**
    * Determines whether or not the incoming request is an AWS request
    * @param req The IoC resolution request
@@ -12,6 +16,9 @@ export class AwsModule implements CloudModule {
     return runtimeArgs && runtimeArgs[1].awsRequestId;
   };
 
+  /**
+   * Creates the inversify container module
+   */
   public create() {
     return new ContainerModule((bind) => {
       bind<CloudContext>(ComponentType.CloudContext)

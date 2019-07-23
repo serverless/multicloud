@@ -8,9 +8,17 @@ import {
 } from "@azure/storage-blob";
 import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
 
+/**
+ * Implementation of CloudStorage for Azure Blob Storage
+ */
 export class AzureBlobStorage implements CloudStorage {
+
   private service: ServiceURL;
 
+  /**
+   * Initialize new Azure Blob Storage service
+   * @param options Object containing `account` and `accountKey` for Azure Storage account
+   */
   public constructor(options: any) {
     const sharedKeyCredential = new SharedKeyCredential(
       options.account,
@@ -24,6 +32,10 @@ export class AzureBlobStorage implements CloudStorage {
     );
   }
 
+  /**
+   * Read a blob from Azure Storage account
+   * @param opts Specifies container and blob for read
+   */
   public async read(opts: ReadBlobOptions) {
     const containerURL = ContainerURL.fromServiceURL(this.service, opts.container);
     const blobURL = BlobURL.fromContainerURL(containerURL, opts.path);

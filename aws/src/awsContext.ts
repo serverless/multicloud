@@ -3,17 +3,17 @@ import { AwsRequest, AwsResponse } from ".";
 import { CloudContext, ComponentType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 
+/**
+ * Implementation of Cloud Context for AWS Lambda
+ */
 @injectable()
 export class AwsContext implements CloudContext {
-  public runtime: {
-    event: any;
-    context: any;
-    callback: Function;
-  };
-  public req: AwsRequest;
-  public res: AwsResponse;
-  public providerType: string;
 
+  /**
+   * Initializes new AwsContext, injects runtime arguments of AWS Lambda.
+   * Sets runtime parameters from original arguments
+   * @param args Runtime arguments for AWS Lambda
+   */
   public constructor(@inject(ComponentType.RuntimeArgs) args: any[]) {
     this.providerType = "aws";
 
@@ -24,6 +24,24 @@ export class AwsContext implements CloudContext {
     };
   }
 
+  /** "aws" */
+  public providerType: string;
+  /** HTTP Request */
+  public req: AwsRequest;
+  /** HTTP Response */
+  public res: AwsResponse;
+  /** Original runtime arguments for AWS Lambda */
+  public runtime: {
+    event: any;
+    context: any;
+    callback: Function;
+  };
+
+  /**
+   * Send response from AWS Lambda
+   * @param body Body of response
+   * @param status Status code of response
+   */
   public send(body: any, status: number = 200): void {
     if (this.res) {
       this.res.send(body, status);
