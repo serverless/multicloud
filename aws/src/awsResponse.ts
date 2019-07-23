@@ -30,6 +30,10 @@ export class AwsResponse implements CloudResponse {
    * @param callback Callback function to call with response
    */
   public send(body: any, status: number = 200): void {
+    if (typeof (body) !== "string") {
+      body = JSON.stringify(body);
+    }
+
     this.callback(null, {
       headers: this.headers,
       body: body,
