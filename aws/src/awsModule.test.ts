@@ -7,13 +7,13 @@ describe("Aws Cloud Module", () => {
     { awsRequestId: expect.any(String) },
     jest.fn()
   ];
-  const azureModule = new AwsModule();
+  const awsModule = new AwsModule();
   let container = new CloudContainer();
 
   describe("when aws request", () => {
     beforeAll(() => {
       container = new CloudContainer();
-      container.registerModule(azureModule);
+      container.registerModule(awsModule);
       container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
     });
 
@@ -37,7 +37,7 @@ describe("Aws Cloud Module", () => {
   describe("when non-aws request", () => {
     beforeAll(() => {
       container = new CloudContainer();
-      container.registerModule(azureModule);
+      container.registerModule(awsModule);
       container.bind(ComponentType.RuntimeArgs).toConstantValue([{}]);
     });
 

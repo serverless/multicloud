@@ -22,7 +22,7 @@ export class AwsContext implements CloudContext {
       callback: args[2],
     };
 
-    this.id = this.runtime.context.requestId;
+    this.id = this.runtime.context.awsRequestId;
   }
 
   /** "aws" */

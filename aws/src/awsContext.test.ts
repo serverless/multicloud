@@ -5,7 +5,7 @@ import awsEvent from "./test/events/defaultAwsEvent.json";
 
 describe("AWS context", () => {
   const awsContext = {
-    requestId: "12345",
+    awsRequestId: "12345",
     req: {},
     res: {},
   };
@@ -20,7 +20,7 @@ describe("AWS context", () => {
   it("context id should be set", async () => {
     const emptyAWSEvent = {};
     const sut = createAwsContext(emptyAWSEvent, awsContext);
-    expect(sut.id).toEqual(awsContext.requestId);
+    expect(sut.id).toEqual(awsContext.awsRequestId);
   });
 
   it("send() calls response.send() on httpTrigger", () => {
