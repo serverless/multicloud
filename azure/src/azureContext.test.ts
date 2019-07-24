@@ -9,12 +9,12 @@ const runtimeArgs = [
     req: {},
     res: {},
     done,
-    log: jest.fn(),
-    warn: jest.fn(),
-    info: jest.fn(),
-    debug: jest.fn(),
-    trace: jest.fn(),
-    error: jest.fn()
+    log: () => { return 1; },
+    warn: () => { return 2; },
+    info: () => { return 3; },
+    debug: () => { return 4; },
+    trace: () => { return 5; },
+    error: () => { return 6; },
   }
 ];
 
@@ -68,11 +68,36 @@ describe("Azure context", () => {
     console.debug("dbg");
     console.info("A-okay");
 
-    expect(runtimeArgs[0].log).toHaveBeenCalled();
-    expect(runtimeArgs[0].warn).toHaveBeenCalled();
-    expect(runtimeArgs[0].error).toHaveBeenCalled();
-    expect(runtimeArgs[0].trace).toHaveBeenCalled();
-    expect(runtimeArgs[0].debug).toHaveBeenCalled();
-    expect(runtimeArgs[0].info).toHaveBeenCalled();
+    expect(runtimeArgs[0].log()).toEqual(1);
+    expect(runtimeArgs[0].warn()).toEqual(2);
+    expect(runtimeArgs[0].info()).toEqual(3);
+    expect(runtimeArgs[0].debug()).toEqual(4);
+    expect(runtimeArgs[0].trace()).toEqual(5);
+    expect(runtimeArgs[0].error()).toEqual(6);
+  });
+
+  test("logging calls redirect and be restored", () => {
+    console.log("hi");
+    console.warn("whoa");
+    console.error("crap");
+    console.trace("verbose");
+    console.debug("dbg");
+    console.info("A-okay");
+
+    expect(runtimeArgs[0].log()).toEqual(1);
+    expect(runtimeArgs[0].warn()).toEqual(2);
+    expect(runtimeArgs[0].info()).toEqual(3);
+    expect(runtimeArgs[0].debug()).toEqual(4);
+    expect(runtimeArgs[0].trace()).toEqual(5);
+    expect(runtimeArgs[0].error()).toEqual(6);
+
+    context.send("", 204);
+
+    expect(console.log()).toEqual(undefined);
+    expect(console.warn()).toEqual(undefined);
+    expect(console.info()).toEqual(undefined);
+    expect(console.debug()).toEqual(undefined);
+    expect(console.trace()).toEqual(undefined);
+    expect(console.error()).toEqual(undefined);
   });
 });

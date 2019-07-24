@@ -17,17 +17,7 @@ export class AzureContext implements CloudContext {
     this.runtime = args[0];
     this.providerType = "azure";
     this.id = this.runtime.invocationId;
-
-    // Azure Functions (JavaScript) expect developers to use `context.log`,
-    // instead of the usual console logging APIs. This effectively redirects
-    // console.* logging calls to use the Azure context.* logging equivalents
-    // https://github.com/Azure/azure-functions-host/issues/162
-    console.log = this.runtime.log;
-    console.info = this.runtime.info;
-    console.warn = this.runtime.warn;
-    console.error = this.runtime.error;
-    console.debug = this.runtime.debug;
-    console.trace = this.runtime.trace;
+    this.redirectConsole();
   }
 
   /** "azure" */
@@ -51,10 +41,55 @@ export class AzureContext implements CloudContext {
    * @param status Status code of response
    */
   public send(body: any, status: number = 200): void {
-    if (this.res) {
-      this.res.send(body, status);
+    try {
+      if (this.res) {
+        this.res.send(body, status);
+      }
+
+      this.runtime.done();
+      this.done();
     }
-    this.runtime.done();
-    this.done();
+    finally {
+      this.restoreConsole();
+    }
+  }
+
+  private redirectConsole(): void {
+    // Azure Functions (JavaScript) expect developers to use `context.log`,
+    // instead of the usual console logging APIs. This effectively redirects
+    // console.* logging calls to use the Azure context.* logging equivalents
+    // https://github.com/Azure/azure-functions-host/issues/162
+    if (this.runtime.log && this.runtime.log instanceof Function) {
+      console.log = this.runtime.log;
+    }
+
+    if (this.runtime.info && this.runtime.info instanceof Function) {
+      console.info = this.runtime.info;
+    }
+
+    if (this.runtime.warn && this.runtime.warn instanceof Function) {
+      console.warn = this.runtime.warn;
+    }
+
+    if (this.runtime.error && this.runtime.error instanceof Function) {
+      console.error = this.runtime.error;
+    }
+
+    if (this.runtime.debug && this.runtime.debug instanceof Function) {
+      console.debug = this.runtime.debug;
+    }
+
+    if (this.runtime.trace && this.runtime.trace instanceof Function) {
+      console.trace = this.runtime.trace;
+    }
+  }
+
+  private restoreConsole(): void {
+    delete console.log;
+    delete console.info;
+    delete console.warn;
+    delete console.error;
+    delete console.debug;
+    delete console.trace;
   }
 }
