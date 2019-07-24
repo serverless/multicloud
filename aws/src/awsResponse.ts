@@ -8,8 +8,14 @@ import { injectable, inject } from "inversify";
  */
 @injectable()
 export class AwsResponse implements CloudResponse {
-
+  /** The AWS runtime callback */
   private callback: Function;
+
+  /** The HTTP response body */
+  public body: any;
+
+  /** The HTTP response status code */
+  public status: number = 200;
 
   /** Headers of HTTP Response */
   public headers?: { [key: string]: any };
@@ -34,10 +40,15 @@ export class AwsResponse implements CloudResponse {
       body = JSON.stringify(body);
     }
 
+    this.body = body;
+    this.status = status;
+  }
+
+  public flush(): void {
     this.callback(null, {
       headers: this.headers,
-      body: body,
-      statusCode: status
+      body: this.body,
+      statusCode: this.status || 200,
     });
   }
 }

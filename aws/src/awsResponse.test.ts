@@ -11,11 +11,8 @@ describe("test of response", () => {
     expect(sut.headers).toEqual({});
   });
 
-  it("should call AWS callback when send is called", async () => {
-    const httpRequest = {};
-    const awsContext = {};
-    const callback = jest.fn();
-    const context = new AwsContext([httpRequest, awsContext, callback]);
+  it("send() should set response body & status", async () => {
+    const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);
 
     const httpBody = "test";
@@ -24,27 +21,39 @@ describe("test of response", () => {
     response.headers["Content-Type"] = "application/json";
     response.send(httpBody, httpStatus);
 
-    expect(callback).toBeCalledWith(null, {
-      headers: response.headers,
-      body: httpBody,
-      statusCode: httpStatus
-    });
+    expect(response.body).toEqual(httpBody);
+    expect(response.status).toEqual(httpStatus);
   });
 
-  it("should stringify the body if complex object", () => {
-    const httpRequest = {};
-    const awsContext = {};
-    const callback = jest.fn();
-    const context = new AwsContext([httpRequest, awsContext, callback]);
+  it("send() should stringify the body if complex object", () => {
+    const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);
     const jsonBody = { foo: "bar" };
 
     response.send(jsonBody, 200);
 
-    expect(callback).toBeCalledWith(null, {
-      headers: response.headers,
-      body: JSON.stringify(jsonBody),
-      statusCode: 200,
-    });
+    expect(response.body).toEqual(JSON.stringify(jsonBody));
+    expect(response.status).toEqual(200);
+  });
+
+  it("flush() calls AWS runtime callback with correct parameters", () => {
+    const callback = jest.fn();
+    const context = new AwsContext([{}, {}, callback]);
+    const response = new AwsResponse(context);
+
+    const body = "OK";
+    const status = 200;
+
+    response.send(body, status);
+    response.flush();
+
+    expect(callback).toBeCalledWith(
+      null,
+      {
+        headers: response.headers,
+        body: response.body,
+        statusCode: response.status,
+      }
+    );
   });
 });

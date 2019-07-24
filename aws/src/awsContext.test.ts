@@ -12,6 +12,7 @@ describe("AWS context", () => {
 
   function createAwsContext(event, context, callback = jest.fn()) {
     var awsContext = new AwsContext([event, context, callback]);
+    awsContext.res = new AwsResponse(awsContext);
     awsContext.done = jest.fn();
 
     return awsContext;
@@ -43,10 +44,19 @@ describe("AWS context", () => {
     expect(context.res.send).toHaveBeenCalledWith(body, 400);
   });
 
-  it("send() calls context.done() to signal request is complete", () => {
+  it("send() calls context.done() to signal handler is complete", () => {
     const context = createAwsContext(awsEvent, awsContext);
     context.send("test", 200);
 
     expect(context.done).toBeCalled();
+  });
+
+  it("flush() calls response.flush() to call final AWS callback", () => {
+    const context = createAwsContext(awsEvent, awsContext);
+    const flushSpy = jest.spyOn(context.res, "flush");
+    context.send("test", 200);
+    context.flush();
+
+    expect(flushSpy).toBeCalled();
   });
 });

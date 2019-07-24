@@ -54,4 +54,10 @@ export class AwsContext implements CloudContext {
 
     this.done();
   }
+
+  public flush() {
+    if (this.res) {
+      this.res.flush();
+    }
+  }
 }
