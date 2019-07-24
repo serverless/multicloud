@@ -17,7 +17,7 @@ export interface TelemetryService {
    * @param key Authentication for telemetry service
    * @param data Message to log in telemetry
    */
-  collect: (key: string, data: string) => Promise<void>;
+  collect: (key: string, data: object) => Promise<void>;
   /** Flush all messages in service */
   flush: () => Promise<void>;
 }

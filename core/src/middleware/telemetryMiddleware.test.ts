@@ -56,7 +56,7 @@ describe("TelemetryServiceMiddleware should", () => {
     cloudContext: CloudContext,
     next: Function
   ): Promise<void> => {
-    cloudContext.telemetry.collect(fooKey, JSON.stringify(data));
+    cloudContext.telemetry.collect(fooKey, data);
     await next();
   };
 
@@ -79,22 +79,22 @@ describe("TelemetryServiceMiddleware should", () => {
     options.shouldFlush = false;
 
     const app = new App(testModule);
-    await app.use([TelemetryServiceMiddleware(options), middlewareFoo()], handler)(context);
+    await app.use(
+      [TelemetryServiceMiddleware(options), middlewareFoo()],
+      handler
+    )(context);
 
-    expect(context.telemetry.collect).toHaveBeenCalledWith(
-      fooKey,
-      JSON.stringify(data)
-    );
+    expect(context.telemetry.collect).toHaveBeenCalledWith(fooKey, data);
     expect(context.telemetry.flush).not.toHaveBeenCalled();
   });
 
   it("call collect method from another middleware and flush when shouldFlush is true", async () => {
-    const app = new App(testModule);
-    await app.use([TelemetryServiceMiddleware(options), middlewareFoo()], handler)(context);
-    expect(context.telemetry.collect).toHaveBeenCalledWith(
-      fooKey,
-      JSON.stringify(data)
-    );
+    const sut = new App(testModule);
+    await sut.use(
+      [TelemetryServiceMiddleware(options), middlewareFoo()],
+      handler
+    )(context);
+    expect(context.telemetry.collect).toHaveBeenCalledWith(fooKey, data);
     expect(context.telemetry.flush).toHaveBeenCalled();
   });
 
@@ -102,7 +102,7 @@ describe("TelemetryServiceMiddleware should", () => {
     class TestService implements TelemetryService {
       public analyticsData = {};
 
-      public collect = (key: string, data: string) => {
+      public collect = (key: string, data: object) => {
         this.analyticsData[key] = data;
         return Promise.resolve();
       };
@@ -127,7 +127,7 @@ describe("TelemetryServiceMiddleware should", () => {
     class TestService implements TelemetryService {
       public analyticsData = {};
 
-      public collect = (key: string, data: string) => {
+      public collect = (key: string, data: object) => {
         this.analyticsData[key] = data;
         return Promise.resolve();
       };
@@ -184,14 +184,14 @@ describe("TelemetryServiceMiddleware should", () => {
     await TelemetryServiceMiddleware(options)(context, next);
 
     expect(options.telemetryService.analyticsData.stats).toBeTruthy();
-    expect(
-      JSON.parse(options.telemetryService.analyticsData.stats).consumeCpuIdle
-    ).toEqual(expectedConsumeCpuIdle);
-    expect(
-      JSON.parse(options.telemetryService.analyticsData.stats).consumeCpuTick
-    ).toEqual(expectedConsumeCpuTick);
-    expect(
-      JSON.parse(options.telemetryService.analyticsData.stats).memoryConsume
-    ).toEqual(expectedmemoryConsume);
+    expect(options.telemetryService.analyticsData.stats.consumeCpuIdle).toEqual(
+      expectedConsumeCpuIdle
+    );
+    expect(options.telemetryService.analyticsData.stats.consumeCpuTick).toEqual(
+      expectedConsumeCpuTick
+    );
+    expect(options.telemetryService.analyticsData.stats.memoryConsume).toEqual(
+      expectedmemoryConsume
+    );
   });
 });

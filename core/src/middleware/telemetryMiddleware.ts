@@ -30,7 +30,7 @@ export const TelemetryServiceMiddleware = (
     memoryConsume
   };
 
-  context.telemetry.collect("stats", JSON.stringify(stats));
+  context.telemetry.collect("stats", stats);
 
   if (options.shouldFlush) {
     context.telemetry.flush();

@@ -1,0 +1,79 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: v1
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+custom:
+  webpack:
+    keepOutputDirectory: true
+
+provider:
+  prefix: sls-sample
+  name: azure
+  region: ${opt:region, 'westus'}
+  stage: ${opt:stage, 'dev'}
+  type: premium
+  apim:
+    api:
+      name: v1
+      subscriptionRequired: false
+      displayName: v1
+      description: V1 sample app APIs
+      protocols:
+        - https
+      path: v1
+      tags:
+        - tag1
+        - tag2
+      authorization: none
+    cors:
+      allowCredentials: false
+      allowedOrigins:
+        - "*"
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+      allowedHeaders:
+        - "*"
+      exposeHeaders:
+        - "*"
+
+plugins:
+  - serverless-azure-functions
+  - serverless-webpack
+
+functions:
+  hello:
+    handler: hello/handler.hello
+    apim:
+      operations:
+        - method: get
+          urlTemplate: /hello
+          displayName: Hello
+    events:
+      - http: true
+        x-azure-settings:
+          methods:
+            - GET
+          authLevel: function
+      - http: true
+        x-azure-settings:
+          direction: out
+          name: res
