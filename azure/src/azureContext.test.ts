@@ -20,6 +20,7 @@ const runtimeArgs = [
 
 const createAzureContext = (args): AzureContext => {
   const azureContext = new AzureContext(args);
+  azureContext.res = new AzureResponse(azureContext);
   azureContext.done = jest.fn();
 
   return azureContext;
@@ -49,15 +50,24 @@ describe("Azure context", () => {
     expect(context.res.send).toHaveBeenCalledWith(body, 400);
   });
 
-  test("when send() calls runtime done()", () => {
+  test("send() calls runtime done() on fail status code", () => {
     const body = { message: "oh Crap!" };
     context.send(body, 400);
-    expect(done).toHaveBeenCalledWith();
+    expect(context.done).toBeCalled();
   });
 
-  test("send() calls context.done()", () => {
+  test("send() calls context.done() on success status code", () => {
     context.send("test", 200);
     expect(context.done).toBeCalled();
+  });
+
+  test("flush() calls response.flush()", () => {
+    const flushSpy = jest.spyOn(context.res, "flush");
+
+    context.send("test", 200);
+    context.flush();
+
+    expect(flushSpy).toBeCalled();
   });
 
   test("logging calls should be redirect to Azure context", () => {

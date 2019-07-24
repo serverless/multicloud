@@ -6,7 +6,8 @@ describe("test of response", () => {
       req: {
         body: null
       },
-      res: {}
+      res: {},
+      done: jest.fn(),
     }
   ];
 
@@ -14,10 +15,11 @@ describe("test of response", () => {
     const context = new AzureContext(args);
     context.req = new AzureRequest(context);
     context.res = new AzureResponse(context);
+
     return context;
   };
 
-  it("should passthrough headers value withouth modifications", done => {
+  it("should passthrough headers value withouth modifications", () => {
     const azureContext = createAzureContext([
       {
         req: {},
@@ -34,33 +36,27 @@ describe("test of response", () => {
     const sut = new AzureResponse(azureContext);
 
     expect(sut.headers).toEqual(azureContext.res.headers);
-    done();
   });
 
-  it("should have status = 200", done => {
+  it("should have status = 200", () => {
     const defaultStatusValue = 200;
-
     const azureContext = createAzureContext(defaultParams);
 
-    const sut = new AzureResponse(azureContext);
-    sut.send({});
+    azureContext.res.send({});
 
-    expect(defaultStatusValue).toEqual(sut.runtime.res.status);
-    done();
+    expect(azureContext.res.status).toEqual(defaultStatusValue);
   });
 
-  it("should have status = 400", done => {
+  it("should have status = 400", () => {
     const expectedStatusStatus = 400;
-
     const azureContext = createAzureContext(defaultParams);
-    const sut = new AzureResponse(azureContext);
-    sut.send({}, expectedStatusStatus);
 
-    expect(expectedStatusStatus).toEqual(sut.runtime.res.status);
-    done();
+    azureContext.res.send({}, expectedStatusStatus);
+
+    expect(azureContext.res.status).toEqual(expectedStatusStatus);
   });
 
-  it("should passthrough body value withouth modifications", done => {
+  it("should passthrough body value withouth modifications", () => {
     const body = {
       firstKey: "body",
       secondKey: 123,
@@ -69,21 +65,20 @@ describe("test of response", () => {
 
     const azureContext = createAzureContext(defaultParams);
 
-    const sut = new AzureResponse(azureContext);
-    sut.send(body);
+    azureContext.res.send(body);
 
-    expect(body).toEqual(sut.runtime.res.body);
-    done();
+    expect(azureContext.res.body).toEqual(body);
+    expect(azureContext.res.status).toEqual(200);
   });
 
   it("should have headers value empty object", () => {
     const azureContext = createAzureContext(defaultParams);
-    const sut = new AzureResponse(azureContext);
-    sut.headers["Content-Type"] = "application/json";
-    expect(sut.headers).toEqual({ "Content-Type": "application/json" });
+    azureContext.res.headers["Content-Type"] = "application/json";
+
+    expect(azureContext.res.headers).toEqual({ "Content-Type": "application/json" });
   });
 
-  it("should create res object", done => {
+  it("should create res object", () => {
     const expectedObject = {
       body: {},
       headers: {
@@ -94,11 +89,24 @@ describe("test of response", () => {
 
     const azureContext = createAzureContext(defaultParams);
 
-    const sut = new AzureResponse(azureContext);
-    sut.headers["Content-Type"] = "application/json";
-    sut.send({});
+    azureContext.res.headers["Content-Type"] = "application/json";
+    azureContext.res.send({});
 
-    expect(expectedObject).toEqual(sut.runtime.res);
-    done();
+    expect(azureContext.res).toMatchObject(expectedObject);
+  });
+
+  it("flush() sets Azure context response and calls Azure context done()", () => {
+    const azureContext = createAzureContext(defaultParams);
+    const doneSpy = jest.spyOn(azureContext.runtime, "done");
+
+    azureContext.res.send("OK", 200);
+    azureContext.flush();
+
+    expect(doneSpy).toBeCalled();
+    expect(azureContext.res.runtime.res).toEqual({
+      headers: azureContext.res.headers,
+      body: azureContext.res.body,
+      status: azureContext.res.status,
+    });
   });
 });

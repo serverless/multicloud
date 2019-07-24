@@ -8,11 +8,17 @@ import { AzureContext } from "./azureContext";
  */
 @injectable()
 export class AzureResponse implements CloudResponse {
-
-  /** Headers of HTTP response */
-  public headers?: { [key: string]: any };
   /** Original runtime from Azure Function context */
   public runtime: any;
+
+  /** The HTTP response body */
+  public body: any;
+
+  /** The HTTP response status code */
+  public status: number = 200;
+
+  /** Headers of HTTP Response */
+  public headers?: { [key: string]: any };
 
   /**
    * Initialize new Azure Response, injecting Cloud Context
@@ -31,10 +37,17 @@ export class AzureResponse implements CloudResponse {
    * @param status Status code of HTTP response
    */
   public send(body: any, status: number = 200): void {
+    this.body = body;
+    this.status = status;
+  }
+
+  public flush() {
     this.runtime.res = {
-      status: status,
-      body: body,
+      status: this.status,
+      body: this.body,
       headers: this.headers,
     };
+
+    this.runtime.done();
   }
 }

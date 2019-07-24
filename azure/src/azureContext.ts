@@ -46,11 +46,16 @@ export class AzureContext implements CloudContext {
         this.res.send(body, status);
       }
 
-      this.runtime.done();
       this.done();
     }
     finally {
       this.restoreConsole();
+    }
+  }
+
+  public flush() {
+    if (this.res) {
+      this.res.flush();
     }
   }
 
