@@ -52,7 +52,10 @@ describe("LoggingServiceMiddleware should", () => {
 
   it("save the logger in context and be used from the next middleware", async () => {
     const app = new App(testModule);
-    const middlewareSpy = jest.fn((context: CloudContext) => context.logger.log("test message"));
+    const middlewareSpy = jest.fn(async (context: CloudContext, next: () => Promise<void>) => {
+      context.logger.log("test message");
+      await next();
+    });
     const mockMiddleware = MockFactory.createMockMiddleware(middlewareSpy);
     await app.use([LoggingServiceMiddleware(logger), mockMiddleware], handler)();
 

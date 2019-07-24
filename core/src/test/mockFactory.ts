@@ -1,4 +1,4 @@
-import { Middleware } from "../app";
+import { Middleware, Handler } from "../app";
 import { CloudContext } from "../cloudContext";
 import { CloudRequest } from "../cloudRequest";
 import { CloudResponse } from "../cloudResponse";
@@ -8,10 +8,17 @@ export default class MockFactory {
    * Creates a middleware that executes the specified spy
    * @param spy The spy function to call
    */
-  public static createMockMiddleware(spy: Function = jest.fn()): Middleware {
-    return jest.fn(async (context: CloudContext, next: Function) => {
-      spy(context, next);
+  public static createMockMiddleware(spy?: Middleware): Middleware {
+    const defaultImp = async (context: CloudContext, next: () => Promise<void>) => {
       return await next();
+    };
+
+    if (!spy) {
+      spy = defaultImp;
+    }
+
+    return jest.fn(async (context: CloudContext, next: () => Promise<void>) => {
+      return spy(context, next);
     });
   }
 
@@ -19,10 +26,15 @@ export default class MockFactory {
    * Creates a handler that executes the optional spy function
    * @param spy The spy function to call
    */
-  public static createMockHandler(spy: Function = jest.fn()): (context: CloudContext) => Promise<any> | void {
+  public static createMockHandler(spy?: Handler): Handler {
+    const defaultImp = (context: CloudContext) => context.send("OK", 200);
+
+    if (!spy) {
+      spy = defaultImp;
+    }
+
     return jest.fn((context: CloudContext) => {
-      spy(context);
-      context.send("OK", 200);
+      return spy(context);
     });
   }
 
@@ -30,13 +42,14 @@ export default class MockFactory {
    * Creates a mock CloudContext to use in unit tests
    */
   public static createMockCloudContext(createHttpComponents: boolean = true): CloudContext {
-    const context = {
+    const context: CloudContext = {
       providerType: "providerType",
       id: "12345",
       req: createHttpComponents ? MockFactory.createMockCloudRequest() : null,
       res: createHttpComponents ? MockFactory.createMockCloudResponse() : null,
+      send: jest.fn(() => context.done()),
       done: null,
-      send: jest.fn(() => context.done())
+      flush: jest.fn(),
     };
 
     return context;
@@ -60,6 +73,7 @@ export default class MockFactory {
     return {
       headers,
       send: jest.fn(),
+      flush: jest.fn(),
     };
   }
 

@@ -21,7 +21,7 @@ describe("PerformanceMiddleware should", () => {
   });
 
   it("collect and log performance metrics", async () => {
-    await PerformanceMiddleware()(context, () => {});
+    await PerformanceMiddleware()(context, () => { });
     expect(context.logger.log).toBeCalledTimes(2);
   });
 
@@ -35,12 +35,11 @@ describe("PerformanceMiddleware should", () => {
   });
 
   it("call the next middleware when using App", async () => {
-    const spyMiddleware = jest.fn();
-    const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
+    const mockMiddleware = MockFactory.createMockMiddleware();
 
     const app = new App(testModule);
     await app.use([PerformanceMiddleware(), mockMiddleware], handler)();
-    expect(spyMiddleware).toHaveBeenCalled();
+    expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
   });
 });

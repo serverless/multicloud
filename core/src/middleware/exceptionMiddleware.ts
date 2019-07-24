@@ -14,11 +14,15 @@ export interface ExceptionOptions {
  * @param options Options for handling exceptions
  */
 export const ExceptionMiddleware = (options: ExceptionOptions) =>
-  async (context: CloudContext, next: Function): Promise<void> => {
-    try {
-      await next();
-    } catch (err) {
+  (context: CloudContext, next: Function): Promise<void> => {
+    function onError(err) {
       options.log(err);
       context.send(err, 500);
+    }
+
+    try {
+      return next().catch(onError);
+    } catch (err) {
+      onError(err);
     }
   };

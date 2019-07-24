@@ -13,4 +13,9 @@ export interface CloudResponse {
    * @param callback Callback to call with response
    */
   send: (body: any, status: number, callback?: Function) => void;
+
+  /**
+   * Flushes final response and signals cloud provider runtime that request is complete
+   */
+  flush: () => void;
 }

@@ -37,11 +37,10 @@ describe("HTTPBindingMiddleware should", () => {
   });
 
   it("calls the next middleware in the chain", async () => {
-    const spyMiddleware = jest.fn();
-    const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
+    const mockMiddleware = MockFactory.createMockMiddleware();
 
     await app.use([HTTPBindingMiddleware(), mockMiddleware], handler)();
-    expect(spyMiddleware).toHaveBeenCalled();
+    expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
   });
 

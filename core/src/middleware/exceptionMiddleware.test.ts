@@ -36,22 +36,20 @@ describe("Tests of ExceptionMiddleware should", () => {
     expect(context.send).toHaveBeenCalledWith(error, errorStatus);
   });
 
-  it("call next without calling exception or logging", async done => {
-    const next = jest.fn();
+  it("call next without calling exception or logging", async () => {
+    const next = jest.fn(() => Promise.resolve());
     await ExceptionMiddleware(options)(context, next);
     expect(next).toHaveBeenCalled();
     expect(options.log).not.toHaveBeenCalled();
     expect(context.send).not.toHaveBeenCalled();
-    done();
   });
 
   it("call next middleware after exceptionMiddleware using App", async () => {
-    const spyMiddleware = jest.fn();
-    const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
+    const mockMiddleware = MockFactory.createMockMiddleware();
 
     const app = new App(testModule);
     await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
-    expect(spyMiddleware).toHaveBeenCalled();
+    expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
   });
 
@@ -68,5 +66,32 @@ describe("Tests of ExceptionMiddleware should", () => {
     await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
     expect(context.send).toHaveBeenCalledWith(error, errorStatus);
     expect(options.log).toHaveBeenCalledWith(error);
+  });
+
+  it("catches and logs errors when promise is rejected in handler", async () => {
+    const app = new App(testModule);
+    const errorMessage = "promise rejected";
+    const failHandler = MockFactory.createMockHandler(() => {
+      return Promise.reject(errorMessage);
+    });
+
+    await app.use([ExceptionMiddleware(options)], failHandler)();
+
+    expect(context.send).toBeCalledWith(errorMessage, 500);
+    expect(options.log).toBeCalledWith(errorMessage);
+  });
+
+  it("catches and logs error when promise is rejected in other middleware", async () => {
+    const app = new App(testModule);
+    const errorMessage = "promise rejected";
+    const handler = MockFactory.createMockHandler();
+    const failMiddleware = MockFactory.createMockMiddleware(() => {
+      return Promise.reject(errorMessage);
+    });
+
+    await app.use([ExceptionMiddleware(options), failMiddleware], handler)();
+
+    expect(context.send).toBeCalledWith(errorMessage, 500);
+    expect(options.log).toBeCalledWith(errorMessage);
   });
 });

@@ -26,12 +26,11 @@ describe("App", () => {
   });
 
   it("when use start middleware chain", async () => {
-    const spyMiddleware = jest.fn();
-    const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
+    const mockMiddleware = MockFactory.createMockMiddleware();
 
     const app = new App(testModule);
     await app.use([mockMiddleware], handler)();
-    expect(spyMiddleware).toBeCalled();
+    expect(mockMiddleware).toBeCalled();
     expect(handler).toBeCalled();
   });
 
@@ -118,5 +117,20 @@ describe("App", () => {
     await app.use([], handler)();
     expect(spy).toBeCalled();
     expect(sendSpy).toBeCalledWith("void", 200);
+  });
+
+  it("unwraps all post-middleware calls successfully", async () => {
+    const app = new App(testModule);
+    const handler = MockFactory.createMockHandler();
+    const postHandlerSpy = jest.fn();
+
+    const postHandlerMiddleware = MockFactory.createMockMiddleware(async (context: CloudContext, next: Function) => {
+      await next();
+      postHandlerSpy();
+    });
+
+    await app.use([postHandlerMiddleware], handler)();
+
+    expect(postHandlerSpy).toBeCalled();
   });
 });

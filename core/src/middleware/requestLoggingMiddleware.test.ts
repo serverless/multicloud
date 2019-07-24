@@ -51,12 +51,11 @@ describe("requestLoggingServiceMiddleware should", () => {
   });
 
   it("call next middleware after requestLoggingMiddleware using App", async () => {
-    const spyMiddleware = jest.fn();
-    const mockMiddleware = MockFactory.createMockMiddleware(spyMiddleware);
+    const mockMiddleware = MockFactory.createMockMiddleware();
 
     const sut = new App(testModule);
     await sut.use([RequestLoggingMiddleware(new SpecificLoggingOptions()), mockMiddleware], handler)();
-    expect(spyMiddleware).toHaveBeenCalled();
+    expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
   });
 });

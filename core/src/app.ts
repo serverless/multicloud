@@ -42,16 +42,20 @@ export class App {
           index++;
           result = middleware(context, next);
         } else {
-          result = new Promise((resolve) => {
+          result = new Promise((resolve, reject) => {
             context.done = resolve;
-            return ensurePromise(handler(context));
+            return ensurePromise(handler(context)).catch(reject);
           });
         }
 
         return ensurePromise(result);
       };
 
-      return await next();
+      // Executes the middleware chain and handler
+      await next();
+
+      // Flush the final response to the cloud provider
+      context.flush();
     };
   }
 }
@@ -61,7 +65,7 @@ export class App {
  * @param context Cloud Context for Serverless function
  * @param next Next function to call in middleware chain
  */
-export type Middleware = (context: CloudContext, next: Function) => Promise<void> | void;
+export type Middleware = (context: CloudContext, next: () => Promise<void>) => Promise<void>;
 
 /**
  * Serverless Handler type
