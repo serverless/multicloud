@@ -42,12 +42,12 @@ export class AzureResponse implements CloudResponse {
   }
 
   public flush() {
-    this.runtime.res = {
+    const response = {
       status: this.status,
       body: this.body,
       headers: this.headers,
     };
 
-    this.runtime.done();
+    this.runtime.done(null, response);
   }
 }

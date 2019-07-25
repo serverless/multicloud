@@ -7,6 +7,11 @@ describe("test of response", () => {
         body: null
       },
       res: {},
+      bindingDefinitions: [{
+        name: "$return",
+        type: "http",
+        direction: "out",
+      }],
       done: jest.fn(),
     }
   ];
@@ -102,8 +107,7 @@ describe("test of response", () => {
     azureContext.res.send("OK", 200);
     azureContext.flush();
 
-    expect(doneSpy).toBeCalled();
-    expect(azureContext.res.runtime.res).toEqual({
+    expect(doneSpy).toBeCalledWith(null, {
       headers: azureContext.res.headers,
       body: azureContext.res.body,
       status: azureContext.res.status,
