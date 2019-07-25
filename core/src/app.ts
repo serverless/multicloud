@@ -29,33 +29,44 @@ export class App {
    */
   public use(middlewares: Middleware[], handler: Handler): Function {
     return async (...args: any[]) => {
+      // Bind the runtime arguments sent in from the cloud provider
+      // and register them with the IoC container for used in dependency injection
       this.container.bind(ComponentType.RuntimeArgs).toConstantValue(args);
+
+      // Retrieve the cloud provider specific cloud context based on the
+      // IoC container component registrions & constrints
+      // Each cloud provider registers constraints based on the incoming runtime arguments
       const context = this.container.resolve<CloudContext>(ComponentType.CloudContext);
       context.container = this.container;
+      context.done = () => undefined;
+
       let index = 0;
 
-      const next = () => {
-        const middleware = middlewares[index];
-        let result = null;
+      try {
+        const next = () => {
+          const middleware = middlewares[index];
+          let result = null;
 
-        if (middleware) {
-          index++;
-          result = middleware(context, next);
-        } else {
-          result = new Promise((resolve, reject) => {
-            context.done = resolve;
-            return ensurePromise(handler(context)).catch(reject);
-          });
-        }
+          // Recursively loop through the middleware pipeline
+          if (middleware) {
+            index++;
+            result = middleware(context, next);
+          } else { // When we are out of middlewares, execute the handler
+            result = new Promise((resolve, reject) => {
+              context.done = resolve;
+              return ensurePromise(handler(context)).catch(reject);
+            });
+          }
 
-        return ensurePromise(result);
-      };
+          return ensurePromise(result);
+        };
 
-      // Executes the middleware chain and handler
-      await next();
-
-      // Flush the final response to the cloud provider
-      context.flush();
+        // Executes the middleware chain and handler
+        await next();
+      } finally {
+        // Flush the final response to the cloud provider
+        context.flush();
+      }
     };
   }
 }

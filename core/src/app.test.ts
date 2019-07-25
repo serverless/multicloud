@@ -133,4 +133,19 @@ describe("App", () => {
 
     expect(postHandlerSpy).toBeCalled();
   });
+
+  it("ensure context.flush() is always called even if error occurred", async () => {
+    const app = new App(testModule);
+    const middleware = MockFactory.createMockMiddleware(() => { throw new Error("Ooops!") });
+    const handler = MockFactory.createMockHandler();
+
+    try {
+      await app.use([middleware], handler)();
+    }
+    catch (e) {
+      // Unhandled error since no exception middleware in this test
+    }
+
+    expect(context.flush).toBeCalled();
+  });
 });
