@@ -1,6 +1,10 @@
 import { ContainerModule } from "inversify";
 import { CloudContext, App, CloudModule, ComponentType } from "..";
-import { PerformanceMiddleware } from "../middleware";
+import {
+  PerformanceMiddleware,
+  RequestIdResponseHeader,
+  DurationResponseHeader
+} from "../middleware";
 import { ConsoleLogger } from "../services/consoleLogger";
 import MockFactory from "../test/mockFactory";
 
@@ -21,8 +25,10 @@ describe("PerformanceMiddleware should", () => {
   });
 
   it("collect and log performance metrics", async () => {
-    await PerformanceMiddleware()(context, () => {});
+    await PerformanceMiddleware()(context, () => { });
     expect(context.logger.info).toBeCalledTimes(2);
+    expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
+    expect(context.res.headers[DurationResponseHeader]).toBeDefined();
   });
 
   it("collect and log performance metrics, even if an exception is thrown", async () => {
@@ -32,6 +38,8 @@ describe("PerformanceMiddleware should", () => {
 
     await expect(PerformanceMiddleware()(context, failNext)).rejects.toThrow();
     expect(context.logger.info).toBeCalledTimes(2);
+    expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
+    expect(context.res.headers[DurationResponseHeader]).toBeDefined();
   });
 
   it("call the next middleware when using App", async () => {
@@ -41,5 +49,7 @@ describe("PerformanceMiddleware should", () => {
     await app.use([PerformanceMiddleware(), mockMiddleware], handler)();
     expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
+    expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
+    expect(context.res.headers[DurationResponseHeader]).toBeDefined();
   });
 });

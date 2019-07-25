@@ -71,7 +71,7 @@ export default class MockFactory {
    */
   public static createMockCloudResponse(headers = {}): CloudResponse {
     return {
-      headers,
+      headers: {},
       send: jest.fn(),
       flush: jest.fn(),
     };

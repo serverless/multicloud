@@ -6,10 +6,10 @@ import { Logger, LogLevel } from "./logger";
 export class ConsoleLogger implements Logger {
   /** Creates a new Logger, with the specified LogLevel. */
   public constructor(private logLevel?: LogLevel) {
-    // When set to LogLevel.NONE (0), fallback logic defaults to LogLevel.INFO, instead of NONE.
-    // Skip the logic in that case
-    if (logLevel) {
-      this.logLevel = logLevel || LogLevel[process.env.LOG_LEVEL] || LogLevel.INFO;
+    if (logLevel === LogLevel.NONE) {
+      this.logLevel = logLevel;
+    } else {
+      this.logLevel = logLevel || parseInt(process.env.LOG_LEVEL) || LogLevel.INFO;
     }
   }
 

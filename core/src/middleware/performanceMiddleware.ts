@@ -2,6 +2,9 @@ import { performance, PerformanceObserver } from "perf_hooks";
 import { CloudContext } from "../cloudContext";
 import { ConsoleLogger } from "../services/consoleLogger";
 
+export const RequestIdResponseHeader = "x-sls-request-id";
+export const DurationResponseHeader = "x-sls-perf-duration";
+
 /**
  * Middleware for logging performance of Serverless function. Returns
  * async function that accepts the CloudContext and the `next` Function
@@ -20,6 +23,8 @@ export const PerformanceMiddleware = () =>
         if (perfEntries && perfEntries.length) {
           const entry = perfEntries[0];
           logger.info(`Function End, Request ID: ${context.id}, took ${entry.duration}ms`);
+          context.res.headers[RequestIdResponseHeader] = context.id;
+          context.res.headers[DurationResponseHeader] = entry.duration.toString();
         }
         observer.disconnect();
       });

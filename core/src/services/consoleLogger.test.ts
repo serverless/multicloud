@@ -10,6 +10,24 @@ describe("Console Logger", () => {
     console.error = jest.fn();
   });
 
+  test("Empty constructor should default to LogLevel.INFO", () => {
+    // no env variable set (process.env.LOG_LEVEL)
+    const logger = new ConsoleLogger();
+    logger.trace("");
+    logger.debug("");
+    logger.log("");
+    logger.info("");
+    logger.warn("");
+    logger.error("");
+
+    expect(console.trace).not.toHaveBeenCalled();
+    expect(console.debug).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.info).toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalled();
+  });
+
   test("LogLevel.NONE should not log", () => {
     const logger = new ConsoleLogger(LogLevel.NONE);
     logger.trace("");
@@ -92,6 +110,25 @@ describe("Console Logger", () => {
     expect(console.log).not.toHaveBeenCalled();
     expect(console.info).not.toHaveBeenCalled();
     expect(console.warn).not.toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalled();
+  });
+
+  test("LOG_LEVEL environment variable should be used", () => {
+
+    process.env.LOG_LEVEL = "3";
+    const logger = new ConsoleLogger();
+    logger.trace("");
+    logger.debug("");
+    logger.log("");
+    logger.info("");
+    logger.warn("");
+    logger.error("");
+
+    expect(console.trace).not.toHaveBeenCalled();
+    expect(console.debug).not.toHaveBeenCalled();
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.info).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalled();
     expect(console.error).toHaveBeenCalled();
   });
 
