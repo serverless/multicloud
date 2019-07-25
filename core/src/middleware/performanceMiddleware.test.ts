@@ -8,7 +8,7 @@ describe("PerformanceMiddleware should", () => {
   const handler = MockFactory.createMockHandler();
   const context = MockFactory.createMockCloudContext();
   const consoleLogger = new ConsoleLogger();
-  consoleLogger.log = jest.fn();
+  consoleLogger.info = jest.fn();
   context.logger = consoleLogger;
   const testModule: CloudModule = {
     create: () => new ContainerModule((bind) => {
@@ -21,8 +21,8 @@ describe("PerformanceMiddleware should", () => {
   });
 
   it("collect and log performance metrics", async () => {
-    await PerformanceMiddleware()(context, () => { });
-    expect(context.logger.log).toBeCalledTimes(2);
+    await PerformanceMiddleware()(context, () => {});
+    expect(context.logger.info).toBeCalledTimes(2);
   });
 
   it("collect and log performance metrics, even if an exception is thrown", async () => {
@@ -31,7 +31,7 @@ describe("PerformanceMiddleware should", () => {
     };
 
     await expect(PerformanceMiddleware()(context, failNext)).rejects.toThrow();
-    expect(context.logger.log).toBeCalledTimes(2);
+    expect(context.logger.info).toBeCalledTimes(2);
   });
 
   it("call the next middleware when using App", async () => {

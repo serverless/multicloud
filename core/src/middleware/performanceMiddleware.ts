@@ -19,7 +19,7 @@ export const PerformanceMiddleware = () =>
         const perfEntries = list.getEntriesByName(context.id);
         if (perfEntries && perfEntries.length) {
           const entry = perfEntries[0];
-          logger.log(`Function End, Request ID: ${context.id}, took ${entry.duration}ms`);
+          logger.info(`Function End, Request ID: ${context.id}, took ${entry.duration}ms`);
         }
         observer.disconnect();
       });
@@ -28,7 +28,7 @@ export const PerformanceMiddleware = () =>
       observer.observe({ entryTypes: ["measure"] });
 
       performance.mark(start);
-      logger.log(`Function Start, Request ID: ${context.id}`);
+      logger.info(`Function Start, Request ID: ${context.id}`);
       await next();
     } finally {
       performance.mark(end);

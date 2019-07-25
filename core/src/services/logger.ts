@@ -2,24 +2,22 @@
  * Level of verbosity for logging
  */
 export enum LogLevel {
-  /** No logs */
+  /** Disable logging */
   NONE = 0,
-  /** Only errors */
-  ERROR = 2,
-  /** Only errors and warnings */
+  /** Log everyting */
+  VERBOSE = 1,
+  /** Only log info, errors and warnings */
+  INFO = 2,
+  /** Only log errors and warnings */
   WARN = 3,
-  /** Only info, errors and warnings */
-  INFO = 4,
-  /** Any log statement */
-  LOG = 5
+  /** Only log errors */
+  ERROR = 4,
 }
 
 /**
  * Logging service
  */
 export interface Logger {
-  /** Level of verbosity for logging */
-  logLevel: LogLevel;
   /** Log message */
   log: (message: string) => void;
   /** Log message as info */
@@ -28,4 +26,8 @@ export interface Logger {
   error: (message: string) => void;
   /** Log message as warning */
   warn: (message: string) => void;
+  /** Log message as debug */
+  debug: (message: string) => void;
+  /** Log message with the current stack trace */
+  trace: (message: string) => void;
 }

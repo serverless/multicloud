@@ -1,29 +1,57 @@
-import { Logger, LogLevel } from ".";
+import { Logger, LogLevel } from "./logger";
 
 /**
  * Console implementation of Logger interface
  */
 export class ConsoleLogger implements Logger {
-  /** Level of verbosity for logging */
-  public logLevel: LogLevel;
+  /** Creates a new Logger, with the specified LogLevel. */
+  public constructor(private logLevel?: LogLevel) {
+    // When set to LogLevel.NONE (0), fallback logic defaults to LogLevel.INFO, instead of NONE.
+    // Skip the logic in that case
+    if (logLevel) {
+      this.logLevel = logLevel || LogLevel[process.env.LOG_LEVEL] || LogLevel.INFO;
+    }
+  }
+
+  /** Log message with the current stack trace */
+  public trace(message: string) {
+    if (this.logLevel && this.logLevel === LogLevel.VERBOSE) {
+      console.trace(`[TRACE] ${message}`);
+    }
+  }
+
+  /** Log message as debug */
+  public debug(message: string) {
+    if (this.logLevel && this.logLevel === LogLevel.VERBOSE) {
+      console.debug(`[DEBUG] ${message}`);
+    }
+  }
 
   /** Log message */
   public log(message: string) {
-    console.log(message);
+    if (this.logLevel && this.logLevel === LogLevel.VERBOSE) {
+      console.log(`[VERBOSE] ${message}`);
+    }
   }
 
   /** Log message as info */
   public info(message: string) {
-    console.info(message);
+    if (this.logLevel && this.logLevel <= LogLevel.INFO) {
+      console.info(`[INFO] ${message}`);
+    }
   }
 
   /** Log message as warning */
   public warn(message: string) {
-    console.warn(message);
+    if (this.logLevel && this.logLevel <= LogLevel.WARN) {
+      console.warn(`[WARN] ${message}`);
+    }
   }
 
   /** Log message as error */
   public error(message: string) {
-    console.error(message);
+    if (this.logLevel && this.logLevel <= LogLevel.ERROR) {
+      console.error(`[ERROR] ${message}`);
+    }
   }
 }
