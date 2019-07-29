@@ -1,6 +1,6 @@
 import { AzureContext, AzureRequest, AzureResponse } from ".";
 
-describe("test of response", () => {
+describe("Azure Response", () => {
   const defaultParams: any[] = [
     {
       req: {
@@ -23,6 +23,10 @@ describe("test of response", () => {
 
     return context;
   };
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
   it("should passthrough headers value withouth modifications", () => {
     const azureContext = createAzureContext([
@@ -100,17 +104,41 @@ describe("test of response", () => {
     expect(azureContext.res).toMatchObject(expectedObject);
   });
 
-  it("flush() sets Azure context response and calls Azure context done()", () => {
+  it("flush() calls runtime callback when non-default output binding has not been defined", () => {
     const azureContext = createAzureContext(defaultParams);
     const doneSpy = jest.spyOn(azureContext.runtime, "done");
 
     azureContext.res.send("OK", 200);
     azureContext.flush();
 
+    expect(azureContext.runtime.res).toEqual({});
     expect(doneSpy).toBeCalledWith(null, {
       headers: azureContext.res.headers,
       body: azureContext.res.body,
       status: azureContext.res.status,
+    });
+  });
+
+  it("flush() sets runtime.res when custom output binding has been defined", () => {
+    const contextParams = [...defaultParams];
+    // Example of custom output binding
+    contextParams[0].bindingDefinitions = [{
+      name: "res",
+      type: "http",
+      direction: "out",
+    }];
+
+    const azureContext = createAzureContext(contextParams);
+    const doneSpy = jest.spyOn(azureContext.runtime, "done");
+
+    azureContext.res.send("OK", 200);
+    azureContext.flush();
+
+    expect(doneSpy).not.toBeCalled();
+    expect(azureContext.runtime.res).toEqual({
+      headers: azureContext.runtime.res.headers,
+      body: azureContext.runtime.res.body,
+      status: azureContext.runtime.res.status,
     });
   });
 });
