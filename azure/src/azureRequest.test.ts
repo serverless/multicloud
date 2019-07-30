@@ -1,6 +1,13 @@
 import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 describe("test of request", () => {
+  const runtimeContext = {
+    invocationId: "ABC123",
+    bindingDefinitions: [],
+    req: {},
+    res: {}
+  };
+
   const createAzureContext = (args): AzureContext => {
     const context = new AzureContext(args);
     context.req = new AzureRequest(context);
@@ -11,6 +18,7 @@ describe("test of request", () => {
   it("should passthrough body value without modifications", () => {
     const azureContext = createAzureContext([
       {
+        ...runtimeContext,
         req: {
           body: {
             firstKey: "body",
@@ -18,7 +26,6 @@ describe("test of request", () => {
             thirdKey: {}
           }
         },
-        res: {}
       }
     ]);
 
@@ -30,6 +37,7 @@ describe("test of request", () => {
   it("should passthrough headers value without modifications", () => {
     const azureContext = createAzureContext([
       {
+        ...runtimeContext,
         req: {
           headers: {
             firstKey: "body",
@@ -37,7 +45,6 @@ describe("test of request", () => {
             thirdKey: {}
           }
         },
-        res: {}
       }
     ]);
 
@@ -48,10 +55,10 @@ describe("test of request", () => {
   it("should passthrough method value without modifications", () => {
     const azureContext = createAzureContext([
       {
+        ...runtimeContext,
         req: {
           method: "GET"
         },
-        res: {}
       }
     ]);
 
@@ -62,6 +69,7 @@ describe("test of request", () => {
   it("should  passthrough query value without modifications", () => {
     const azureContext = createAzureContext([
       {
+        ...runtimeContext,
         req: {
           query: {
             firstKey: "body",
@@ -69,7 +77,6 @@ describe("test of request", () => {
             thirdKey: {}
           }
         },
-        res: {}
       }
     ]);
 
@@ -78,18 +85,12 @@ describe("test of request", () => {
   });
 
   it("should check if context content are empty objects", () => {
-    const azureContext = createAzureContext([
-      {
-        req: {},
-        res: {}
-      }
-    ]);
+    const azureContext = createAzureContext([runtimeContext]);
+    const request = new AzureRequest(azureContext);
 
-    const sut = new AzureRequest(azureContext);
-
-    expect(sut.body).toEqual({});
-    expect(sut.headers).toEqual({});
-    expect(sut.method).toEqual("");
-    expect(sut.query).toEqual({});
+    expect(request.body).toEqual({});
+    expect(request.headers).toEqual({});
+    expect(request.method).toEqual("");
+    expect(request.query).toEqual({});
   });
 });

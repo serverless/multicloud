@@ -3,6 +3,7 @@ import { AzureRequest, AzureResponse } from ".";
 import { CloudContext, ComponentType } from "@multicloud/sls-core";
 import { CloudStorage } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
+import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions";
 
 /**
  * Implementation of Cloud Context for Azure Functions
@@ -17,6 +18,7 @@ export class AzureContext implements CloudContext {
     this.runtime = args[0];
     this.providerType = "azure";
     this.id = this.runtime.invocationId;
+    this.processInputBindings(args);
     this.redirectConsole();
   }
 
@@ -31,7 +33,7 @@ export class AzureContext implements CloudContext {
   /** Azure Storage Service */
   public storage: CloudStorage;
   /** Original runtime context for Azure Function */
-  public runtime: any;
+  public runtime: AzureFunctionsRuntime;
   /** Signals to the runtime that the request is complete */
   public done: () => void;
 
@@ -57,6 +59,21 @@ export class AzureContext implements CloudContext {
     if (this.res) {
       this.res.flush();
     }
+  }
+
+  /**
+   * Processing the incoming Azure Functions bindings and attaches the
+   * values onto the CloudContext for easy retrieval.
+   * @param args The original Azure runtime handler arguments
+   */
+  private processInputBindings(args: any[]): void {
+    this.runtime.bindingDefinitions
+      .filter((binding) => binding.direction === BindingDirection.In)
+      .forEach((binding, index) => {
+        if (!this[binding.name]) {
+          this[binding.name] = args[index + 1];
+        }
+      });
   }
 
   private redirectConsole(): void {

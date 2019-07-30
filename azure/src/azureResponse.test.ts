@@ -38,7 +38,8 @@ describe("Azure Response", () => {
             secondKey: 123,
             thirdKey: {}
           }
-        }
+        },
+        bindingDefinitions: [],
       }
     ]);
 

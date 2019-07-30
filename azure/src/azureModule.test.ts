@@ -6,7 +6,8 @@ describe("Azure Cloud Module", () => {
     {
       invocationId: expect.any(String),
       req: {},
-      res: {}
+      res: {},
+      bindingDefinitions: [],
     }];
   const azureModule = new AzureModule();
   let container = new CloudContainer();

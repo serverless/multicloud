@@ -15,6 +15,7 @@ const runtimeArgs = [
     debug: () => { return 4; },
     trace: () => { return 5; },
     error: () => { return 6; },
+    bindingDefinitions: [],
   }
 ];
 
@@ -34,34 +35,34 @@ describe("Azure context", () => {
     context.res = new AzureResponse(context);
   });
 
-  test("requestId should be set", () => {
+  it("requestId should be set", () => {
     expect(context.id).toEqual(runtimeArgs[0].invocationId);
   });
 
-  test("when send() calls response.send() on httpTrigger", () => {
+  it("when send() calls response.send() on httpTrigger", () => {
     const body = { message: "Hello World" };
     context.send(body);
     expect(context.res.send).toHaveBeenCalledWith(body, 200);
   });
 
-  test("when send() calls response.send() on httpTrigger with custom status", () => {
+  it("when send() calls response.send() on httpTrigger with custom status", () => {
     const body = { message: "oh Crap!" };
     context.send(body, 400);
     expect(context.res.send).toHaveBeenCalledWith(body, 400);
   });
 
-  test("send() calls runtime done() on fail status code", () => {
+  it("send() calls runtime done() on fail status code", () => {
     const body = { message: "oh Crap!" };
     context.send(body, 400);
     expect(context.done).toBeCalled();
   });
 
-  test("send() calls context.done() on success status code", () => {
+  it("send() calls context.done() on success status code", () => {
     context.send("test", 200);
     expect(context.done).toBeCalled();
   });
 
-  test("flush() calls response.flush()", () => {
+  it("flush() calls response.flush()", () => {
     const flushSpy = jest.spyOn(context.res, "flush");
 
     context.send("test", 200);
@@ -70,7 +71,7 @@ describe("Azure context", () => {
     expect(flushSpy).toBeCalled();
   });
 
-  test("logging calls should be redirect to Azure context", () => {
+  it("logging calls should be redirect to Azure context", () => {
     console.log("hi");
     console.warn("whoa");
     console.error("crap");
@@ -86,7 +87,7 @@ describe("Azure context", () => {
     expect(runtimeArgs[0].error()).toEqual(6);
   });
 
-  test("logging calls redirect and be restored", () => {
+  it("logging calls redirect and be restored", () => {
     console.log("hi");
     console.warn("whoa");
     console.error("crap");
@@ -109,5 +110,74 @@ describe("Azure context", () => {
     expect(console.debug()).toEqual(undefined);
     expect(console.trace()).toEqual(undefined);
     expect(console.error()).toEqual(undefined);
+  });
+
+  describe("Input bindings", () => {
+    it("Processes single input binding correctly", () => {
+      const expectedMessage = { "foo": "bar" };
+      const runtimeArgs = [
+        {
+          bindingDefinitions: [
+            {
+              name: "message",
+              type: "queueTrigger",
+              direction: "in",
+            }
+          ]
+        },
+        expectedMessage,
+      ];
+
+      const context = new AzureContext(runtimeArgs);
+      expect(context["message"]).toBe(expectedMessage);
+    });
+
+    it("Processes multiple input bindings correctly", () => {
+      const expectedMessage1 = { "a": 1 };
+      const expectedMessage2 = { "b": 2 };
+      const runtimeArgs = [
+        {
+          bindingDefinitions: [
+            {
+              name: "message1",
+              type: "queueTrigger",
+              direction: "in",
+            },
+            {
+              name: "message2",
+              type: "queueTrigger",
+              direction: "in",
+            }
+          ]
+        },
+        expectedMessage1,
+        expectedMessage2,
+      ];
+
+      const context = new AzureContext(runtimeArgs);
+      expect(context["message1"]).toBe(expectedMessage1);
+      expect(context["message2"]).toBe(expectedMessage2);
+    });
+
+    it("Does not overwrite context properties that already exist and would cause conflict", () => {
+      const expectedMessage = { "foo": "bar" };
+
+      const runtimeArgs = [
+        {
+          bindingDefinitions: [
+            {
+              name: "container",
+              type: "queueTrigger",
+              direction: "in",
+            }
+          ]
+        },
+        expectedMessage,
+      ];
+
+      const context = new AzureContext(runtimeArgs);
+      expect(context.providerType).not.toBe(expectedMessage);
+      expect(context.providerType).toEqual("azure");
+    });
   });
 });
