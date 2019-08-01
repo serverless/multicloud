@@ -1,5 +1,6 @@
 import { AwsModule, AwsContext, AwsRequest, AwsResponse } from ".";
-import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer } from "@multicloud/sls-core";
+import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService } from "@multicloud/sls-core";
+import { LambdaCloudService } from "./services";
 
 describe("Aws Cloud Module", () => {
   const params: any[] = [
@@ -32,6 +33,11 @@ describe("Aws Cloud Module", () => {
       const response = container.resolve<CloudResponse>(ComponentType.CloudResponse);
       expect(response).toBeInstanceOf(AwsResponse);
     });
+
+    it("resolves service", () => {
+      const service = container.resolve<CloudService>(ComponentType.CloudService);
+      expect(service).toBeInstanceOf(LambdaCloudService);
+    });
   });
 
   describe("when non-aws request", () => {
@@ -51,6 +57,10 @@ describe("Aws Cloud Module", () => {
 
     it("does not resolve response", () => {
       expect(container.resolve<CloudContext>(ComponentType.CloudResponse)).toBeNull();
+    });
+
+    it("does not resolve service", () => {
+      expect(container.resolve<CloudService>(ComponentType.CloudService)).toBeNull();
     });
   })
 });

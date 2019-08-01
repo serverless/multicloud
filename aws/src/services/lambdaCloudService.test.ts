@@ -12,9 +12,13 @@ const getCartAWSCloudService: AWSCloudServiceOptions = {
 
 describe("LambdaCloudService", () => {
   let container: CloudContainer;
+  let context;
 
   beforeAll(() => {
     container = new CloudContainer();
+    context = {
+      container
+    }
     container.bind(getCartAWSCloudService.name).toConstantValue(getCartAWSCloudService);
 
     AWS.Lambda.prototype.invoke = jest.fn().mockReturnValue({
@@ -23,7 +27,7 @@ describe("LambdaCloudService", () => {
   });
 
   it("should create a Lambda instance", async () => {
-    const sut = new LambdaCloudService(container);
+    const sut = new LambdaCloudService(context);
     await sut.invoke<Promise<any>>("aws-getCart", null, {});
     expect(AWS.Lambda).toHaveBeenCalled();
   })
@@ -35,7 +39,7 @@ describe("LambdaCloudService", () => {
       InvocationType: AWSInvokeType.fireAndWait
     }
 
-    const sut = new LambdaCloudService(container);
+    const sut = new LambdaCloudService(context);
     await sut.invoke<Promise<any>>("aws-getCart", null, {});
     expect(AWS.Lambda.prototype.invoke).toHaveBeenCalledWith(options);
   })
@@ -51,7 +55,7 @@ describe("LambdaCloudService", () => {
       promise: jest.fn().mockReturnValue(Promise.resolve({}))
     })
 
-    const sut = new LambdaCloudService(container);
+    const sut = new LambdaCloudService(context);
     const response = await sut.invoke<Promise<any>>("aws-getCart", true, {});
     expect(AWS.Lambda.prototype.invoke).toHaveBeenCalledWith(options);
     expect(response).toEqual({});
@@ -68,14 +72,14 @@ describe("LambdaCloudService", () => {
       promise: jest.fn().mockReturnValue(Promise.resolve({ data: "some data" }))
     })
 
-    const sut = new LambdaCloudService(container);
+    const sut = new LambdaCloudService(context);
     const response = await sut.invoke<Promise<any>>("aws-getCart", false, {});
     expect(AWS.Lambda.prototype.invoke).toHaveBeenCalledWith(options);
     expect(response.data).toEqual("some data");
   })
 
   it("should return an error if no name is passed", async () => {
-    const sut = new LambdaCloudService(container);
+    const sut = new LambdaCloudService(context);
     try {
       await sut.invoke<Promise<any>>(null, false, {})
     } catch (err) {
@@ -92,7 +96,7 @@ describe("LambdaCloudService", () => {
 
     container.bind(awsUpdateCartApi.name).toConstantValue(awsUpdateCartApi);
 
-    const sut = new LambdaCloudService(container);
+    const sut = new LambdaCloudService(context);
     const invoke = async () => await sut.invoke<Promise<any>>("aws-updateCart", false, {});
     await expect(invoke()).rejects.not.toBeNull();
   })

@@ -5,3 +5,4 @@ export * from "./performanceMiddleware";
 export * from "./requestLoggingMiddleware";
 export * from "./validationMiddleware";
 export * from "./telemetryMiddleware";
+export * from "./serviceMiddleware";

@@ -1,6 +1,7 @@
 import { ContainerModule, interfaces } from "inversify";
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType } from "@multicloud/sls-core";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "@multicloud/sls-core";
 import { AzureContext, AzureRequest, AzureResponse } from ".";
+import { AzureFunctionCloudService } from "./services";
 
 /**
  * Azure Module that can be registered in IoC container
@@ -31,6 +32,10 @@ export class AzureModule implements CloudModule {
 
       bind<CloudResponse>(ComponentType.CloudResponse)
         .to(AzureResponse)
+        .when(this.isAzureRequest);
+
+      bind<CloudService>(ComponentType.CloudService)
+        .to(AzureFunctionCloudService)
         .when(this.isAzureRequest);
     });
   }

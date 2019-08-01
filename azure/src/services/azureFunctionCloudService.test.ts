@@ -11,11 +11,15 @@ const getCartAzureCloudService: AzureCloudServiceOptions = {
 describe("Azure Cloud Service should", () => {
   let container: CloudContainer;
   let cloudService: CloudService;
+  let context;
 
   beforeEach(() => {
     jest.clearAllMocks();
     container = new CloudContainer();
-    cloudService = new AzureFunctionCloudService(container);
+    context = {
+      container
+    }
+    cloudService = new AzureFunctionCloudService(context);
     container.bind(getCartAzureCloudService.name).toConstantValue(getCartAzureCloudService);
   });
 
@@ -90,8 +94,9 @@ describe("Azure Cloud Service should", () => {
         return (EmptyContainer as unknown) as T;
       }
     }
+    context.container = newResolver;
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
-    const sut = new AzureFunctionCloudService(newResolver);
+    const sut = new AzureFunctionCloudService(context);
     try {
       await sut.invoke<Promise<any>>("azure-getCart", true);
     } catch (err) {

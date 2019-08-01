@@ -1,5 +1,7 @@
-import { CloudService, ContainerResolver, CloudServiceOptions } from "@multicloud/sls-core";
+import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext } from "@multicloud/sls-core";
 import axios, { AxiosRequestConfig } from "axios";
+import { ComponentType } from "@multicloud/sls-core";
+import { injectable, inject } from "inversify";
 
 /**
  * Options for Azure Function invocation
@@ -16,13 +18,18 @@ export interface AzureCloudServiceOptions extends CloudServiceOptions {
 /**
  * Implementation of Cloud Service for Azure Functions. Invokes HTTP Azure Functions
  */
+@injectable()
 export class AzureFunctionCloudService implements CloudService {
 
   /**
    * Initialize a new Azure Function Cloud Service with the IoC container
    * @param containerResolver IoC container for service resolution
    */
-  public constructor(private containerResolver: ContainerResolver) { }
+  public constructor(@inject(ComponentType.CloudContext) context: CloudContext) {
+    this.containerResolver = context.container;
+  }
+
+  public containerResolver: ContainerResolver;
 
   /**
    *

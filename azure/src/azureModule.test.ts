@@ -1,5 +1,6 @@
 import { AzureModule, AzureContext, AzureRequest, AzureResponse } from ".";
-import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer } from "@multicloud/sls-core";
+import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService } from "@multicloud/sls-core";
+import { AzureFunctionCloudService } from "./services";
 
 describe("Azure Cloud Module", () => {
   const params: any[] = [
@@ -34,6 +35,11 @@ describe("Azure Cloud Module", () => {
       const response = container.resolve<CloudResponse>(ComponentType.CloudResponse);
       expect(response).toBeInstanceOf(AzureResponse);
     });
+
+    it("resolves service", () => {
+      const service = container.resolve<CloudService>(ComponentType.CloudService);
+      expect(service).toBeInstanceOf(AzureFunctionCloudService);
+    });
   });
 
   describe("when non-azure request", () => {
@@ -53,6 +59,10 @@ describe("Azure Cloud Module", () => {
 
     it("does not resolve response", () => {
       expect(container.resolve<CloudContext>(ComponentType.CloudResponse)).toBeNull();
+    });
+
+    it("does not resolve service", () => {
+      expect(container.resolve<CloudService>(ComponentType.CloudService)).toBeNull();
     });
   })
 });

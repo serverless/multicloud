@@ -1,6 +1,7 @@
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType } from "@multicloud/sls-core";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "@multicloud/sls-core";
 import { ContainerModule, interfaces } from "inversify";
 import { AwsContext, AwsRequest, AwsResponse } from ".";
+import { LambdaCloudService } from "./services";
 
 /**
  * AWS Module that can be registered in IoC container
@@ -31,6 +32,10 @@ export class AwsModule implements CloudModule {
 
       bind<CloudResponse>(ComponentType.CloudResponse)
         .to(AwsResponse)
+        .when(this.isAwsRequest);
+
+      bind<CloudService>(ComponentType.CloudService)
+        .to(LambdaCloudService)
         .when(this.isAwsRequest);
     });
   }

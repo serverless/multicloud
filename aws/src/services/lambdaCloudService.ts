@@ -1,5 +1,7 @@
 import AWS from "aws-sdk";
-import { CloudService, ContainerResolver, CloudServiceOptions } from "@multicloud/sls-core";
+import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext } from "@multicloud/sls-core";
+import { ComponentType } from "@multicloud/sls-core";
+import { injectable, inject } from "inversify";
 
 /**
  * Type of invocation for AWS Lambda
@@ -27,8 +29,13 @@ export interface AWSCloudServiceOptions extends CloudServiceOptions {
  * Implementation of Cloud Service for AWS Lambda. Invokes Lambda Functions
  * with exposed HTTP endpoints via API Gateway
  */
+@injectable()
 export class LambdaCloudService implements CloudService {
-  public constructor(private containerResolver: ContainerResolver) { }
+  public constructor(@inject(ComponentType.CloudContext) context: CloudContext) {
+    this.containerResolver = context.container;
+  }
+
+  public containerResolver: ContainerResolver;
 
   /**
    *

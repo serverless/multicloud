@@ -2,6 +2,7 @@ import { Middleware, Handler } from "../app";
 import { CloudContext } from "../cloudContext";
 import { CloudRequest } from "../cloudRequest";
 import { CloudResponse } from "../cloudResponse";
+import { CloudService } from "../services";
 
 export default class MockFactory {
   /**
@@ -74,6 +75,16 @@ export default class MockFactory {
       headers: {},
       send: jest.fn(),
       flush: jest.fn(),
+    };
+  }
+
+  /**
+   * Creates a mock CloudService for use in unit tests
+   * @param headers The HTTP response headers to set
+   */
+  public static createMockCloudService(): CloudService {
+    return {
+      invoke: jest.fn(),
     };
   }
 
