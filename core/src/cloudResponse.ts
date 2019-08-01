@@ -6,6 +6,7 @@ export interface CloudResponse {
   headers?: {
     [key: string]: any;
   };
+
   /**
    * Send response
    * @param body Body of response
@@ -19,3 +20,8 @@ export interface CloudResponse {
    */
   flush: () => void;
 }
+
+/**
+ * Cloud provider response header name.
+ */
+export const CloudProviderResponseHeader = "x-sls-cloud-provider";

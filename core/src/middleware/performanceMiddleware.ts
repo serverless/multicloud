@@ -2,7 +2,14 @@ import { performance, PerformanceObserver } from "perf_hooks";
 import { CloudContext } from "../cloudContext";
 import { ConsoleLogger } from "../services/consoleLogger";
 
+/**
+ * Request ID response header name.
+ */
 export const RequestIdResponseHeader = "x-sls-request-id";
+
+/**
+ * Performance response header name.
+ */
 export const DurationResponseHeader = "x-sls-perf-duration";
 
 /**

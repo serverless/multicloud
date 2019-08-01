@@ -37,3 +37,11 @@ export interface CloudContext {
   /** Flushes the final response to the cloud providers */
   flush: () => void;
 }
+
+/**
+ * Currently supported cloud provider types.
+ */
+export declare enum ProviderType {
+  Azure = "azure",
+  AWS = "aws"
+}
