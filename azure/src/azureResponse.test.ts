@@ -107,12 +107,12 @@ describe("Azure Response", () => {
 
   it("flush() calls runtime callback when non-default output binding has not been defined", () => {
     const azureContext = createAzureContext(defaultParams);
-    const doneSpy = jest.spyOn(azureContext.runtime, "done");
+    const doneSpy = jest.spyOn(azureContext.runtime.context, "done");
 
     azureContext.res.send("OK", 200);
     azureContext.flush();
 
-    expect(azureContext.runtime.res).toEqual({});
+    expect(azureContext.runtime.context.res).toEqual({});
     expect(doneSpy).toBeCalledWith(null, {
       headers: azureContext.res.headers,
       body: azureContext.res.body,
@@ -130,16 +130,16 @@ describe("Azure Response", () => {
     }];
 
     const azureContext = createAzureContext(contextParams);
-    const doneSpy = jest.spyOn(azureContext.runtime, "done");
+    const doneSpy = jest.spyOn(azureContext.runtime.context, "done");
 
     azureContext.res.send("OK", 200);
     azureContext.flush();
 
     expect(doneSpy).not.toBeCalled();
-    expect(azureContext.runtime.res).toEqual({
-      headers: azureContext.runtime.res.headers,
-      body: azureContext.runtime.res.body,
-      status: azureContext.runtime.res.status,
+    expect(azureContext.runtime.context.res).toEqual({
+      headers: azureContext.runtime.context.res.headers,
+      body: azureContext.runtime.context.res.body,
+      status: azureContext.runtime.context.res.status,
     });
   });
 });

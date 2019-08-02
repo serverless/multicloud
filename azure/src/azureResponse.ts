@@ -28,7 +28,7 @@ export class AzureResponse implements CloudResponse {
     @inject(ComponentType.CloudContext) context: AzureContext
   ) {
     this.runtime = context.runtime;
-    this.headers = context.runtime.res.headers || {};
+    this.headers = this.runtime.context.res.headers || {};
   }
 
   /**
@@ -49,16 +49,16 @@ export class AzureResponse implements CloudResponse {
     };
 
     // Find the registered output binding for the function
-    const outputBinding = this.runtime.bindingDefinitions
+    const outputBinding = this.runtime.context.bindingDefinitions
       .find((binding) => binding.direction === "out" && binding.type === "http");
 
     // If an output binding has been defined and it is not the
     // default $return binding then set the "res" on the runtime
     // The Azure functions framework will then set the output bindings to the value of runtime.res
     if (outputBinding && outputBinding.name !== "$return") {
-      this.runtime.res = response;
+      this.runtime.context.res = response;
     } else { // Otherwise call the done callback with the response
-      this.runtime.done(null, response);
+      this.runtime.context.done(null, response);
     }
   }
 }

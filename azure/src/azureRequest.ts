@@ -23,13 +23,13 @@ export class AzureRequest implements CloudRequest {
    * Initialize new Azure Request, injecting Cloud Context
    * @param context Current CloudContext
    */
-  public constructor(
-    @inject(ComponentType.CloudContext) private context: AzureContext
-  ) {
-    this.body = this.context.runtime.req.body || {};
-    this.headers = this.context.runtime.req.headers || {};
-    this.method = this.context.runtime.req.method || "";
-    this.query = this.context.runtime.req.query || {};
-    this.pathParams = this.context.runtime.req.params || {};
+  public constructor(@inject(ComponentType.CloudContext) context: AzureContext) {
+    const req = context.runtime.event || context.runtime.context.req;
+
+    this.body = req.body || {};
+    this.headers = req.headers || {};
+    this.method = req.method || "";
+    this.query = req.query || {};
+    this.pathParams = req.params || {};
   }
 }

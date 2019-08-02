@@ -179,5 +179,17 @@ describe("Azure context", () => {
       expect(context.providerType).not.toBe(expectedMessage);
       expect(context.providerType).toEqual("azure");
     });
+
+    it("Binds CloudContext event to the first incoming binding argument", () => {
+      const runtimeArgs = [
+        {
+          bindingDefinitions: [],
+        },
+        "test message"
+      ];
+
+      const context = new AzureContext(runtimeArgs);
+      expect(context.event).toBe(runtimeArgs[1]);
+    });
   });
 });

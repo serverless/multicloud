@@ -15,9 +15,17 @@ export class AzureContext implements CloudContext {
    * @param args Runtime arguments for Azure function
    */
   public constructor(@inject(ComponentType.RuntimeArgs) private args: any[]) {
-    this.runtime = args[0];
     this.providerType = "azure";
-    this.id = this.runtime.invocationId;
+    this.runtime = {
+      context: args[0],
+      event: args[1]
+    };
+    this.id = this.runtime.context.invocationId;
+
+    // Azure supports multiple input event bindings. Set the first one to the generic event
+    // Other bindings are set dynamically based on the function.json naming conventions.
+    this.event = this.runtime.event;
+
     this.processInputBindings(args);
     this.redirectConsole();
   }
@@ -26,6 +34,8 @@ export class AzureContext implements CloudContext {
   public providerType: string;
   /** Unique identifier for request */
   public id: string;
+  /** The incoming event source */
+  public event: any;
   /** HTTP Request */
   public req: AzureRequest;
   /** HTTP Response */
@@ -67,7 +77,7 @@ export class AzureContext implements CloudContext {
    * @param args The original Azure runtime handler arguments
    */
   private processInputBindings(args: any[]): void {
-    this.runtime.bindingDefinitions
+    this.runtime.context.bindingDefinitions
       .filter((binding) => binding.direction === BindingDirection.In)
       .forEach((binding, index) => {
         if (!this[binding.name]) {
@@ -81,28 +91,28 @@ export class AzureContext implements CloudContext {
     // instead of the usual console logging APIs. This effectively redirects
     // console.* logging calls to use the Azure context.* logging equivalents
     // https://github.com/Azure/azure-functions-host/issues/162
-    if (this.runtime.log && this.runtime.log instanceof Function) {
-      console.log = this.runtime.log;
+    if (this.runtime.context.log && this.runtime.context.log instanceof Function) {
+      console.log = this.runtime.context.log;
     }
 
-    if (this.runtime.info && this.runtime.info instanceof Function) {
-      console.info = this.runtime.info;
+    if (this.runtime.context.info && this.runtime.context.info instanceof Function) {
+      console.info = this.runtime.context.info;
     }
 
-    if (this.runtime.warn && this.runtime.warn instanceof Function) {
-      console.warn = this.runtime.warn;
+    if (this.runtime.context.warn && this.runtime.context.warn instanceof Function) {
+      console.warn = this.runtime.context.warn;
     }
 
-    if (this.runtime.error && this.runtime.error instanceof Function) {
-      console.error = this.runtime.error;
+    if (this.runtime.context.error && this.runtime.context.error instanceof Function) {
+      console.error = this.runtime.context.error;
     }
 
-    if (this.runtime.debug && this.runtime.debug instanceof Function) {
-      console.debug = this.runtime.debug;
+    if (this.runtime.context.debug && this.runtime.context.debug instanceof Function) {
+      console.debug = this.runtime.context.debug;
     }
 
-    if (this.runtime.trace && this.runtime.trace instanceof Function) {
-      console.trace = this.runtime.trace;
+    if (this.runtime.context.trace && this.runtime.context.trace instanceof Function) {
+      console.trace = this.runtime.context.trace;
     }
   }
 
