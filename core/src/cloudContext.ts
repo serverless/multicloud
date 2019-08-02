@@ -51,7 +51,7 @@ export interface CloudContext {
 /**
  * Currently supported cloud provider types.
  */
-export declare enum ProviderType {
+export enum ProviderType {
   Azure = "azure",
   AWS = "aws"
 }
