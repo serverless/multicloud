@@ -9,6 +9,7 @@ import { ensurePromise } from "./common/util";
  */
 export class App {
   private container: CloudContainer;
+  private modules: CloudModule[];
 
   /**
    * Initialize IoC container and register all modules
@@ -18,6 +19,7 @@ export class App {
     Guard.null(modules);
     Guard.expression(modules, (values) => values.length > 0);
 
+    this.modules = modules;
     this.container = new CloudContainer();
     this.container.registerModule(...modules);
   }
@@ -29,15 +31,21 @@ export class App {
    */
   public use(middlewares: Middleware[], handler: Handler): Function {
     return async (...args: any[]) => {
+      // Creates a child IoC container for each request into the app
+      // This allows multiple calls to the container to reuse the same instance
+      // of singleton components such as the `CloudContext`
+      const requestContainer = new CloudContainer(this.container);
+      requestContainer.registerModule(...this.modules)
+
       // Bind the runtime arguments sent in from the cloud provider
       // and register them with the IoC container for used in dependency injection
-      this.container.bind(ComponentType.RuntimeArgs).toConstantValue(args);
+      requestContainer.bind(ComponentType.RuntimeArgs).toConstantValue(args);
 
       // Retrieve the cloud provider specific cloud context based on the
       // IoC container component registrions & constrints
       // Each cloud provider registers constraints based on the incoming runtime arguments
-      const context = this.container.resolve<CloudContext>(ComponentType.CloudContext);
-      context.container = this.container;
+      const context = requestContainer.resolve<CloudContext>(ComponentType.CloudContext);
+      context.container = requestContainer;
       context.done = () => undefined;
 
       let index = 0;

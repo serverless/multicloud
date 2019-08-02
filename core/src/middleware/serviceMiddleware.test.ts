@@ -1,52 +1,30 @@
 import { ServiceMiddleware } from "./serviceMiddleware";
-import { ComponentType, CloudModule, CloudContext, App } from "..";
-import { ContainerModule } from "inversify";
-import MockFactory from "../test/mockFactory";
-import { Handler } from "../app";
-import { CloudService } from "../services";
+import { CloudContext } from "..";
+import { TestModule, TestContext, TestCloudService } from "../test/mocks";
+import { CloudContainer } from "../cloudContainer";
 
 describe("ServiceMiddleware should", () => {
-  const cloudContext = MockFactory.createMockCloudContext(false);
-  const cloudService = MockFactory.createMockCloudService();
-
-  const testModule: CloudModule = {
-    create: () => new ContainerModule((bind) => {
-      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(cloudContext)
-      bind<CloudService>(ComponentType.CloudService).toConstantValue(cloudService);
-    })
-  }
-
-  let app: App;
-  let handler: Handler;
+  let context: CloudContext;
 
   beforeEach(() => {
-    app = new App(testModule);
-    handler = MockFactory.createMockHandler();
+    context = new TestContext();
+
+    const container = new CloudContainer();
+    container.registerModule(new TestModule());
+    context.container = container;
   })
 
-  it("calls next handler", async () => {
-    await app.use([ServiceMiddleware()], handler)();
-
-    expect(handler).toBeCalled();
-  });
-
   it("calls the next middleware in the chain", async () => {
-    const mockMiddleware = MockFactory.createMockMiddleware();
+    const next = jest.fn();
+    await ServiceMiddleware()(context, next);
 
-    await app.use([ServiceMiddleware(), mockMiddleware], handler)();
-    expect(mockMiddleware).toHaveBeenCalled();
-    expect(handler).toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
   });
 
-  it("sets the cloudService", async () => {
-    const testMiddleware = MockFactory.createMockMiddleware(async (context: CloudContext, next: Function) => {
-      expect(context.service).not.toBeNull();
-
-      await next();
-    });
-
-    await app.use([ServiceMiddleware(), testMiddleware], handler)();
-    expect(testMiddleware).toBeCalled();
-    expect(handler).toBeCalled();
+  it("sets the cloudService on the context", async () => {
+    const next = jest.fn();
+    await ServiceMiddleware()(context, next);
+    expect(context.service).toBeInstanceOf(TestCloudService);
+    expect(next).toBeCalled();
   });
 });

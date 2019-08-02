@@ -1,81 +1,24 @@
 import { CloudContainer, CloudModule, ComponentType } from ".";
-
-import { injectable, inject, ContainerModule } from "inversify";
+import { ContainerModule } from "inversify";
 import { CloudContext } from "./cloudContext";
 import { CloudRequest } from "./cloudRequest";
 import { CloudResponse } from "./cloudResponse";
-
-@injectable()
-export class TestCloudContext implements CloudContext {
-  public constructor(@inject("RuntimeArgs") public args: any[]) { }
-
-  public providerType: string = "AzureCustom";
-
-  public send(body: any, statusCode: number) {
-    console.log(statusCode, body);
-  }
-}
-
-@injectable()
-export class TestRequest implements CloudRequest {
-  public constructor(
-    @inject(ComponentType.CloudContext) private context: CloudContext
-  ) { }
-
-  public body?: any;
-  public headers?: { [key: string]: any };
-  public method: string = "POST";
-  public query?: { [key: string]: any };
-}
-
-@injectable()
-export class TestResponse implements CloudResponse {
-  public constructor(
-    @inject(ComponentType.CloudContext) private context: CloudContext
-  ) { }
-  public headers?: { [key: string]: any };
-  public send: (
-    body: any,
-    status: number,
-    callback?: Function
-  ) => void = jest.fn();
-}
-
-const createTestModule = (): CloudModule => {
-  return {
-    create: () => {
-      return new ContainerModule((bind) => {
-        bind<CloudContext>(ComponentType.CloudContext)
-          .to(TestCloudContext)
-          .inSingletonScope();
-
-        bind<CloudRequest>(ComponentType.CloudRequest)
-          .to(TestRequest)
-          .inSingletonScope();
-
-        bind<CloudResponse>(ComponentType.CloudResponse)
-          .to(TestResponse)
-          .inSingletonScope();
-      });
-    }
-  };
-}
+import { TestModule, TestRequest, TestResponse } from "./test/mocks";
 
 describe("Core Module", () => {
-  let sut: CloudContainer = undefined;
-  let context: TestCloudContext = undefined;
+  let cloudContainer: CloudContainer = undefined;
+  let context: CloudContext = undefined;
   const params: any[] = [
     {
+      isHttp: true,
       id: "123"
     }
   ];
   beforeEach(() => {
-    sut = new CloudContainer();
-    sut.bind(ComponentType.RuntimeArgs).toConstantValue(params);
-    sut.registerModule(createTestModule());
-    context = sut.resolve<CloudContext>(
-      ComponentType.CloudContext
-    ) as TestCloudContext;
+    cloudContainer = new CloudContainer();
+    cloudContainer.bind(ComponentType.RuntimeArgs).toConstantValue(params);
+    cloudContainer.registerModule(new TestModule());
+    context = cloudContainer.resolve<CloudContext>(ComponentType.CloudContext);
   });
 
   it("resolves CloudContextProvider", () => {
@@ -83,27 +26,38 @@ describe("Core Module", () => {
   });
 
   it("resolves CloudContext using args in ctor and CloudContextProvider", () => {
-    expect(context.args).toBe(params);
+    expect(context["args"]).toBe(params);
   });
 
   it("resolves request", () => {
-    const request = sut.resolve<CloudRequest>(ComponentType.CloudRequest);
+    const request = cloudContainer.resolve<CloudRequest>(ComponentType.CloudRequest);
 
     expect(request).toBeInstanceOf(TestRequest);
   });
 
   it("resolves response", () => {
-    const response = sut.resolve<CloudResponse>(ComponentType.CloudResponse);
+    const response = cloudContainer.resolve<CloudResponse>(ComponentType.CloudResponse);
 
     expect(response).toBeInstanceOf(TestResponse);
+  });
+
+  it("reuses instances of cloud context", () => {
+    const context1 = cloudContainer.resolve<CloudContext>(ComponentType.CloudContext);
+    context1.container = cloudContainer;
+
+    const context2 = cloudContainer.resolve<CloudContext>(ComponentType.CloudContext);
+
+    expect(context1).not.toBeNull();
+    expect(context2).not.toBeNull();
+    expect(context1).toBe(context2);
   });
 });
 
 describe("Cloud container", () => {
-  let sut: CloudContainer = undefined;
+  let cloudContainer: CloudContainer = undefined;
 
   beforeEach(() => {
-    sut = new CloudContainer();
+    cloudContainer = new CloudContainer();
   });
 
   it("call module init with container", () => {
@@ -115,7 +69,7 @@ describe("Cloud container", () => {
       })
     };
 
-    sut.registerModule(mock);
+    cloudContainer.registerModule(mock);
     expect(mock.create).toHaveBeenCalled();
   });
 
@@ -130,15 +84,15 @@ describe("Cloud container", () => {
       }
     };
 
-    sut.registerModule(mockModule);
-    const result = sut.resolve("test");
+    cloudContainer.registerModule(mockModule);
+    const result = cloudContainer.resolve("test");
     expect(result).toBe(object);
   });
 
   it("fail when empty identifier", () => {
     const err = "service identifier cannot be empty or undefined";
-    expect(() => sut.resolve("")).toThrow(err);
-    expect(() => sut.resolve(undefined)).toThrow(err);
+    expect(() => cloudContainer.resolve("")).toThrow(err);
+    expect(() => cloudContainer.resolve(undefined)).toThrow(err);
   });
 
   it("can rebind component registrations that previously exist", () => {
@@ -147,8 +101,8 @@ describe("Cloud container", () => {
       "arg2",
     ];
 
-    sut.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs1);
-    const result1 = sut.resolve(ComponentType.RuntimeArgs);
+    cloudContainer.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs1);
+    const result1 = cloudContainer.resolve(ComponentType.RuntimeArgs);
 
     expect(result1).toEqual(runtimeArgs1);
 
@@ -158,8 +112,8 @@ describe("Cloud container", () => {
       "arg3",
     ];
 
-    sut.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs2);
-    const result2 = sut.resolve(ComponentType.RuntimeArgs);
+    cloudContainer.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs2);
+    const result2 = cloudContainer.resolve(ComponentType.RuntimeArgs);
 
     expect(result2).toEqual(runtimeArgs2);
   });
@@ -169,5 +123,46 @@ describe("Cloud container", () => {
     const result = container.resolve("unknown");
 
     expect(result).toBeNull();
+  });
+
+  it("resolving between child & parent containers", () => {
+    const runtimeArgs = ["arg1", "arg2"];
+    const testModule = new TestModule();
+
+    const parent = new CloudContainer();
+    parent.registerModule(testModule);
+
+    const child1 = new CloudContainer(parent);
+    const child2 = new CloudContainer(parent);
+    child1.registerModule(testModule);
+    child2.registerModule(testModule);
+
+    child1.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs);
+    child2.bind(ComponentType.RuntimeArgs).toConstantValue(runtimeArgs);
+
+    // Retrieve context from child container 1
+    const context1a = child1.resolve<CloudContext>(ComponentType.CloudContext);
+    const context1b = child1.resolve<CloudContext>(ComponentType.CloudContext);
+
+    // Retrieve context from child container 2
+    const context2a = child2.resolve<CloudContext>(ComponentType.CloudContext);
+    const context2b = child2.resolve<CloudContext>(ComponentType.CloudContext);
+
+    // Retrieve context from parent
+    const context3b = parent.resolve<CloudContext>(ComponentType.CloudContext);
+
+    // Context from same child container are the same
+    expect(context1a).toBe(context1b);
+    expect(context2a).toBe(context2b);
+
+    // Context from another child container are the same
+    expect(context1a).not.toBe(context2a);
+    expect(context1b).not.toBe(context2b);
+
+    // Context resolved from parent container are not the same as any children
+    expect(context1a).not.toBe(context3b);
+    expect(context1b).not.toBe(context3b);
+    expect(context2a).not.toBe(context3b);
+    expect(context2b).not.toBe(context3b);
   });
 });

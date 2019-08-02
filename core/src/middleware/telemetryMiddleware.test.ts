@@ -1,9 +1,9 @@
 import { TelemetryOptions, TelemetryService } from "../services";
-import { CloudContext, App, CloudModule, ComponentType } from "..";
+import { CloudContext, App } from "..";
 import { TelemetryServiceMiddleware } from "./telemetryMiddleware";
 import os from "os";
-import { ContainerModule } from "inversify";
 import MockFactory from "../test/mockFactory";
+import { TestContext, TestModule } from "../test/mocks";
 
 describe("TelemetryServiceMiddleware should", () => {
   jest.mock("os");
@@ -23,30 +23,27 @@ describe("TelemetryServiceMiddleware should", () => {
   os.totalmem = jest.fn().mockReturnValue(1000);
   os.freemem = jest.fn().mockReturnValue(800);
 
-  class Service implements TelemetryService {
-    public collect = jest.fn();
-    public flush = jest.fn();
+  class TestTelemetryService implements TelemetryService {
+    public collect() {
+      return Promise.resolve();
+    }
+
+    public flush() {
+      return Promise.resolve();
+    }
   }
 
-  class Options implements TelemetryOptions {
-    public telemetryService = new Service();
-    public shouldFlush: boolean = true;
-  }
-
-  let options = new Options();
-
-  const testModule: CloudModule = {
-    create: () =>
-      new ContainerModule(bind => {
-        bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-      })
+  const options: TelemetryOptions = {
+    telemetryService: new TestTelemetryService(),
+    shouldFlush: true,
   };
 
-  const context: CloudContext = MockFactory.createMockCloudContext(false);
+  let context: CloudContext;
 
   beforeEach(() => {
     options.shouldFlush = true;
     jest.clearAllMocks();
+    context = new TestContext();
   });
 
   const data = { analytics: "foo" };
@@ -69,33 +66,39 @@ describe("TelemetryServiceMiddleware should", () => {
   });
 
   it("call next and flush methods", async () => {
-    const next = jest.fn();
-    await TelemetryServiceMiddleware(options)(context, next);
-    expect(next).toHaveBeenCalled();
-    expect(context.telemetry.flush).toHaveBeenCalled();
+    const flushSpy = jest.spyOn(TestTelemetryService.prototype, "flush");
+    const handler = MockFactory.createMockHandler();
+    const middlewares = [TelemetryServiceMiddleware(options)];
+
+    const app = new App(new TestModule);
+    await app.use(middlewares, handler)();
+
+    expect(handler).toBeCalled();
+    expect(flushSpy).toHaveBeenCalled();
   });
 
   it("call collect method from another middleware and don't call flush when shouldFlush is false", async () => {
     options.shouldFlush = false;
 
-    const app = new App(testModule);
-    await app.use(
-      [TelemetryServiceMiddleware(options), middlewareFoo()],
-      handler
-    )(context);
+    const collectSpy = jest.spyOn(TestTelemetryService.prototype, "collect");
+    const flushSpy = jest.spyOn(TestTelemetryService.prototype, "flush");
+    const app = new App(new TestModule());
+    const middlewares = [TelemetryServiceMiddleware(options), middlewareFoo()];
+    await app.use(middlewares, handler)(context);
 
-    expect(context.telemetry.collect).toHaveBeenCalledWith(fooKey, data);
-    expect(context.telemetry.flush).not.toHaveBeenCalled();
+    expect(collectSpy).toHaveBeenCalledWith(fooKey, data);
+    expect(flushSpy).not.toHaveBeenCalled();
   });
 
   it("call collect method from another middleware and flush when shouldFlush is true", async () => {
-    const sut = new App(testModule);
-    await sut.use(
-      [TelemetryServiceMiddleware(options), middlewareFoo()],
-      handler
-    )(context);
-    expect(context.telemetry.collect).toHaveBeenCalledWith(fooKey, data);
-    expect(context.telemetry.flush).toHaveBeenCalled();
+    const collectSpy = jest.spyOn(TestTelemetryService.prototype, "collect");
+    const flushSpy = jest.spyOn(TestTelemetryService.prototype, "flush");
+    const app = new App(new TestModule());
+    const middlewares = [TelemetryServiceMiddleware(options), middlewareFoo()];
+    await app.use(middlewares, handler)(context);
+
+    expect(collectSpy).toHaveBeenCalledWith(fooKey, data);
+    expect(flushSpy).toHaveBeenCalled();
   });
 
   it("have values on the data array of the implementation", async () => {
@@ -125,7 +128,7 @@ describe("TelemetryServiceMiddleware should", () => {
 
   it("call context.telemetry.collect with the stats", async () => {
     class TestService implements TelemetryService {
-      public analyticsData = {};
+      public analyticsData: any = {};
 
       public collect = (key: string, data: object) => {
         this.analyticsData[key] = data;

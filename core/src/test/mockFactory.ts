@@ -1,8 +1,5 @@
 import { Middleware, Handler } from "../app";
 import { CloudContext } from "../cloudContext";
-import { CloudRequest } from "../cloudRequest";
-import { CloudResponse } from "../cloudResponse";
-import { CloudService } from "../services";
 
 export default class MockFactory {
   /**
@@ -37,56 +34,6 @@ export default class MockFactory {
     return jest.fn((context: CloudContext) => {
       return spy(context);
     });
-  }
-
-  /**
-   * Creates a mock CloudContext to use in unit tests
-   */
-  public static createMockCloudContext(createHttpComponents: boolean = true): CloudContext {
-    const context: CloudContext = {
-      providerType: "providerType",
-      id: "12345",
-      event: null,
-      req: createHttpComponents ? MockFactory.createMockCloudRequest() : null,
-      res: createHttpComponents ? MockFactory.createMockCloudResponse() : null,
-      send: jest.fn(() => context.done()),
-      done: null,
-      flush: jest.fn(),
-    };
-
-    return context;
-  }
-
-  /**
-   * Creates a mock CloudRequest for use in unit tests
-   * @param method The HTTP method
-   */
-  public static createMockCloudRequest(method: string = "GET"): CloudRequest {
-    return {
-      method,
-    };
-  }
-
-  /**
-   * Creates a mock CloudResponse for use in unit tests
-   * @param headers The HTTP response headers to set
-   */
-  public static createMockCloudResponse(headers = {}): CloudResponse {
-    return {
-      headers,
-      send: jest.fn(),
-      flush: jest.fn(),
-    };
-  }
-
-  /**
-   * Creates a mock CloudService for use in unit tests
-   * @param headers The HTTP response headers to set
-   */
-  public static createMockCloudService(): CloudService {
-    return {
-      invoke: jest.fn(),
-    };
   }
 
   /**

@@ -1,32 +1,15 @@
 import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
-import { ComponentType, CloudModule, CloudContext, CloudRequest, CloudResponse, App } from "..";
-import { ContainerModule, interfaces } from "inversify";
+import { CloudContext, App } from "..";
 import MockFactory from "../test/mockFactory";
 import { Handler } from "../app";
+import { TestModule } from "../test/mocks";
 
 describe("HTTPBindingMiddleware should", () => {
-  const cloudContext = MockFactory.createMockCloudContext(false);
-  const cloudRequest = MockFactory.createMockCloudRequest();
-  const cloudResponse = MockFactory.createMockCloudResponse();
-
-  function isHttpRequest(req: interfaces.Request) {
-    const runtimeArgs = req.parentContext.container.get(ComponentType.RuntimeArgs);
-    return runtimeArgs && runtimeArgs[0].isHttp;
-  }
-
-  const testModule: CloudModule = {
-    create: () => new ContainerModule((bind) => {
-      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(cloudContext)
-      bind<CloudRequest>(ComponentType.CloudRequest).toConstantValue(cloudRequest).when(isHttpRequest);
-      bind<CloudResponse>(ComponentType.CloudResponse).toConstantValue(cloudResponse).when(isHttpRequest);
-    })
-  }
-
   let app: App;
   let handler: Handler;
 
   beforeEach(() => {
-    app = new App(testModule);
+    app = new App(new TestModule());
     handler = MockFactory.createMockHandler();
   })
 

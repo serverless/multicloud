@@ -20,20 +20,23 @@ export const DurationResponseHeader = "x-sls-perf-duration";
 export const PerformanceMiddleware = () =>
   async (context: CloudContext, next: Function): Promise<void> => {
     // NOTE: if the context provides a logger, use it, otherwise use the default console logger
-    const logger = (context.logger) ? context.logger : new ConsoleLogger();
+    const logger = context.logger ? context.logger : new ConsoleLogger();
     const start = `Function Start: ${context.id}`;
     const end = `Function End: ${context.id}`;
 
     try {
-      const observer = new PerformanceObserver((list, observer) => {
+      const observer = new PerformanceObserver((list, innerObserver) => {
         const perfEntries = list.getEntriesByName(context.id);
         if (perfEntries && perfEntries.length) {
           const entry = perfEntries[0];
           logger.info(`Function End, Request ID: ${context.id}, took ${entry.duration}ms`);
-          context.res.headers[RequestIdResponseHeader] = context.id;
-          context.res.headers[DurationResponseHeader] = entry.duration.toString();
+
+          if (context.res) {
+            context.res.headers[RequestIdResponseHeader] = context.id;
+            context.res.headers[DurationResponseHeader] = entry.duration.toString();
+          }
         }
-        observer.disconnect();
+        innerObserver.disconnect();
       });
 
       // fire performance observer events for all measure calls

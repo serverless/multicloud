@@ -3,9 +3,10 @@ import { Logger, LogLevel } from "../services"
 import { App, CloudContext, CloudModule, ComponentType } from "..";
 import { ContainerModule } from "inversify";
 import MockFactory from "../test/mockFactory";
+import { TestContext } from "../test/mocks";
 
 describe("requestLoggingServiceMiddleware should", () => {
-  class LoggerConsole implements Logger {
+  class TestLogger implements Logger {
     public constructor(logLevel: LogLevel) {
       this.logLevel = logLevel;
     }
@@ -13,20 +14,23 @@ describe("requestLoggingServiceMiddleware should", () => {
     public logLevel: LogLevel;
     public log = jest.fn();
     public info = jest.fn();
-    public warn = jest.fn();
     public error = jest.fn();
+    public warn = jest.fn();
+    public debug = jest.fn();
+    public trace = jest.fn();
   }
 
-  class SpecificLoggingOptions implements LoggingOptions {
-    public logger = new LoggerConsole(LogLevel.LOG);
-    public handlerName = "GET cartAPI";
+  const loggingOptions: LoggingOptions = {
+    logger: new TestLogger(LogLevel.VERBOSE),
+    handlerName: "GET myAPI",
   }
 
   const handler = MockFactory.createMockHandler();
-  const context = MockFactory.createMockCloudContext();
+  let context;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    context = new TestContext();
   });
 
   const testModule: CloudModule = {
@@ -37,7 +41,6 @@ describe("requestLoggingServiceMiddleware should", () => {
 
   it("should call log twice with provided messages", async () => {
     const next = jest.fn();
-    const loggingOptions = new SpecificLoggingOptions()
     await RequestLoggingMiddleware(loggingOptions)(context, next);
     expect(loggingOptions.logger.log).toBeCalledTimes(2);
     expect(loggingOptions.logger.log).toHaveBeenNthCalledWith(1, `Starting request for handler: ${loggingOptions.handlerName}`);
@@ -46,7 +49,7 @@ describe("requestLoggingServiceMiddleware should", () => {
 
   it("call next middleware", async () => {
     const next = jest.fn();
-    await RequestLoggingMiddleware(new SpecificLoggingOptions())(context, next);
+    await RequestLoggingMiddleware(loggingOptions)(context, next);
     expect(next).toHaveBeenCalled();
   });
 
@@ -54,7 +57,7 @@ describe("requestLoggingServiceMiddleware should", () => {
     const mockMiddleware = MockFactory.createMockMiddleware();
 
     const sut = new App(testModule);
-    await sut.use([RequestLoggingMiddleware(new SpecificLoggingOptions()), mockMiddleware], handler)();
+    await sut.use([RequestLoggingMiddleware(loggingOptions), mockMiddleware], handler)();
     expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
   });

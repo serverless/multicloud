@@ -1,7 +1,7 @@
-import { CloudContext, App, CloudModule, ComponentType } from "..";
+import { App } from "..";
 import { ExceptionMiddleware, ExceptionOptions } from "../middleware";
-import { ContainerModule } from "inversify";
 import MockFactory from "../test/mockFactory";
+import { TestModule, TestContext } from "../test/mocks";
 
 describe("Tests of ExceptionMiddleware should", () => {
   let options: ExceptionOptions = {
@@ -9,13 +9,6 @@ describe("Tests of ExceptionMiddleware should", () => {
   };
 
   const handler = MockFactory.createMockHandler();
-  const context = MockFactory.createMockCloudContext();
-  const testModule: CloudModule = {
-    create: () => new ContainerModule((bind) => {
-      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-    })
-  }
-
   const errorStatus = 500;
 
   beforeEach(() => {
@@ -29,14 +22,15 @@ describe("Tests of ExceptionMiddleware should", () => {
     const failHandler = MockFactory.createMockHandler(() => {
       throw error;
     });
-
-    const app = new App(testModule);
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
+    const app = new App(new TestModule());
     await app.use([ExceptionMiddleware(options)], failHandler)();
     expect(options.log).toHaveBeenCalledWith(error);
-    expect(context.send).toHaveBeenCalledWith(error, errorStatus);
+    expect(sendSpy).toHaveBeenCalledWith(error, errorStatus);
   });
 
   it("call next without calling exception or logging", async () => {
+    const context = new TestContext();
     const next = jest.fn(() => Promise.resolve());
     await ExceptionMiddleware(options)(context, next);
     expect(next).toHaveBeenCalled();
@@ -47,7 +41,7 @@ describe("Tests of ExceptionMiddleware should", () => {
   it("call next middleware after exceptionMiddleware using App", async () => {
     const mockMiddleware = MockFactory.createMockMiddleware();
 
-    const app = new App(testModule);
+    const app = new App(new TestModule());
     await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
     expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
@@ -62,14 +56,16 @@ describe("Tests of ExceptionMiddleware should", () => {
     };
     const mockMiddleware = MockFactory.createMockMiddleware(failNext);
 
-    const app = new App(testModule);
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
+    const app = new App(new TestModule());
     await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
-    expect(context.send).toHaveBeenCalledWith(error, errorStatus);
+    expect(sendSpy).toHaveBeenCalledWith(error, errorStatus);
     expect(options.log).toHaveBeenCalledWith(error);
   });
 
   it("catches and logs errors when promise is rejected in handler", async () => {
-    const app = new App(testModule);
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
+    const app = new App(new TestModule());
     const errorMessage = "promise rejected";
     const failHandler = MockFactory.createMockHandler(() => {
       return Promise.reject(errorMessage);
@@ -77,12 +73,13 @@ describe("Tests of ExceptionMiddleware should", () => {
 
     await app.use([ExceptionMiddleware(options)], failHandler)();
 
-    expect(context.send).toBeCalledWith(errorMessage, 500);
+    expect(sendSpy).toBeCalledWith(errorMessage, 500);
     expect(options.log).toBeCalledWith(errorMessage);
   });
 
   it("catches and logs error when promise is rejected in other middleware", async () => {
-    const app = new App(testModule);
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
+    const app = new App(new TestModule());
     const errorMessage = "promise rejected";
     const handler = MockFactory.createMockHandler();
     const failMiddleware = MockFactory.createMockMiddleware(() => {
@@ -91,7 +88,7 @@ describe("Tests of ExceptionMiddleware should", () => {
 
     await app.use([ExceptionMiddleware(options), failMiddleware], handler)();
 
-    expect(context.send).toBeCalledWith(errorMessage, 500);
+    expect(sendSpy).toBeCalledWith(errorMessage, 500);
     expect(options.log).toBeCalledWith(errorMessage);
   });
 });

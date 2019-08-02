@@ -1,31 +1,29 @@
-import { ContainerModule } from "inversify";
-import { CloudContext, App, CloudModule, ComponentType } from "..";
 import {
   PerformanceMiddleware,
   RequestIdResponseHeader,
   DurationResponseHeader
 } from "../middleware";
-import { ConsoleLogger } from "../services/consoleLogger";
-import MockFactory from "../test/mockFactory";
+import { TestContext, TestResponse } from "../test/mocks";
+import { ConsoleLogger } from "../services";
 
 describe("PerformanceMiddleware should", () => {
-  const handler = MockFactory.createMockHandler();
-  const context = MockFactory.createMockCloudContext();
-  const consoleLogger = new ConsoleLogger();
-  consoleLogger.info = jest.fn();
-  context.logger = consoleLogger;
-  const testModule: CloudModule = {
-    create: () => new ContainerModule((bind) => {
-      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-    })
-  }
+  let context;
+
+  beforeEach(() => {
+    context = new TestContext();
+    context.res = new TestResponse(context);
+    context.logger = new ConsoleLogger();
+    context.logger.info = jest.fn();
+  })
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("collect and log performance metrics", async () => {
-    await PerformanceMiddleware()(context, () => { });
+    const next = jest.fn();
+    await PerformanceMiddleware()(context, next);
+
     expect(context.logger.info).toBeCalledTimes(2);
     expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
     expect(context.res.headers[DurationResponseHeader]).toBeDefined();
@@ -43,12 +41,10 @@ describe("PerformanceMiddleware should", () => {
   });
 
   it("call the next middleware when using App", async () => {
-    const mockMiddleware = MockFactory.createMockMiddleware();
+    const next = jest.fn();
+    await PerformanceMiddleware()(context, next);
 
-    const app = new App(testModule);
-    await app.use([PerformanceMiddleware(), mockMiddleware], handler)();
-    expect(mockMiddleware).toHaveBeenCalled();
-    expect(handler).toHaveBeenCalled();
+    expect(next).toBeCalled();
     expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
     expect(context.res.headers[DurationResponseHeader]).toBeDefined();
   });

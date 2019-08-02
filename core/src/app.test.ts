@@ -1,8 +1,7 @@
 import { App } from "./app";
 import { CloudContext } from "./cloudContext";
-import { CloudModule, ComponentType } from ".";
-import { ContainerModule } from "inversify";
 import MockFactory from "./test/mockFactory"
+import { TestModule, TestContext } from "./test/mocks";
 
 const errorMiddleware = (spy: Function) => async (
   context: CloudContext
@@ -12,13 +11,6 @@ const errorMiddleware = (spy: Function) => async (
 };
 
 const handler = MockFactory.createMockHandler();
-const context: CloudContext = MockFactory.createMockCloudContext(false);
-
-const testModule: CloudModule = {
-  create: () => new ContainerModule((bind) => {
-    bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-  })
-}
 
 describe("App", () => {
   beforeEach(() => {
@@ -28,21 +20,21 @@ describe("App", () => {
   it("when use start middleware chain", async () => {
     const mockMiddleware = MockFactory.createMockMiddleware();
 
-    const app = new App(testModule);
+    const app = new App(new TestModule());
     await app.use([mockMiddleware], handler)();
     expect(mockMiddleware).toBeCalled();
     expect(handler).toBeCalled();
   });
 
   it("when empty middlewares call handler", async () => {
-    const app = new App(testModule);
+    const app = new App(new TestModule());
     await app.use([], handler)();
     expect(handler).toBeCalled();
   });
 
   it("not call handler when middleware complete execution", async () => {
     const spyError = jest.fn();
-    const app = new App(testModule);
+    const app = new App(new TestModule());
 
     await app.use([errorMiddleware(spyError)], handler)();
     expect(spyError).toBeCalled();
@@ -50,7 +42,7 @@ describe("App", () => {
   });
 
   it("can accept multiple requests and rebind arguments", async () => {
-    const app = new App(testModule);
+    const app = new App(new TestModule());
     const runtimeArgs1 = [
       "arg1",
       "arg2",
@@ -69,9 +61,9 @@ describe("App", () => {
   });
 
   it("handler can run with callbacks", async () => {
-    const sendSpy = jest.spyOn(context, "send");
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
     const spy = jest.fn();
-    const app = new App(testModule);
+    const app = new App(new TestModule());
 
     const handler = (context: CloudContext) => {
       MockFactory.simulateCallback(null, () => {
@@ -88,9 +80,9 @@ describe("App", () => {
   });
 
   it("handler can run with promises", async () => {
-    const sendSpy = jest.spyOn(context, "send");
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
     const spy = jest.fn();
-    const app = new App(testModule);
+    const app = new App(new TestModule());
 
     const handler = async (context: CloudContext) => {
       await MockFactory.simulatePromise();
@@ -105,9 +97,9 @@ describe("App", () => {
   });
 
   it("handler can run and return void", async () => {
-    const sendSpy = jest.spyOn(context, "send");
+    const sendSpy = jest.spyOn(TestContext.prototype, "send");
     const spy = jest.fn();
-    const app = new App(testModule);
+    const app = new App(new TestModule());
 
     const handler = async (context: CloudContext) => {
       spy();
@@ -120,7 +112,7 @@ describe("App", () => {
   });
 
   it("unwraps all post-middleware calls successfully", async () => {
-    const app = new App(testModule);
+    const app = new App(new TestModule());
     const handler = MockFactory.createMockHandler();
     const postHandlerSpy = jest.fn();
 
@@ -135,7 +127,8 @@ describe("App", () => {
   });
 
   it("ensure context.flush() is always called even if error occurred", async () => {
-    const app = new App(testModule);
+    const flushSpy = jest.spyOn(TestContext.prototype, "flush");
+    const app = new App(new TestModule());
     const middleware = MockFactory.createMockMiddleware(() => { throw new Error("Ooops!") });
     const handler = MockFactory.createMockHandler();
 
@@ -146,6 +139,30 @@ describe("App", () => {
       // Unhandled error since no exception middleware in this test
     }
 
-    expect(context.flush).toBeCalled();
+    expect(flushSpy).toBeCalled();
+  });
+
+  it("multiple requests to same handler get unique instance of context", async () => {
+    const requestCount = 10;
+    const app = new App(new TestModule());
+    const contextInstances: CloudContext[] = [];
+
+    const handler = (context: CloudContext) => {
+      contextInstances.push(context);
+      context.done();
+    }
+
+    for (let i = 0; i < requestCount; i++) {
+      await app.use([], handler)();
+    }
+
+    expect(contextInstances).toHaveLength(requestCount);
+
+    for (let i = 0; i < requestCount; i++) {
+      const current = contextInstances[i];
+      const next = contextInstances[i + 1];
+
+      expect(current).not.toBe(next);
+    }
   });
 });

@@ -1,8 +1,7 @@
 import { LoggingServiceMiddleware } from "./loggingServiceMiddleware";
 import { Logger, LogLevel, ConsoleLogger } from "../services";
-import { App, CloudContext, CloudModule, ComponentType } from "..";
-import { ContainerModule } from "inversify";
-import MockFactory from "../test/mockFactory";
+import { CloudContext } from "..";
+import { TestContext } from "../test/mocks";
 
 describe("LoggingServiceMiddleware should", () => {
   class TestLogger implements Logger {
@@ -15,20 +14,15 @@ describe("LoggingServiceMiddleware should", () => {
     public info = jest.fn();
     public error = jest.fn();
     public warn = jest.fn();
+    public debug = jest.fn();
+    public trace = jest.fn();
   }
 
-  const handler = MockFactory.createMockHandler();
-  const context = MockFactory.createMockCloudContext();
-
-  const testModule: CloudModule = {
-    create: () => new ContainerModule((bind) => {
-      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-    })
-  }
-
-  const logger = new TestLogger(LogLevel.LOG);
+  let context: CloudContext;
+  const logger = new TestLogger(LogLevel.VERBOSE);
 
   beforeEach(() => {
+    context = new TestContext();
     jest.clearAllMocks();
   });
 
@@ -51,24 +45,9 @@ describe("LoggingServiceMiddleware should", () => {
   });
 
   it("save the logger in context and be used from the next middleware", async () => {
-    const app = new App(testModule);
-    const middlewareSpy = jest.fn(async (context: CloudContext, next: () => Promise<void>) => {
-      context.logger.log("test message");
-      await next();
-    });
-    const mockMiddleware = MockFactory.createMockMiddleware(middlewareSpy);
-    await app.use([LoggingServiceMiddleware(logger), mockMiddleware], handler)();
-
+    const next = jest.fn();
+    await LoggingServiceMiddleware(logger)(context, next);
     expect(context.logger).toEqual(logger);
-    expect(context.logger.log).toBeCalledWith("test message");
-    expect(handler).toBeCalled();
-  });
-
-  it("save the logger in the middleware after the execution of the first middleware", async () => {
-    const app = new App(testModule);
-    const mockMiddleware = MockFactory.createMockMiddleware();
-    expect(app.use([mockMiddleware, LoggingServiceMiddleware(logger)], handler)())
-      .rejects
-      .toThrow(TypeError);
+    expect(next).toBeCalled();
   });
 });

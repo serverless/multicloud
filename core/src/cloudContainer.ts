@@ -63,6 +63,12 @@ export enum ComponentType {
 export class CloudContainer implements ContainerResolver, ContainerRegister, ContainerBind {
   private container: Container = new Container();
 
+  public constructor(private parent?: CloudContainer) {
+    if (this.parent) {
+      this.container.parent = parent.container;
+    }
+  }
+
   /**
    * Register modules within container
    * @param modules Array of modules to register within container

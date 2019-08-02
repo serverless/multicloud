@@ -4,7 +4,8 @@ import {
   ValidationOptions,
   ValidationResult
 } from "./validationMiddleware";
-import MockFactory from "../test/mockFactory";
+import { TestContext } from "../test/mocks";
+import { CloudContext } from "../cloudContext";
 
 describe("Validation Middleware", () => {
   const successValidation: ValidationResult = {
@@ -23,12 +24,13 @@ describe("Validation Middleware", () => {
     validate: jest.fn()
   };
 
-  const context = MockFactory.createMockCloudContext();
+  let context: CloudContext;
 
   let middleware: Middleware = undefined;
   beforeEach(() => {
     jest.clearAllMocks();
     middleware = createValidationMiddleware(options);
+    context = new TestContext();
   });
 
   it("call validate", async () => {
