@@ -1,3 +1,4 @@
+import { ProviderType, CloudProviderResponseHeader } from "@multicloud/sls-core";
 import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 describe("Azure Response", () => {
@@ -84,8 +85,10 @@ describe("Azure Response", () => {
   it("should have headers value empty object", () => {
     const azureContext = createAzureContext(defaultParams);
     azureContext.res.headers["Content-Type"] = "application/json";
+    let expectedHeaders = { "Content-Type": "application/json" };
+    expectedHeaders[CloudProviderResponseHeader] = ProviderType.Azure;
 
-    expect(azureContext.res.headers).toEqual({ "Content-Type": "application/json" });
+    expect(azureContext.res.headers).toEqual(expectedHeaders);
   });
 
   it("should create res object", () => {
@@ -100,6 +103,7 @@ describe("Azure Response", () => {
     const azureContext = createAzureContext(defaultParams);
 
     azureContext.res.headers["Content-Type"] = "application/json";
+    azureContext.res.headers[CloudProviderResponseHeader] = ProviderType.Azure;
     azureContext.res.send({});
 
     expect(azureContext.res).toMatchObject(expectedObject);

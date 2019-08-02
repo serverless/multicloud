@@ -1,6 +1,10 @@
 import "reflect-metadata";
 import { inject, injectable } from "inversify";
-import { CloudResponse, ComponentType } from "@multicloud/sls-core";
+import {
+  CloudResponse,
+  ComponentType,
+  ProviderType,
+  CloudProviderResponseHeader } from "@multicloud/sls-core";
 import { AzureContext } from "./azureContext";
 
 /**
@@ -29,6 +33,7 @@ export class AzureResponse implements CloudResponse {
   ) {
     this.runtime = context.runtime;
     this.headers = this.runtime.context.res.headers || {};
+    this.headers[CloudProviderResponseHeader] = ProviderType.Azure;
   }
 
   /**
