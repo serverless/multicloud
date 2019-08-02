@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { AwsRequest, AwsResponse } from ".";
 import { CloudContext, ComponentType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
+import { AwsLambdaRuntime } from "./models/awsLamda";
 
 /**
  * Implementation of Cloud Context for AWS Lambda
@@ -23,22 +24,23 @@ export class AwsContext implements CloudContext {
     };
 
     this.id = this.runtime.context.awsRequestId;
+
+    // AWS has a single incoming event source
+    this.event = this.runtime.event;
   }
 
   /** "aws" */
   public providerType: string;
   /** Unique identifier for request */
   public id: string;
+  /** The incoming event source */
+  public event: any;
   /** HTTP Request */
   public req: AwsRequest;
   /** HTTP Response */
   public res: AwsResponse;
   /** Original runtime arguments for AWS Lambda */
-  public runtime: {
-    event: any;
-    context: any;
-    callback: Function;
-  };
+  public runtime: AwsLambdaRuntime;
   /** Signals to the framework that the request is complete */
   public done: () => void;
 

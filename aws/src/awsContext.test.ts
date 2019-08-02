@@ -59,4 +59,9 @@ describe("AWS context", () => {
 
     expect(flushSpy).toBeCalled();
   });
+
+  it("binds event property to incoming event argument", () => {
+    const context = createAwsContext(awsEvent, awsContext);
+    expect(context.event).toBe(awsEvent);
+  });
 });
