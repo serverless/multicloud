@@ -1,3 +1,4 @@
+import { ProviderType, CloudProviderResponseHeader } from "@multicloud/sls-core";
 import { AwsContext, AwsResponse } from ".";
 
 describe("test of response", () => {
@@ -8,7 +9,7 @@ describe("test of response", () => {
   it("should have headers value empty object", async () => {
     const emptyAWSEvent = {};
     const sut = new AwsResponse(new AwsContext([emptyAWSEvent, context, null]));
-    expect(sut.headers).toEqual({});
+    expect(sut.headers[CloudProviderResponseHeader]).toEqual(ProviderType.AWS);
   });
 
   it("send() should set response body & status", async () => {
@@ -21,6 +22,7 @@ describe("test of response", () => {
     response.headers["Content-Type"] = "application/json";
     response.send(httpBody, httpStatus);
 
+    expect(response.headers[CloudProviderResponseHeader]).toEqual(ProviderType.AWS);
     expect(response.body).toEqual(httpBody);
     expect(response.status).toEqual(httpStatus);
   });

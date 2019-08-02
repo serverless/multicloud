@@ -1,5 +1,9 @@
 import "reflect-metadata";
-import { CloudResponse, ComponentType } from "@multicloud/sls-core";
+import {
+  CloudResponse,
+  ComponentType,
+  ProviderType,
+  CloudProviderResponseHeader } from "@multicloud/sls-core";
 import { AwsContext } from ".";
 import { injectable, inject } from "inversify";
 
@@ -26,6 +30,7 @@ export class AwsResponse implements CloudResponse {
    */
   public constructor(@inject(ComponentType.CloudContext) context: AwsContext) {
     this.headers = {};
+    this.headers[CloudProviderResponseHeader] = ProviderType.AWS;
     this.callback = context.runtime.callback;
   }
 
