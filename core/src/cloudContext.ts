@@ -7,6 +7,14 @@ import { TelemetryService } from "./services/telemetry";
 import { CloudContainer } from "./cloudContainer";
 
 /**
+ * Cloud Provider Runtime
+ */
+export interface CloudProviderRuntime {
+  context: any;
+  event: any;
+}
+
+/**
  * Common context for Serverless functions
  */
 export interface CloudContext {
@@ -14,6 +22,8 @@ export interface CloudContext {
   providerType: string;
   /** Request ID */
   id: string;
+  /** Incoming request */
+  event: any;
   /** Container for Cloud Services */
   container?: CloudContainer;
   /** Common Request for Serverless Functions */
@@ -27,7 +37,7 @@ export interface CloudContext {
   /** Invocation Service */
   service?: CloudService;
   /** Original cloud-specific event context */
-  runtime?: any;
+  runtime?: CloudProviderRuntime;
   /** Telemetry Service */
   telemetry?: TelemetryService;
   /** Send response */

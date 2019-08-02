@@ -46,6 +46,7 @@ export default class MockFactory {
     const context: CloudContext = {
       providerType: "providerType",
       id: "12345",
+      event: null,
       req: createHttpComponents ? MockFactory.createMockCloudRequest() : null,
       res: createHttpComponents ? MockFactory.createMockCloudResponse() : null,
       send: jest.fn(() => context.done()),
@@ -72,7 +73,7 @@ export default class MockFactory {
    */
   public static createMockCloudResponse(headers = {}): CloudResponse {
     return {
-      headers: {},
+      headers,
       send: jest.fn(),
       flush: jest.fn(),
     };
