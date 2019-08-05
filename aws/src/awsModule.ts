@@ -1,6 +1,6 @@
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "@multicloud/sls-core";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudStorage, CloudService } from "@multicloud/sls-core";
 import { ContainerModule, interfaces } from "inversify";
-import { AwsContext, AwsRequest, AwsResponse } from ".";
+import { AwsContext, AwsRequest, AwsResponse, S3Storage } from ".";
 import { LambdaCloudService } from "./services";
 
 /**
@@ -36,6 +36,10 @@ export class AwsModule implements CloudModule {
 
       bind<CloudService>(ComponentType.CloudService)
         .to(LambdaCloudService)
+        .when(this.isAwsRequest);
+
+      bind<CloudStorage>(ComponentType.CloudStorage)
+        .to(S3Storage)
         .when(this.isAwsRequest);
     });
   }

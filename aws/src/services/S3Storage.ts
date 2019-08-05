@@ -1,10 +1,13 @@
 import AWS from "aws-sdk";
 import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
 import { Stream } from "stream";
+import { injectable } from "inversify";
+import "reflect-metadata";
 
 /**
  * Implementation of CloudStorage for AWS S3 Storage
  */
+@injectable()
 export class S3Storage implements CloudStorage {
 
   private s3: AWS.S3;
