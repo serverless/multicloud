@@ -24,6 +24,7 @@ export class AwsModule implements CloudModule {
     return new ContainerModule((bind) => {
       bind<CloudContext>(ComponentType.CloudContext)
         .to(AwsContext)
+        .inSingletonScope()
         .when(this.isAwsRequest);
 
       bind<CloudRequest>(ComponentType.CloudRequest)

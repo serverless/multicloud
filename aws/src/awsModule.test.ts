@@ -1,5 +1,5 @@
 import { AwsModule, AwsContext, AwsRequest, AwsResponse, S3Storage } from ".";
-import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudStorage, CloudService } from "@multicloud/sls-core";
+import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudStorage, CloudService, App } from "@multicloud/sls-core";
 import { LambdaCloudService } from "./services";
 
 describe("Aws Cloud Module", () => {
@@ -18,10 +18,31 @@ describe("Aws Cloud Module", () => {
       container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
     });
 
-    it("resolves context", () => {
-      const context = container.resolve<CloudContext>(ComponentType.CloudContext);
-      expect(context).toBeInstanceOf(AwsContext);
-      expect(context.providerType).toBe("aws");
+    it("resolves context as singleton", () => {
+      const context1 = container.resolve<CloudContext>(ComponentType.CloudContext);
+      const context2 = container.resolve<CloudContext>(ComponentType.CloudContext);
+
+      expect(context1).toBeInstanceOf(AwsContext);
+      expect(context1.providerType).toBe("aws");
+      expect(context1).toBe(context2);
+    });
+
+    it("Resolves new context per request", async () => {
+      const requestCount = 2;
+      const contextInstances: AwsContext[] = [];
+      const app = new App(new AwsModule());
+
+      const handler = (context: AwsContext) => {
+        contextInstances.push(context);
+        context.done();
+      };
+
+      for (var i = 0; i < 2; i++) {
+        await app.use([], handler)(...params);
+      }
+
+      expect(contextInstances).toHaveLength(requestCount);
+      expect(contextInstances[0]).not.toBe(contextInstances[1]);
     });
 
     it("resolves request", () => {
