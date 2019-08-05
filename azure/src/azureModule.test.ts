@@ -1,5 +1,5 @@
 import { AzureModule, AzureContext, AzureRequest, AzureResponse, AzureBlobStorage } from ".";
-import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService, CloudStorage } from "@multicloud/sls-core";
+import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService, CloudStorage, App } from "@multicloud/sls-core";
 import { AzureFunctionCloudService } from "./services";
 import { StorageURL, SharedKeyCredential } from "@azure/storage-blob";
 
@@ -23,10 +23,31 @@ describe("Azure Cloud Module", () => {
       container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
     });
 
-    it("resolves context", () => {
-      const context = container.resolve<CloudContext>(ComponentType.CloudContext);
-      expect(context).toBeInstanceOf(AzureContext);
-      expect(context.providerType).toBe("azure");
+    it("resolves context as singleton", () => {
+      const context1 = container.resolve<CloudContext>(ComponentType.CloudContext);
+      const context2 = container.resolve<CloudContext>(ComponentType.CloudContext);
+
+      expect(context1).toBeInstanceOf(AzureContext);
+      expect(context1.providerType).toBe("azure");
+      expect(context1).toBe(context2);
+    });
+
+    it("Resolves new context per request", async () => {
+      const requestCount = 2;
+      const contextInstances: AzureContext[] = [];
+      const app = new App(new AzureModule());
+
+      const handler = (context: AzureContext) => {
+        contextInstances.push(context);
+        context.done();
+      };
+
+      for (var i = 0; i < 2; i++) {
+        await app.use([], handler)(...params);
+      }
+
+      expect(contextInstances).toHaveLength(requestCount);
+      expect(contextInstances[0]).not.toBe(contextInstances[1]);
     });
 
     it("resolves request", () => {

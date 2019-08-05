@@ -24,6 +24,7 @@ export class AzureModule implements CloudModule {
     return new ContainerModule((bind) => {
       bind<CloudContext>(ComponentType.CloudContext)
         .to(AzureContext)
+        .inSingletonScope()
         .when(this.isAzureRequest);
 
       bind<CloudRequest>(ComponentType.CloudRequest)
