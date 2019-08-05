@@ -8,9 +8,9 @@ import { injectable, inject } from "inversify";
  */
 export enum AWSInvokeType {
   /** Wait for response */
-  fireAndWait = "Event",
+  fireAndWait = "RequestResponse",
   /** Don't wait for response */
-  fireAndForget = "RequestResponse"
+  fireAndForget = "Event"
 }
 
 /**
