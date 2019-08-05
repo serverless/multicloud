@@ -29,7 +29,7 @@ describe("Storage Queue Middleware", () => {
 
   it("transforms the azure event into a generic cloud message", async () => {
     const originalEvent = "test message";
-    const runtimeArgs = [
+    const runtimeArgs: any[] = [
       {
         invocationID: "ID123",
         bindingData: {
