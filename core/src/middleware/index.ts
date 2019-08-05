@@ -6,3 +6,4 @@ export * from "./requestLoggingMiddleware";
 export * from "./validationMiddleware";
 export * from "./telemetryMiddleware";
 export * from "./serviceMiddleware";
+export * from "./storageMiddleware";

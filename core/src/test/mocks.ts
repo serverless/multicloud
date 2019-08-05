@@ -1,6 +1,7 @@
 import { injectable, inject, ContainerModule, interfaces } from "inversify";
 import { CloudModule, ComponentType, CloudContext, CloudRequest, CloudResponse } from "..";
-import { CloudService } from "../services";
+import { CloudService, CloudStorage } from "../services";
+import { Stream } from "stream";
 
 @injectable()
 export class TestModule implements CloudModule {
@@ -25,6 +26,10 @@ export class TestModule implements CloudModule {
 
       bind<CloudService>(ComponentType.CloudService)
         .to(TestCloudService);
+
+      bind<CloudStorage>(ComponentType.CloudStorage)
+        .to(TestCloudStorage)
+        .when(TestModule.isHttpRequest);
     });
   }
 }
@@ -98,4 +103,11 @@ export class TestCloudService implements CloudService {
   public invoke<T>(): Promise<T> {
     return Promise.resolve(null);
   }
+}
+
+@injectable()
+export class TestCloudStorage implements CloudStorage {
+  public read(): Promise<Stream> {
+    return Promise.resolve(null);
+  };
 }
