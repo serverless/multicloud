@@ -10,26 +10,26 @@ jest.mock("@azure/storage-blob");
 
 describe("Azure Blob Storage adapter should", () => {
   it("connect to blob service when initialize", () => {
-    const options = {
-      account: "foo",
-      accountKey: "bar"
-    };
+    const OLD_ENV = process.env;
+
+    const account = "foo";
+    const accountKey = "bar";
+
+    process.env.azAccount = account;
+    process.env.azAccountKey = accountKey;
 
     const credentials = {};
     SharedKeyCredential.prototype.create = jest.fn().mockReturnValue(credentials);
     StorageURL.newPipeline = jest.fn();
 
-    new AzureBlobStorage(options);
-    expect(SharedKeyCredential).toHaveBeenCalledWith(options.account, options.accountKey)
+    new AzureBlobStorage();
+    expect(SharedKeyCredential).toHaveBeenCalledWith(account, accountKey)
     expect(StorageURL.newPipeline).toHaveBeenCalled();
+
+    process.env = OLD_ENV;
   });
 
   it("read file successfully", async () => {
-    const options = {
-      account: "foo",
-      accountKey: "bar"
-    };
-
     const file = new Buffer("file");
 
     ContainerURL.fromServiceURL = jest.fn();
@@ -39,7 +39,7 @@ describe("Azure Blob Storage adapter should", () => {
       })
     });
 
-    const sut = new AzureBlobStorage(options);
+    const sut = new AzureBlobStorage();
     const fileOptions = {
       container: "foo",
       path: "bar"
@@ -50,11 +50,6 @@ describe("Azure Blob Storage adapter should", () => {
   });
 
   it("throw an error when reading a file", async () => {
-    const options = {
-      account: "foo",
-      accountKey: "bar"
-    };
-
     const err = "fail";
 
     ContainerURL.fromServiceURL = jest.fn();
@@ -62,7 +57,7 @@ describe("Azure Blob Storage adapter should", () => {
       download: jest.fn().mockRejectedValue(new Error(err))
     });
 
-    const sut = new AzureBlobStorage(options);
+    const sut = new AzureBlobStorage();
     const fileOptions = {
       container: "foo",
       path: "bar"

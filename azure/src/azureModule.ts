@@ -1,6 +1,6 @@
 import { ContainerModule, interfaces } from "inversify";
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "@multicloud/sls-core";
-import { AzureContext, AzureRequest, AzureResponse } from ".";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService, CloudStorage } from "@multicloud/sls-core";
+import { AzureContext, AzureRequest, AzureResponse, AzureBlobStorage } from ".";
 import { AzureFunctionCloudService } from "./services";
 
 /**
@@ -36,6 +36,10 @@ export class AzureModule implements CloudModule {
 
       bind<CloudService>(ComponentType.CloudService)
         .to(AzureFunctionCloudService)
+        .when(this.isAzureRequest);
+
+      bind<CloudStorage>(ComponentType.CloudStorage)
+        .to(AzureBlobStorage)
         .when(this.isAzureRequest);
     });
   }

@@ -1,6 +1,9 @@
-import { AzureModule, AzureContext, AzureRequest, AzureResponse } from ".";
-import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService } from "@multicloud/sls-core";
+import { AzureModule, AzureContext, AzureRequest, AzureResponse, AzureBlobStorage } from ".";
+import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService, CloudStorage } from "@multicloud/sls-core";
 import { AzureFunctionCloudService } from "./services";
+import { StorageURL, SharedKeyCredential } from "@azure/storage-blob";
+
+jest.mock("@azure/storage-blob");
 
 describe("Azure Cloud Module", () => {
   const params: any[] = [
@@ -40,6 +43,14 @@ describe("Azure Cloud Module", () => {
       const service = container.resolve<CloudService>(ComponentType.CloudService);
       expect(service).toBeInstanceOf(AzureFunctionCloudService);
     });
+
+    it("resolves storage", () => {
+      SharedKeyCredential.prototype.create = jest.fn().mockReturnValue({});
+      StorageURL.newPipeline = jest.fn();
+
+      const storage = container.resolve<CloudStorage>(ComponentType.CloudStorage);
+      expect(storage).toBeInstanceOf(AzureBlobStorage);
+    });
   });
 
   describe("when non-azure request", () => {
@@ -63,6 +74,10 @@ describe("Azure Cloud Module", () => {
 
     it("does not resolve service", () => {
       expect(container.resolve<CloudService>(ComponentType.CloudService)).toBeNull();
+    });
+
+    it("does not resolve storage", () => {
+      expect(container.resolve<CloudStorage>(ComponentType.CloudStorage)).toBeNull();
     });
   })
 });

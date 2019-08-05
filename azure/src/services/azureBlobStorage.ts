@@ -7,27 +7,29 @@ import {
   ContainerURL
 } from "@azure/storage-blob";
 import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
+import { injectable } from "inversify";
+import "reflect-metadata";
 
 /**
  * Implementation of CloudStorage for Azure Blob Storage
  */
+@injectable()
 export class AzureBlobStorage implements CloudStorage {
 
   private service: ServiceURL;
 
   /**
    * Initialize new Azure Blob Storage service
-   * @param options Object containing `account` and `accountKey` for Azure Storage account
    */
-  public constructor(options: any) {
+  public constructor() {
     const sharedKeyCredential = new SharedKeyCredential(
-      options.account,
-      options.accountKey
+      process.env.azAccount,
+      process.env.azAccountKey
     );
     const pipeline = StorageURL.newPipeline(sharedKeyCredential);
 
     this.service = new ServiceURL(
-      `https://${options.account}.blob.core.windows.net`,
+      `https://${process.env.azAccount}.blob.core.windows.net`,
       pipeline
     );
   }
