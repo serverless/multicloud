@@ -1,12 +1,12 @@
 import { CloudContext, Middleware } from "@multicloud/sls-core";
-import { SimpleQueueMiddleware } from ".";
 import { AwsContext } from "../awsContext";
+import { KinesisMiddleware } from ".";
 
-describe("Simple Storage Middleware", () => {
+describe("Kinesis Middleware", () => {
   let middleware: Middleware;
 
   beforeEach(() => {
-    middleware = SimpleQueueMiddleware();
+    middleware = KinesisMiddleware();
   });
 
   it("only runs for AWS requests", async () => {
@@ -28,22 +28,22 @@ describe("Simple Storage Middleware", () => {
   });
 
   it("transforms AWS events into normalized Cloud Messages", async () => {
-    const originalEvent = {
+    const originalEvent: any = {
       Records: [
         {
-          messageId: "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
-          receiptHandle: "MessageReceiptHandle",
-          body: "Hello from SQS!",
-          attributes: {
-            ApproximateReceiveCount: "1",
-            SentTimestamp: "1523232000000",
-            SenderId: "123456789012",
-            ApproximateFirstReceiveTimestamp: "1523232000001"
+          kinesis: {
+            partitionKey: "partitionKey-03",
+            kinesisSchemaVersion: "1.0",
+            data: "SGVsbG8sIHRoaXMgaXMgYSB0ZXN0IDEyMy4=",
+            sequenceNumber: "49545115243490985018280067714973144582180062593244200961",
+            approximateArrivalTimestamp: 1428537600
           },
-          messageAttributes: {},
-          md5OfBody: "7b270e59b47ff90a553787216d55d91d",
-          eventSource: "aws:sqs",
-          eventSourceARN: "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+          eventSource: "aws:kinesis",
+          eventID: "shardId-000000000000:49545115243490985018280067714973144582180062593244200961",
+          invokeIdentityArn: "arn:aws:iam::EXAMPLE",
+          eventVersion: "1.0",
+          eventName: "aws:kinesis:record",
+          eventSourceARN: "arn:aws:kinesis:EXAMPLE",
           awsRegion: "us-east-1"
         }
       ]
@@ -61,10 +61,13 @@ describe("Simple Storage Middleware", () => {
 
     expect(context.event).toEqual({
       records: [{
-        id: originalEvent.Records[0].messageId,
-        body: originalEvent.Records[0].body,
+        id: originalEvent.Records[0].eventID,
+        body: originalEvent.Records[0].kinesis.data,
+        partitionKey: originalEvent.Records[0].kinesis.partitionKey,
+        sequenceNumber: originalEvent.Records[0].kinesis.sequenceNumber,
+        eventSourceARN: originalEvent.Records[0].kinesis.eventSourceARN,
         timestamp: expect.any(Date),
-        eventSource: "aws:sqs",
+        eventSource: "aws:kinesis",
       }]
     })
     expect(next).toBeCalled();
