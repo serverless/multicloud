@@ -8,6 +8,7 @@ import {
 } from "@azure/storage-blob";
 import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
 import { injectable } from "inversify";
+import { Stream } from "stream";
 import "reflect-metadata";
 
 /**
@@ -38,7 +39,7 @@ export class AzureBlobStorage implements CloudStorage {
    * Read a blob from Azure Storage account
    * @param opts Specifies container and blob for read
    */
-  public async read(opts: ReadBlobOptions) {
+  public async read(opts: ReadBlobOptions): Promise<Stream> {
     const containerURL = ContainerURL.fromServiceURL(this.service, opts.container);
     const blobURL = BlobURL.fromContainerURL(containerURL, opts.path);
 
