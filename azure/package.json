@@ -1,6 +1,6 @@
 {
   "name": "@multicloud/sls-azure",
-  "version": "0.0.8-24",
+  "version": "0.0.8-25",
   "description": "Microsoft Azure specific middleware and components for multi-cloud serverless.",
   "repository": {
     "type": "git",
