@@ -32,8 +32,8 @@ export const PerformanceMiddleware = () =>
           logger.info(`Function End, Request ID: ${context.id}, took ${entry.duration}ms`);
 
           if (context.res) {
-            context.res.headers[RequestIdResponseHeader] = context.id;
-            context.res.headers[DurationResponseHeader] = entry.duration.toString();
+            context.res.headers.set(RequestIdResponseHeader, context.id);
+            context.res.headers.set(DurationResponseHeader, entry.duration.toString());
           }
         }
         innerObserver.disconnect();

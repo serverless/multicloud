@@ -78,4 +78,32 @@ describe("String Params", () => {
     expect(b).toBe(entries.B);
     expect(c).toBe(entries.c);
   });
+
+  it("serializes to JSON correctly", () => {
+    const entries = {
+      a: 1,
+      b: 2,
+      c: 3,
+    };
+
+    const params = new StringParams(entries);
+    expect(JSON.stringify(params)).toEqual(JSON.stringify(entries));
+  });
+
+  it("serializes to lowercase keys correctly", () => {
+    const original: any = {
+      A: 1,
+      B: 2,
+      C: 3,
+    };
+
+    const expected = {
+      a: 1,
+      b: 2,
+      c: 3,
+    };
+
+    const params = new StringParams(original);
+    expect(JSON.stringify(params)).toEqual(JSON.stringify(expected));
+  });
 });

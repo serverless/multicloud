@@ -2,6 +2,7 @@ import { injectable, inject, ContainerModule, interfaces } from "inversify";
 import { CloudModule, ComponentType, CloudContext, CloudRequest, CloudResponse } from "..";
 import { CloudService, CloudStorage } from "../services";
 import { Stream } from "stream";
+import { StringParams } from "../common/stringParams";
 
 @injectable()
 export class TestModule implements CloudModule {
@@ -73,10 +74,10 @@ export class TestRequest implements CloudRequest {
   }
 
   public body: any;
-  public headers = {};
   public method: string;
-  public query = {};
-  public pathParams = {};
+  public headers: StringParams = new StringParams();
+  public query: StringParams = new StringParams();
+  public pathParams: StringParams = new StringParams();
 }
 
 @injectable()
@@ -87,7 +88,7 @@ export class TestResponse implements CloudResponse {
 
   public body: string;
   public status: number;
-  public headers = {};
+  public headers: StringParams = new StringParams();
 
   public send(body: any, status: number) {
     this.body = body;

@@ -2,6 +2,7 @@ import Guard from "./guard";
 
 /**
  * Create a case insensitive string parameter map
+ * Used in HTTP request / response for headers, query strings & path params
  */
 export class StringParams<T = any> extends Map<string, T> {
 
@@ -48,6 +49,19 @@ export class StringParams<T = any> extends Map<string, T> {
   public delete(key: string): boolean {
     Guard.empty(key);
     return super.delete(this.normalizeKey(key));
+  }
+
+  /**
+   * Serializes the map to a plain javascript object for use with JSON.stringify
+   */
+  public toJSON() {
+    const output = {};
+
+    this.forEach((value, key) => {
+      output[key] = value;
+    });
+
+    return output;
   }
 
   /**

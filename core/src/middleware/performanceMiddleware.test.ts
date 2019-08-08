@@ -25,8 +25,8 @@ describe("PerformanceMiddleware should", () => {
     await PerformanceMiddleware()(context, next);
 
     expect(context.logger.info).toBeCalledTimes(2);
-    expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
-    expect(context.res.headers[DurationResponseHeader]).toBeDefined();
+    expect(context.res.headers.has(RequestIdResponseHeader)).toBe(true);
+    expect(context.res.headers.has(DurationResponseHeader)).toBe(true);
   });
 
   it("collect and log performance metrics, even if an exception is thrown", async () => {
@@ -36,8 +36,8 @@ describe("PerformanceMiddleware should", () => {
 
     await expect(PerformanceMiddleware()(context, failNext)).rejects.toThrow();
     expect(context.logger.info).toBeCalledTimes(2);
-    expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
-    expect(context.res.headers[DurationResponseHeader]).toBeDefined();
+    expect(context.res.headers.has(RequestIdResponseHeader)).toBe(true);
+    expect(context.res.headers.has(DurationResponseHeader)).toBe(true);
   });
 
   it("call the next middleware when using App", async () => {
@@ -45,7 +45,7 @@ describe("PerformanceMiddleware should", () => {
     await PerformanceMiddleware()(context, next);
 
     expect(next).toBeCalled();
-    expect(context.res.headers[RequestIdResponseHeader]).toBeDefined();
-    expect(context.res.headers[DurationResponseHeader]).toBeDefined();
+    expect(context.res.headers.has(RequestIdResponseHeader)).toBe(true);
+    expect(context.res.headers.has(DurationResponseHeader)).toBe(true);
   });
 });

@@ -1,3 +1,5 @@
+import { StringParams } from "./common/stringParams";
+
 /**
  * Common HTTP Request for Serverless functions
  */
@@ -5,17 +7,11 @@ export interface CloudRequest {
   /** Body of request */
   body?: any;
   /** Headers of request */
-  headers?: {
-    [key: string]: any;
-  };
+  headers?: StringParams;
   /** HTTM Method */
   method: string;
   /** Query parameters */
-  query?: {
-    [key: string]: any;
-  };
+  query?: StringParams;
   /** Path parameters */
-  pathParams?: {
-    [key: string]: any;
-  };
+  pathParams?: StringParams;
 }
