@@ -32,6 +32,7 @@ describe("Service Bus Middleware", () => {
     const runtimeArgs: any[] = [
       {
         invocationID: "ID123",
+        log: {},
         bindingData: {
           invocationId: "db9752bd-8380-4e18-9b71-469b66921e67",
           deliveryCount: 1,

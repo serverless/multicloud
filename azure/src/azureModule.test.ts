@@ -1,5 +1,14 @@
 import { AzureModule, AzureContext, AzureRequest, AzureResponse, AzureBlobStorage } from ".";
-import { ComponentType, CloudContext, CloudRequest, CloudResponse, CloudContainer, CloudService, CloudStorage, App } from "@multicloud/sls-core";
+import {
+  ComponentType,
+  CloudContext,
+  CloudRequest,
+  CloudResponse,
+  CloudContainer,
+  CloudService,
+  CloudStorage,
+  ProviderType,
+  App } from "@multicloud/sls-core";
 import { AzureFunctionCloudService } from "./services";
 import { StorageURL, SharedKeyCredential } from "@azure/storage-blob";
 
@@ -11,6 +20,7 @@ describe("Azure Cloud Module", () => {
       invocationId: expect.any(String),
       req: {},
       res: {},
+      log: {},
       bindingDefinitions: [],
     }];
   const azureModule = new AzureModule();
@@ -28,7 +38,7 @@ describe("Azure Cloud Module", () => {
       const context2 = container.resolve<CloudContext>(ComponentType.CloudContext);
 
       expect(context1).toBeInstanceOf(AzureContext);
-      expect(context1.providerType).toBe("azure");
+      expect(context1.providerType).toBe(ProviderType.Azure);
       expect(context1).toBe(context2);
     });
 

@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { AzureRequest, AzureResponse } from ".";
 import { CloudContext, ComponentType } from "@multicloud/sls-core";
-import { CloudStorage } from "@multicloud/sls-core";
+import { CloudStorage, ProviderType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions";
 
@@ -15,7 +15,7 @@ export class AzureContext implements CloudContext {
    * @param args Runtime arguments for Azure function
    */
   public constructor(@inject(ComponentType.RuntimeArgs) private args: any[]) {
-    this.providerType = "azure";
+    this.providerType = ProviderType.Azure;
     this.runtime = {
       context: args[0],
       event: args[1]
@@ -91,28 +91,29 @@ export class AzureContext implements CloudContext {
     // instead of the usual console logging APIs. This effectively redirects
     // console.* logging calls to use the Azure context.* logging equivalents
     // https://github.com/Azure/azure-functions-host/issues/162
+
+    //NOTE: the shape of the logging APIs is atypical than what might be expected:
+    //      https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object
     if (this.runtime.context.log && this.runtime.context.log instanceof Function) {
       console.log = this.runtime.context.log;
     }
 
-    if (this.runtime.context.info && this.runtime.context.info instanceof Function) {
-      console.info = this.runtime.context.info;
+    if (this.runtime.context.log.info && this.runtime.context.log.info instanceof Function) {
+      console.info = this.runtime.context.log.info;
     }
 
-    if (this.runtime.context.warn && this.runtime.context.warn instanceof Function) {
-      console.warn = this.runtime.context.warn;
+    if (this.runtime.context.log.warn && this.runtime.context.log.warn instanceof Function) {
+      console.warn = this.runtime.context.log.warn;
     }
 
-    if (this.runtime.context.error && this.runtime.context.error instanceof Function) {
-      console.error = this.runtime.context.error;
+    if (this.runtime.context.log.error && this.runtime.context.log.error instanceof Function) {
+      console.error = this.runtime.context.log.error;
     }
 
-    if (this.runtime.context.debug && this.runtime.context.debug instanceof Function) {
-      console.debug = this.runtime.context.debug;
-    }
-
-    if (this.runtime.context.trace && this.runtime.context.trace instanceof Function) {
-      console.trace = this.runtime.context.trace;
+    // debug and trace have no true analog; using verbose, which has no counterpart in console.* APIs
+    if (this.runtime.context.log.verbose && this.runtime.context.log.verbose instanceof Function) {
+      console.debug = this.runtime.context.log.verbose;
+      console.trace = this.runtime.context.log.verbose;
     }
   }
 

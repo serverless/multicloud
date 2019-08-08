@@ -32,6 +32,7 @@ describe("Event Hub Middleware", () => {
     const runtimeArgs: any[] = [
       {
         invocationID: "ID123",
+        log: {},
         bindingData: {
           invocationId: "16334991-5501-4ad1-8bea-73963b5b34d2",
           partitionContext:

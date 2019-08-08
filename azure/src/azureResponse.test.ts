@@ -14,6 +14,7 @@ describe("Azure Response", () => {
         direction: "out",
       }],
       done: jest.fn(),
+      log: {},
     }
   ];
 
@@ -40,6 +41,7 @@ describe("Azure Response", () => {
             thirdKey: {}
           }
         },
+        log: {},
         bindingDefinitions: [],
       }
     ]);

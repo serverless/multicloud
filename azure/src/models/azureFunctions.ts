@@ -9,17 +9,27 @@ export interface AzureFunctionsRuntime extends CloudProviderRuntime {
     bindingData: any;
     bindingDefinitions: BindingDefinition[];
     invocationId: string;
-    log: (message: string) => void;
-    debug: (message: string) => void;
-    info: (message: string) => void;
-    trace: (message: string) => void;
-    message: (message: string) => void;
-    warn: (message: string) => void;
-    error: (message: string) => void;
+    log: AzureLog;
     done: (err: any, response: any) => void;
     req?: any;
     res?: any;
   };
+}
+
+/**
+ * Azure JavaScript logging function definition.
+ */
+export type LogFunction = (message: string) => void;
+
+/**
+ * Azure logging interface, as per documentation:
+ * https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node#context-object
+ */
+export type AzureLog = LogFunction & {
+  verbose: LogFunction;
+  info: LogFunction;
+  warn: LogFunction;
+  error: LogFunction;
 }
 
 /**

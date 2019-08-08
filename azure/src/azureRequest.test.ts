@@ -5,7 +5,8 @@ describe("test of request", () => {
     invocationId: "ABC123",
     bindingDefinitions: [],
     req: {},
-    res: {}
+    res: {},
+    log: {},
   };
 
   const createAzureContext = (args): AzureContext => {

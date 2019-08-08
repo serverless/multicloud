@@ -1,3 +1,4 @@
+import { ProviderType } from "@multicloud/sls-core";
 import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 jest.mock("./azureResponse");
@@ -9,15 +10,16 @@ const runtimeArgs = [
     req: {},
     res: {},
     done,
-    log: () => { return 1; },
-    warn: () => { return 2; },
-    info: () => { return 3; },
-    debug: () => { return 4; },
-    trace: () => { return 5; },
-    error: () => { return 6; },
+    log: {},
     bindingDefinitions: [],
   }
 ];
+
+runtimeArgs[0].log = () => { return 1; }
+runtimeArgs[0].log.verbose = () => { return 2; };
+runtimeArgs[0].log.info = () => { return 3; };
+runtimeArgs[0].log.warn = () => { return 4; };
+runtimeArgs[0].log.error = () => { return 5; };
 
 const createAzureContext = (args): AzureContext => {
   const azureContext = new AzureContext(args);
@@ -80,11 +82,10 @@ describe("Azure context", () => {
     console.info("A-okay");
 
     expect(runtimeArgs[0].log()).toEqual(1);
-    expect(runtimeArgs[0].warn()).toEqual(2);
-    expect(runtimeArgs[0].info()).toEqual(3);
-    expect(runtimeArgs[0].debug()).toEqual(4);
-    expect(runtimeArgs[0].trace()).toEqual(5);
-    expect(runtimeArgs[0].error()).toEqual(6);
+    expect(runtimeArgs[0].log.verbose()).toEqual(2);
+    expect(runtimeArgs[0].log.info()).toEqual(3);
+    expect(runtimeArgs[0].log.warn()).toEqual(4);
+    expect(runtimeArgs[0].log.error()).toEqual(5);
   });
 
   it("logging calls redirect and be restored", () => {
@@ -96,11 +97,10 @@ describe("Azure context", () => {
     console.info("A-okay");
 
     expect(runtimeArgs[0].log()).toEqual(1);
-    expect(runtimeArgs[0].warn()).toEqual(2);
-    expect(runtimeArgs[0].info()).toEqual(3);
-    expect(runtimeArgs[0].debug()).toEqual(4);
-    expect(runtimeArgs[0].trace()).toEqual(5);
-    expect(runtimeArgs[0].error()).toEqual(6);
+    expect(runtimeArgs[0].log.verbose()).toEqual(2);
+    expect(runtimeArgs[0].log.info()).toEqual(3);
+    expect(runtimeArgs[0].log.warn()).toEqual(4);
+    expect(runtimeArgs[0].log.error()).toEqual(5);
 
     context.send("", 204);
 
@@ -123,7 +123,8 @@ describe("Azure context", () => {
               type: "queueTrigger",
               direction: "in",
             }
-          ]
+          ],
+          log: {},
         },
         expectedMessage,
       ];
@@ -137,6 +138,7 @@ describe("Azure context", () => {
       const expectedMessage2 = { "b": 2 };
       const runtimeArgs = [
         {
+          log: {},
           bindingDefinitions: [
             {
               name: "message1",
@@ -164,6 +166,7 @@ describe("Azure context", () => {
 
       const runtimeArgs = [
         {
+          log: {},
           bindingDefinitions: [
             {
               name: "container",
@@ -177,12 +180,13 @@ describe("Azure context", () => {
 
       const context = new AzureContext(runtimeArgs);
       expect(context.providerType).not.toBe(expectedMessage);
-      expect(context.providerType).toEqual("azure");
+      expect(context.providerType).toEqual(ProviderType.Azure);
     });
 
     it("Binds CloudContext event to the first incoming binding argument", () => {
       const runtimeArgs = [
         {
+          log: {},
           bindingDefinitions: [],
         },
         "test message"

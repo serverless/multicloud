@@ -32,6 +32,7 @@ describe("Storage Queue Middleware", () => {
     const runtimeArgs: any[] = [
       {
         invocationID: "ID123",
+        log: {},
         bindingData: {
           id: "ABC123",
           insertionTime: new Date().toUTCString(),
