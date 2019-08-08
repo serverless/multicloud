@@ -1,4 +1,4 @@
-import { ProviderType, CloudProviderResponseHeader } from "@multicloud/sls-core";
+import { ProviderType, CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
 import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 describe("Azure Response", () => {
@@ -86,29 +86,26 @@ describe("Azure Response", () => {
 
   it("should have headers value empty object", () => {
     const azureContext = createAzureContext(defaultParams);
-    azureContext.res.headers["Content-Type"] = "application/json";
-    let expectedHeaders = { "Content-Type": "application/json" };
-    expectedHeaders[CloudProviderResponseHeader] = ProviderType.Azure;
+    azureContext.res.headers.set("Content-Type", "application/json");
 
-    expect(azureContext.res.headers).toEqual(expectedHeaders);
+    expect(azureContext.res.headers.get(CloudProviderResponseHeader)).toEqual(ProviderType.Azure);
+    expect(azureContext.res.headers.get("content-type")).toEqual("application/json");
   });
 
-  it("should create res object", () => {
-    const expectedObject = {
-      body: {},
-      headers: {
-        "Content-Type": "application/json"
-      },
-      status: 200
-    };
-
+  it("should set properties on res object", () => {
     const azureContext = createAzureContext(defaultParams);
 
-    azureContext.res.headers["Content-Type"] = "application/json";
-    azureContext.res.headers[CloudProviderResponseHeader] = ProviderType.Azure;
+    azureContext.res.headers.set("Content-Type", "application/json");
     azureContext.res.send({});
 
-    expect(azureContext.res).toMatchObject(expectedObject);
+    expect(azureContext.res).toMatchObject({
+      body: {},
+      headers: new StringParams({
+        "Content-Type": "application/json",
+        "x-sls-cloud-provider": "azure",
+      }),
+      status: 200
+    });
   });
 
   it("flush() calls runtime callback when non-default output binding has not been defined", () => {

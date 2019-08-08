@@ -4,7 +4,9 @@ import {
   CloudResponse,
   ComponentType,
   ProviderType,
-  CloudProviderResponseHeader } from "@multicloud/sls-core";
+  CloudProviderResponseHeader,
+  StringParams
+} from "@multicloud/sls-core";
 import { AzureContext } from "./azureContext";
 
 /**
@@ -22,7 +24,7 @@ export class AzureResponse implements CloudResponse {
   public status: number = 200;
 
   /** Headers of HTTP Response */
-  public headers?: { [key: string]: any };
+  public headers?: StringParams;
 
   /**
    * Initialize new Azure Response, injecting Cloud Context
@@ -32,8 +34,8 @@ export class AzureResponse implements CloudResponse {
     @inject(ComponentType.CloudContext) context: AzureContext
   ) {
     this.runtime = context.runtime;
-    this.headers = this.runtime.context.res.headers || {};
-    this.headers[CloudProviderResponseHeader] = ProviderType.Azure;
+    this.headers = new StringParams(this.runtime.context.res.headers);
+    this.headers.set(CloudProviderResponseHeader, ProviderType.Azure);
   }
 
   /**

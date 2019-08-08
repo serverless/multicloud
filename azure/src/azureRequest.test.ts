@@ -1,10 +1,13 @@
 import { AzureContext, AzureRequest, AzureResponse } from ".";
+import { StringParams } from "@multicloud/sls-core";
 
 describe("test of request", () => {
   const runtimeContext = {
     invocationId: "ABC123",
     bindingDefinitions: [],
-    req: {},
+    req: {
+      method: "GET",
+    },
     res: {},
     log: {},
   };
@@ -13,11 +16,12 @@ describe("test of request", () => {
     const context = new AzureContext(args);
     context.req = new AzureRequest(context);
     context.res = new AzureResponse(context);
+
     return context;
   };
 
   it("should passthrough body value without modifications", () => {
-    const azureContext = createAzureContext([
+    const runtimeArgs = [
       {
         ...runtimeContext,
         req: {
@@ -28,15 +32,15 @@ describe("test of request", () => {
           }
         },
       }
-    ]);
+    ];
 
-    const sut = new AzureRequest(azureContext);
+    const azureContext = createAzureContext(runtimeArgs);
 
-    expect(sut.body).toEqual(azureContext.req.body);
+    expect(azureContext.req.body).toEqual(runtimeArgs[0].req.body);
   });
 
   it("should passthrough headers value without modifications", () => {
-    const azureContext = createAzureContext([
+    const runtimeArgs = [
       {
         ...runtimeContext,
         req: {
@@ -47,28 +51,47 @@ describe("test of request", () => {
           }
         },
       }
-    ]);
+    ]
 
-    const sut = new AzureRequest(azureContext);
-    expect(sut.headers).toEqual(azureContext.req.headers);
+    const expectedHeaders = new StringParams(runtimeArgs[0].req.headers);
+    const azureContext = createAzureContext(runtimeArgs);
+
+    expect(azureContext.req.headers).toEqual(expectedHeaders);
+  });
+
+  it("should passthrough pathParms value without modification", () => {
+    const runtimeArgs = [{
+      ...runtimeContext,
+      req: {
+        params: {
+          categoryId: 1,
+          productId: 2
+        }
+      }
+    }];
+
+    const expectedParams = new StringParams(runtimeArgs[0].req.params);
+    const azureContext = createAzureContext(runtimeArgs);
+
+    expect(azureContext.req.pathParams).toEqual(expectedParams);
   });
 
   it("should passthrough method value without modifications", () => {
-    const azureContext = createAzureContext([
+    const runtimeArgs = [
       {
         ...runtimeContext,
         req: {
           method: "GET"
         },
       }
-    ]);
+    ];
 
-    const sut = new AzureRequest(azureContext);
-    expect(sut.method).toEqual(azureContext.req.method);
+    const azureContext = createAzureContext(runtimeArgs);
+    expect(azureContext.req.method).toEqual(runtimeArgs[0].req.method);
   });
 
-  it("should  passthrough query value without modifications", () => {
-    const azureContext = createAzureContext([
+  it("should passthrough query value without modifications", () => {
+    const runtimeArgs = [
       {
         ...runtimeContext,
         req: {
@@ -79,19 +102,21 @@ describe("test of request", () => {
           }
         },
       }
-    ]);
+    ];
 
-    const sut = new AzureRequest(azureContext);
-    expect(sut.query).toEqual(azureContext.req.query);
+    const azureContext = createAzureContext(runtimeArgs);
+    const expectedQueryParams = new StringParams(runtimeArgs[0].req.query);
+
+    expect(azureContext.req.query).toEqual(expectedQueryParams);
   });
 
   it("should check if context content are empty objects", () => {
     const azureContext = createAzureContext([runtimeContext]);
-    const request = new AzureRequest(azureContext);
+    const emptyParams = new StringParams();
 
-    expect(request.body).toEqual({});
-    expect(request.headers).toEqual({});
-    expect(request.method).toEqual("");
-    expect(request.query).toEqual({});
+    expect(azureContext.req.method).toEqual("GET");
+    expect(azureContext.req.headers).toEqual(emptyParams);
+    expect(azureContext.req.query).toEqual(emptyParams);
+    expect(azureContext.req.body).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { inject, injectable } from "inversify";
-import { CloudRequest, ComponentType } from "@multicloud/sls-core";
+import { CloudRequest, ComponentType, StringParams } from "@multicloud/sls-core";
 import { AzureContext } from "./azureContext";
 
 /**
@@ -11,13 +11,13 @@ export class AzureRequest implements CloudRequest {
   /** Body of HTTP request */
   public body?: any;
   /** Headers of HTTP request */
-  public headers?: { [key: string]: any };
+  public headers?: StringParams;
   /** HTTP method of request */
   public method: string;
   /** Query params of HTTP request */
-  public query?: { [key: string]: any };
+  public query?: StringParams;
   /** Path params of HTTP request */
-  public pathParams?: { [key: string]: any };
+  public pathParams?: StringParams;
 
   /**
    * Initialize new Azure Request, injecting Cloud Context
@@ -26,10 +26,10 @@ export class AzureRequest implements CloudRequest {
   public constructor(@inject(ComponentType.CloudContext) context: AzureContext) {
     const req = context.runtime.event || context.runtime.context.req;
 
-    this.body = req.body || {};
-    this.headers = req.headers || {};
+    this.body = req.body || null;
+    this.headers = new StringParams(req.headers);
     this.method = req.method || "";
-    this.query = req.query || {};
-    this.pathParams = req.params || {};
+    this.query = new StringParams(req.query);
+    this.pathParams = new StringParams(req.params);
   }
 }
