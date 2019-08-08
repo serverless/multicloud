@@ -3,7 +3,9 @@ import {
   CloudResponse,
   ComponentType,
   ProviderType,
-  CloudProviderResponseHeader } from "@multicloud/sls-core";
+  CloudProviderResponseHeader,
+  StringParams
+} from "@multicloud/sls-core";
 import { AwsContext } from ".";
 import { injectable, inject } from "inversify";
 
@@ -22,15 +24,14 @@ export class AwsResponse implements CloudResponse {
   public status: number = 200;
 
   /** Headers of HTTP Response */
-  public headers?: { [key: string]: any };
+  public headers?: StringParams = new StringParams();
 
   /**
    * Initialize new AWS Response, injecting Cloud Context
    * @param context Current CloudContext
    */
   public constructor(@inject(ComponentType.CloudContext) context: AwsContext) {
-    this.headers = {};
-    this.headers[CloudProviderResponseHeader] = ProviderType.AWS;
+    this.headers.set(CloudProviderResponseHeader, ProviderType.AWS);
     this.callback = context.runtime.callback;
   }
 
