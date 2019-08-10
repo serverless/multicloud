@@ -22,12 +22,13 @@ export interface ValidationOptions {
  * Create validation middleware
  * @param options Options for Validation Middleware
  */
-export const createValidationMiddleware = (options: ValidationOptions): Middleware => async (context: CloudContext, next: Function): Promise<void> => {
-  const result = await options.validate(context);
+export const createValidationMiddleware = (options: ValidationOptions): Middleware =>
+  async (context: CloudContext, next: () => Promise<void>): Promise<void> => {
+    const result = await options.validate(context);
 
-  if (result.hasError()) {
-    await result.send();
-    return;
+    if (result.hasError()) {
+      await result.send();
+      return;
+    }
+    return next();
   }
-  return next();
-}

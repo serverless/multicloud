@@ -1,41 +1,35 @@
-import { CloudContext } from "../cloudContext";
-import { Middleware } from "..";
-import { TelemetryOptions } from "../services";
 import { cpus, totalmem, freemem } from "os";
+import { Middleware, CloudContext, TelemetryOptions } from "..";
 
 /**
  *
  * @param options Options for Telemetry
  */
-export const TelemetryServiceMiddleware = (
-  options: TelemetryOptions
-): Middleware => async (
-  context: CloudContext,
-  next: Function
-): Promise<void> => {
-  const initialCpuAverage = CpuAverage();
-  const usedMemBeforeChain = GetUsedMemory();
+export const TelemetryServiceMiddleware = (options: TelemetryOptions): Middleware =>
+  async (context: CloudContext, next: () => Promise<void>): Promise<void> => {
+    const initialCpuAverage = CpuAverage();
+    const usedMemBeforeChain = GetUsedMemory();
 
-  context.telemetry = options.telemetryService;
-  await next();
+    context.telemetry = options.telemetryService;
+    await next();
 
-  const finalCpuAverage = CpuAverage();
-  const consumeCpuIdle = finalCpuAverage.idle - initialCpuAverage.idle;
-  const consumeCpuTick = finalCpuAverage.tick - initialCpuAverage.tick;
-  const memoryConsume = GetUsedMemory() - usedMemBeforeChain;
+    const finalCpuAverage = CpuAverage();
+    const consumeCpuIdle = finalCpuAverage.idle - initialCpuAverage.idle;
+    const consumeCpuTick = finalCpuAverage.tick - initialCpuAverage.tick;
+    const memoryConsume = GetUsedMemory() - usedMemBeforeChain;
 
-  const stats = {
-    consumeCpuIdle,
-    consumeCpuTick,
-    memoryConsume
+    const stats = {
+      consumeCpuIdle,
+      consumeCpuTick,
+      memoryConsume
+    };
+
+    context.telemetry.collect("stats", stats);
+
+    if (options.shouldFlush) {
+      context.telemetry.flush();
+    }
   };
-
-  context.telemetry.collect("stats", stats);
-
-  if (options.shouldFlush) {
-    context.telemetry.flush();
-  }
-};
 
 const CpuAverage = () => {
   //Initialise sum of idle and time of cores and fetch CPU info

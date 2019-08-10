@@ -1,15 +1,12 @@
-import { StorageMiddleware } from "./storageMiddleware";
-import { CloudContext, App } from "..";
+import { CloudContext, App, Handler, StorageMiddleware } from "..";
 import MockFactory from "../test/mockFactory";
-import { Handler } from "../app";
-import { TestModule } from "../test/mocks";
 
 describe("StorageMiddleware should", () => {
   let app: App;
   let handler: Handler;
 
   beforeEach(() => {
-    app = new App(new TestModule());
+    app = new App();
     handler = MockFactory.createMockHandler();
   });
 
@@ -34,19 +31,19 @@ describe("StorageMiddleware should", () => {
       await next();
     });
 
-    await app.use([StorageMiddleware(), testMiddleware], handler)({ isHttp: true }, {});
+    await app.use([StorageMiddleware(), testMiddleware], handler)({}, { method: "GET" });
     expect(testMiddleware).toBeCalled();
     expect(handler).toBeCalled();
   });
 
   it("does not set the cloudStorage and call next if the eventType is not HTTP", async () => {
     const testMiddleware = MockFactory.createMockMiddleware(async (context: CloudContext, next: Function) => {
-      expect(context.storage).toBeNull();
+      expect(context.storage).not.toBeNull();
 
       await next();
     });
 
-    await app.use([StorageMiddleware(), testMiddleware], handler)({ isHttp: false }, {});
+    await app.use([StorageMiddleware(), testMiddleware], handler)();
     expect(testMiddleware).toBeCalled();
     expect(handler).toBeCalled();
   });

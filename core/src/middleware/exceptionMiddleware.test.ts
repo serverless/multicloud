@@ -1,7 +1,5 @@
-import { App } from "..";
-import { ExceptionMiddleware, ExceptionOptions } from "../middleware";
+import { App, TestContext, ExceptionMiddleware, ExceptionOptions } from "..";
 import MockFactory from "../test/mockFactory";
-import { TestModule, TestContext } from "../test/mocks";
 
 describe("Tests of ExceptionMiddleware should", () => {
   let options: ExceptionOptions = {
@@ -23,7 +21,7 @@ describe("Tests of ExceptionMiddleware should", () => {
       throw error;
     });
     const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App(new TestModule());
+    const app = new App();
     await app.use([ExceptionMiddleware(options)], failHandler)();
     expect(options.log).toHaveBeenCalledWith(error);
     expect(sendSpy).toHaveBeenCalledWith(error, errorStatus);
@@ -41,7 +39,7 @@ describe("Tests of ExceptionMiddleware should", () => {
   it("call next middleware after exceptionMiddleware using App", async () => {
     const mockMiddleware = MockFactory.createMockMiddleware();
 
-    const app = new App(new TestModule());
+    const app = new App();
     await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
     expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
@@ -57,7 +55,7 @@ describe("Tests of ExceptionMiddleware should", () => {
     const mockMiddleware = MockFactory.createMockMiddleware(failNext);
 
     const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App(new TestModule());
+    const app = new App();
     await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
     expect(sendSpy).toHaveBeenCalledWith(error, errorStatus);
     expect(options.log).toHaveBeenCalledWith(error);
@@ -65,7 +63,7 @@ describe("Tests of ExceptionMiddleware should", () => {
 
   it("catches and logs errors when promise is rejected in handler", async () => {
     const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App(new TestModule());
+    const app = new App();
     const errorMessage = "promise rejected";
     const failHandler = MockFactory.createMockHandler(() => {
       return Promise.reject(errorMessage);
@@ -79,7 +77,7 @@ describe("Tests of ExceptionMiddleware should", () => {
 
   it("catches and logs error when promise is rejected in other middleware", async () => {
     const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App(new TestModule());
+    const app = new App();
     const errorMessage = "promise rejected";
     const handler = MockFactory.createMockHandler();
     const failMiddleware = MockFactory.createMockMiddleware(() => {

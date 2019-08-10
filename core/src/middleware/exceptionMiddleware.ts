@@ -1,4 +1,5 @@
-import { CloudContext } from "../cloudContext";
+import { CloudContext } from "..";
+import { Middleware } from "../app";
 
 /**
  * Options for handling exceptions
@@ -13,8 +14,8 @@ export interface ExceptionOptions {
  * CloudContext and the `next` Function in the middleware chain
  * @param options Options for handling exceptions
  */
-export const ExceptionMiddleware = (options: ExceptionOptions) =>
-  (context: CloudContext, next: Function): Promise<void> => {
+export const ExceptionMiddleware = (options: ExceptionOptions): Middleware =>
+  (context: CloudContext, next: () => Promise<void>): Promise<void> => {
     function onError(err) {
       options.log(err);
       context.send(err, 500);

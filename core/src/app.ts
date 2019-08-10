@@ -1,7 +1,6 @@
-import { CloudContext } from ".";
-import { ComponentType, CloudContainer, CloudModule, } from "./cloudContainer";
 import Guard from "./common/guard";
 import { ensurePromise } from "./common/util";
+import { CloudContext, TestModule, ComponentType, CloudContainer, CloudModule } from ".";
 
 /**
  * Base level app. Handles registration for all cloud modules and
@@ -17,7 +16,10 @@ export class App {
    */
   public constructor(...modules: CloudModule[]) {
     Guard.null(modules);
-    Guard.expression(modules, (values) => values.length > 0);
+
+    if (modules.length === 0 || process.env.NODE_ENV === "test") {
+      modules.push(new TestModule());
+    }
 
     this.modules = modules;
     this.container = new CloudContainer();
@@ -30,7 +32,7 @@ export class App {
    * @param handler Serverless Handler function
    */
   public use(middlewares: Middleware[], handler: Handler): Function {
-    return async (...args: any[]) => {
+    return async (...args: any[]): Promise<CloudContext> => {
       // Creates a child IoC container for each request into the app
       // This allows multiple calls to the container to reuse the same instance
       // of singleton components such as the `CloudContext`
@@ -75,6 +77,8 @@ export class App {
         // Flush the final response to the cloud provider
         context.flush();
       }
+
+      return context;
     };
   }
 }

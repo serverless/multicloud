@@ -1,5 +1,4 @@
-import { CloudContext, Middleware } from "..";
-import { Logger, ConsoleLogger } from "../services";
+import { CloudContext, Middleware, Logger, ConsoleLogger } from "..";
 
 /**
  * Options for Request Logging
@@ -18,7 +17,7 @@ export interface LoggingOptions {
  * @param options Options for logging request
  */
 export const RequestLoggingMiddleware = (options: LoggingOptions): Middleware =>
-  async (_: CloudContext, next: Function): Promise<void> => {
+  async (_: CloudContext, next: () => Promise<void>): Promise<void> => {
     const logger: Logger = options.logger || new ConsoleLogger();
 
     logger.log(`Starting request for handler: ${options.handlerName}`);

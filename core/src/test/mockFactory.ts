@@ -1,5 +1,4 @@
-import { Middleware, Handler } from "../app";
-import { CloudContext } from "../cloudContext";
+import { Middleware, Handler, CloudContext } from "..";
 
 export default class MockFactory {
   /**

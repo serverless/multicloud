@@ -1,10 +1,7 @@
 import {
-  PerformanceMiddleware,
-  RequestIdResponseHeader,
-  DurationResponseHeader
-} from "../middleware";
-import { TestContext, TestResponse } from "../test/mocks";
-import { ConsoleLogger } from "../services";
+  PerformanceMiddleware, RequestIdResponseHeader, DurationResponseHeader,
+  TestContext, TestResponse, ConsoleLogger
+} from "..";
 
 describe("PerformanceMiddleware should", () => {
   let context;

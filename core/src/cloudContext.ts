@@ -1,10 +1,7 @@
-import { CloudRequest } from "./cloudRequest";
-import { CloudResponse } from "./cloudResponse";
-import { CloudStorage } from "./services/cloudStorage";
-import { Logger } from "./services/logger";
-import { CloudService } from "./services/cloudService";
-import { TelemetryService } from "./services/telemetry";
-import { CloudContainer } from "./cloudContainer";
+import {
+  CloudRequest, CloudResponse, CloudStorage, Logger,
+  CloudService, TelemetryService, CloudContainer
+} from ".";
 
 /**
  * Cloud Provider Runtime

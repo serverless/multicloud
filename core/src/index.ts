@@ -7,3 +7,4 @@ export * from "./cloudMessage";
 export * from "./middleware";
 export * from "./services";
 export * from "./common/stringParams";
+export * from "./test";

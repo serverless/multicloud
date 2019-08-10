@@ -1,17 +1,18 @@
-import { CloudContainer, CloudModule, ComponentType } from ".";
 import { ContainerModule } from "inversify";
-import { CloudContext } from "./cloudContext";
-import { CloudRequest } from "./cloudRequest";
-import { CloudResponse } from "./cloudResponse";
-import { TestModule, TestRequest, TestResponse } from "./test/mocks";
+import {
+  CloudContainer, CloudModule, ComponentType, CloudContext, CloudRequest, CloudResponse,
+  TestModule, TestRequest, TestResponse
+} from ".";
 
 describe("Core Module", () => {
   let cloudContainer: CloudContainer = undefined;
   let context: CloudContext = undefined;
   const params: any[] = [
     {
-      isHttp: true,
       id: "123"
+    },
+    {
+      method: "GET"
     }
   ];
   beforeEach(() => {
@@ -26,7 +27,7 @@ describe("Core Module", () => {
   });
 
   it("resolves CloudContext using args in ctor and CloudContextProvider", () => {
-    expect(context["args"]).toBe(params);
+    expect(context.runtime.context).toBe(params[0]);
   });
 
   it("resolves request", () => {

@@ -1,15 +1,12 @@
-import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
-import { CloudContext, App } from "..";
+import { CloudContext, App, HTTPBindingMiddleware, Handler } from "..";
 import MockFactory from "../test/mockFactory";
-import { Handler } from "../app";
-import { TestModule } from "../test/mocks";
 
 describe("HTTPBindingMiddleware should", () => {
   let app: App;
   let handler: Handler;
 
   beforeEach(() => {
-    app = new App(new TestModule());
+    app = new App();
     handler = MockFactory.createMockHandler();
   })
 
@@ -35,7 +32,7 @@ describe("HTTPBindingMiddleware should", () => {
       await next();
     });
 
-    await app.use([HTTPBindingMiddleware(), testMiddleware], handler)({ isHttp: true }, {});
+    await app.use([HTTPBindingMiddleware(), testMiddleware], handler)({}, { method: "GET" });
     expect(testMiddleware).toBeCalled();
     expect(handler).toBeCalled();
   });
@@ -48,7 +45,7 @@ describe("HTTPBindingMiddleware should", () => {
       await next();
     });
 
-    await app.use([HTTPBindingMiddleware(), testMiddleware], handler)({ isHttp: false }, {});
+    await app.use([HTTPBindingMiddleware(), testMiddleware], handler)();
     expect(testMiddleware).toBeCalled();
     expect(handler).toBeCalled();
   });

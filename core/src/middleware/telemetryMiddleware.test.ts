@@ -1,9 +1,6 @@
-import { TelemetryOptions, TelemetryService } from "../services";
-import { CloudContext, App } from "..";
-import { TelemetryServiceMiddleware } from "./telemetryMiddleware";
 import os from "os";
 import MockFactory from "../test/mockFactory";
-import { TestContext, TestModule } from "../test/mocks";
+import { TelemetryOptions, TelemetryService, CloudContext, App, TelemetryServiceMiddleware, TestContext } from "..";
 
 describe("TelemetryServiceMiddleware should", () => {
   jest.mock("os");
@@ -70,7 +67,7 @@ describe("TelemetryServiceMiddleware should", () => {
     const handler = MockFactory.createMockHandler();
     const middlewares = [TelemetryServiceMiddleware(options)];
 
-    const app = new App(new TestModule);
+    const app = new App();
     await app.use(middlewares, handler)();
 
     expect(handler).toBeCalled();
@@ -82,7 +79,7 @@ describe("TelemetryServiceMiddleware should", () => {
 
     const collectSpy = jest.spyOn(TestTelemetryService.prototype, "collect");
     const flushSpy = jest.spyOn(TestTelemetryService.prototype, "flush");
-    const app = new App(new TestModule());
+    const app = new App();
     const middlewares = [TelemetryServiceMiddleware(options), middlewareFoo()];
     await app.use(middlewares, handler)(context);
 
@@ -93,7 +90,7 @@ describe("TelemetryServiceMiddleware should", () => {
   it("call collect method from another middleware and flush when shouldFlush is true", async () => {
     const collectSpy = jest.spyOn(TestTelemetryService.prototype, "collect");
     const flushSpy = jest.spyOn(TestTelemetryService.prototype, "flush");
-    const app = new App(new TestModule());
+    const app = new App();
     const middlewares = [TelemetryServiceMiddleware(options), middlewareFoo()];
     await app.use(middlewares, handler)(context);
 

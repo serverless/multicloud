@@ -1,4 +1,4 @@
-import { Logger, LogLevel } from "./logger";
+import { Logger, LogLevel } from ".";
 
 /**
  * Console implementation of Logger interface

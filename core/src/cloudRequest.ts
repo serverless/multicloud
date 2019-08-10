@@ -1,4 +1,4 @@
-import { StringParams } from "./common/stringParams";
+import { StringParams } from ".";
 
 /**
  * Common HTTP Request for Serverless functions

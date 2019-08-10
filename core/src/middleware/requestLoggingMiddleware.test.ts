@@ -1,9 +1,5 @@
-import { RequestLoggingMiddleware, LoggingOptions } from "../middleware";
-import { Logger, LogLevel } from "../services"
-import { App, CloudContext, CloudModule, ComponentType } from "..";
-import { ContainerModule } from "inversify";
+import { RequestLoggingMiddleware, LoggingOptions, Logger, LogLevel, App, TestContext } from "..";
 import MockFactory from "../test/mockFactory";
-import { TestContext } from "../test/mocks";
 
 describe("requestLoggingServiceMiddleware should", () => {
   class TestLogger implements Logger {
@@ -33,12 +29,6 @@ describe("requestLoggingServiceMiddleware should", () => {
     context = new TestContext();
   });
 
-  const testModule: CloudModule = {
-    create: () => new ContainerModule((bind) => {
-      bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-    })
-  }
-
   it("should call log twice with provided messages", async () => {
     const next = jest.fn();
     await RequestLoggingMiddleware(loggingOptions)(context, next);
@@ -56,7 +46,7 @@ describe("requestLoggingServiceMiddleware should", () => {
   it("call next middleware after requestLoggingMiddleware using App", async () => {
     const mockMiddleware = MockFactory.createMockMiddleware();
 
-    const sut = new App(testModule);
+    const sut = new App();
     await sut.use([RequestLoggingMiddleware(loggingOptions), mockMiddleware], handler)();
     expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
