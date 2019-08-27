@@ -58,6 +58,30 @@ describe("Azure Response", () => {
     azureContext.res.send({});
 
     expect(azureContext.res.status).toEqual(defaultStatusValue);
+    expect(azureContext.res.headers.has("Content-Type"));
+    expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
+  });
+
+  it("should set content-type to application/json for JSON objects", () => {
+    const azureContext = createAzureContext(defaultParams);
+
+    azureContext.res.send({
+      a: 1,
+      b: 2,
+      c: 3
+    });
+
+    expect(azureContext.res.headers.has("Content-Type"));
+    expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
+  });
+
+  it("should set content-type to text/html for string object", () => {
+    const azureContext = createAzureContext(defaultParams);
+
+    azureContext.res.send("<div>hello</div>");
+
+    expect(azureContext.res.headers.has("Content-Type"));
+    expect(azureContext.res.headers.get("Content-Type")).toEqual("text/html");
   });
 
   it("should have status = 400", () => {

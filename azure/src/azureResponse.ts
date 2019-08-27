@@ -46,6 +46,18 @@ export class AzureResponse implements CloudResponse {
   public send(body: any, status: number = 200): void {
     this.body = body;
     this.status = status;
+
+    if (!body) {
+      return;
+    }
+
+    if (body.constructor.name === "Object") {
+      this.headers.set("Content-Type", "application/json");
+    }
+
+    if (typeof (body) === "string") {
+      this.headers.set("Content-Type", "text/html");
+    }
   }
 
   public flush() {
