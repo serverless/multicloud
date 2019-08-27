@@ -19,13 +19,35 @@ describe("test of response", () => {
     const httpBody = "test";
     const httpStatus = 200;
 
-    response.headers.set("Content-Type", "application/json");
     response.send(httpBody, httpStatus);
 
-    expect(response.headers.get("content-type")).toEqual("application/json");
     expect(response.headers.get(CloudProviderResponseHeader)).toEqual(ProviderType.AWS);
     expect(response.body).toEqual(httpBody);
     expect(response.status).toEqual(httpStatus);
+  });
+
+  it("should set content-type to application/json for JSON objects", () => {
+    const context = new AwsContext([{}, {}]);
+    const response = new AwsResponse(context);
+
+    response.send({
+      a: 1,
+      b: 2,
+      c: 3
+    });
+
+    expect(response.headers.has("Content-Type"));
+    expect(response.headers.get("Content-Type")).toEqual("application/json");
+  });
+
+  it("should set content-type to text/html for string object", () => {
+    const context = new AwsContext([{}, {}]);
+    const response = new AwsResponse(context);
+
+    response.send("<div>hello</div>");
+
+    expect(response.headers.has("Content-Type"));
+    expect(response.headers.get("Content-Type")).toEqual("text/html");
   });
 
   it("send() should stringify the body if complex object", () => {

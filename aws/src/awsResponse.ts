@@ -42,12 +42,24 @@ export class AwsResponse implements CloudResponse {
    * @param callback Callback function to call with response
    */
   public send(body: any, status: number = 200): void {
-    if (typeof (body) !== "string") {
-      body = JSON.stringify(body);
+    const responseBody = typeof (body) !== "string"
+      ? JSON.stringify(body)
+      : body;
+
+    this.body = responseBody;
+    this.status = status;
+
+    if (!body) {
+      return;
     }
 
-    this.body = body;
-    this.status = status;
+    if (body.constructor.name === "Object") {
+      this.headers.set("Content-Type", "application/json");
+    }
+
+    if (typeof (body) === "string") {
+      this.headers.set("Content-Type", "text/html");
+    }
   }
 
   public flush(): void {
