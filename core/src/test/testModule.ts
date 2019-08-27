@@ -24,11 +24,11 @@ export class TestModule implements CloudModule {
 
       bind<CloudRequest>(ComponentType.CloudRequest)
         .to(TestRequest)
-        .when((req) => TestModule.isHttpRequest(req) && TestModule.isHttpRequest(req));
+        .when((req) => TestModule.isTestEnvironment() && TestModule.isHttpRequest(req));
 
       bind<CloudResponse>(ComponentType.CloudResponse)
         .to(TestResponse)
-        .when((req) => TestModule.isHttpRequest(req) && TestModule.isHttpRequest(req));
+        .when((req) => TestModule.isTestEnvironment() && TestModule.isHttpRequest(req));
 
       bind<CloudService>(ComponentType.CloudService)
         .to(TestCloudService)
