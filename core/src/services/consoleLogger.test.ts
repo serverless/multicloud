@@ -1,4 +1,5 @@
-import { ConsoleLogger, LogLevel } from ".";
+import { ConsoleLogger } from "./consoleLogger";
+import { LogLevel } from "./logger";
 
 describe("Console Logger", () => {
   beforeEach(() => {

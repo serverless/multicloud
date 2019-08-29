@@ -1,5 +1,7 @@
-import { CloudContext, App, Handler, StorageMiddleware } from "..";
 import MockFactory from "../test/mockFactory";
+import { App, Handler } from "../app";
+import { CloudContext } from "../cloudContext";
+import { StorageMiddleware } from "./storageMiddleware";
 
 describe("StorageMiddleware should", () => {
   let app: App;

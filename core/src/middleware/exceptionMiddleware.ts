@@ -1,5 +1,5 @@
-import { CloudContext } from "..";
 import { Middleware } from "../app";
+import { CloudContext } from "../cloudContext";
 
 /**
  * Options for handling exceptions

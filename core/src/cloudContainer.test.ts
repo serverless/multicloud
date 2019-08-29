@@ -1,8 +1,11 @@
 import { ContainerModule } from "inversify";
-import {
-  CloudContainer, CloudModule, ComponentType, CloudContext, CloudRequest, CloudResponse,
-  TestModule, TestRequest, TestResponse
-} from ".";
+import { CloudContainer, ComponentType, CloudModule } from "./cloudContainer";
+import { CloudContext } from "./cloudContext";
+import { TestModule } from "./test/testModule";
+import { CloudRequest } from "./cloudRequest";
+import { TestRequest } from "./test/testRequest";
+import { CloudResponse } from "./cloudResponse";
+import { TestResponse } from "./test/testResponse";
 
 describe("Core Module", () => {
   let cloudContainer: CloudContainer = undefined;

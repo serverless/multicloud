@@ -1,5 +1,7 @@
-import { CloudContext, App, HTTPBindingMiddleware, Handler } from "..";
 import MockFactory from "../test/mockFactory";
+import { App, Handler } from "../app";
+import { CloudContext } from "../cloudContext";
+import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
 
 describe("HTTPBindingMiddleware should", () => {
   let app: App;

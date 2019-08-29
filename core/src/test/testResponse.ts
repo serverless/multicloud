@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { injectable } from "inversify";
-import { CloudResponse, StringParams } from "..";
+import { CloudResponse } from "../cloudResponse";
+import { StringParams } from "../common/stringParams";
 
 @injectable()
 export class TestResponse implements CloudResponse {

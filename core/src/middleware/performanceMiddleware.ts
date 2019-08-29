@@ -1,6 +1,7 @@
 import { performance, PerformanceObserver } from "perf_hooks";
-import { CloudContext, ConsoleLogger } from "..";
 import { Middleware } from "../app";
+import { CloudContext } from "../cloudContext";
+import { ConsoleLogger } from "../services/consoleLogger";
 
 /**
  * Request ID response header name.

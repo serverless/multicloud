@@ -1,4 +1,5 @@
-import { Middleware, Handler, CloudContext } from "..";
+import { Middleware, Handler } from "../app";
+import { CloudContext } from "../cloudContext";
 
 export default class MockFactory {
   /**
@@ -52,5 +53,49 @@ export default class MockFactory {
       throw err;
     }
     setImmediate(callback);
+  }
+
+  private static middlewareMap = new Map();
+
+  /**
+   * Creates a spy on a middleware an calls original implementation
+   * @param moduleName The module to spy on
+   * @param middlewareName The middleware export name
+   */
+  public static spyOnMiddleware(moduleName: string, middlewareName: string) {
+    let createMiddlewareFunction = null;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const origModule = require(moduleName);
+    const origMiddleware = origModule[middlewareName];
+
+    // Create a spy that will be bound to the original imported component
+    const createMiddlewareSpy = (...args) => {
+      const result = origMiddleware(...args);
+      const spy = jest.fn(result);
+
+      // Set reference to spy so we can later check and perform assertions against it
+      if (createMiddlewareFunction) {
+        MockFactory.middlewareMap.set(createMiddlewareFunction, spy);
+      }
+
+      return spy;
+    };
+
+    createMiddlewareFunction = jest.fn(createMiddlewareSpy);
+
+    // Overwrites the spy onto the original module
+    Object.defineProperty(origModule, middlewareName, {
+      value: createMiddlewareFunction,
+    });
+
+    return createMiddlewareFunction;
+  }
+
+  /**
+   * Gets the spy associated with the requested middleware
+   * @param middleware The middleware
+   */
+  public static ensureMiddleware(middleware: Function) {
+    return MockFactory.middlewareMap.get(middleware) || jest.fn();
   }
 }

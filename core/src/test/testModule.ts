@@ -1,9 +1,16 @@
 import "reflect-metadata";
 import { interfaces, ContainerModule } from "inversify";
-import {
-  CloudModule, ComponentType, CloudContext, CloudRequest, CloudResponse, CloudService, CloudStorage,
-  TestCloudService, TestCloudStorage, TestContext, TestRequest, TestResponse
-} from "..";
+import { CloudModule, ComponentType } from "../cloudContainer";
+import { CloudContext } from "../cloudContext";
+import { TestContext } from "./testContext";
+import { CloudRequest } from "../cloudRequest";
+import { TestRequest } from "./testRequest";
+import { CloudResponse } from "../cloudResponse";
+import { TestResponse } from "./testResponse";
+import { CloudService } from "../services/cloudService";
+import { TestCloudService } from "./testCloudService";
+import { CloudStorage } from "../services/cloudStorage";
+import { TestCloudStorage } from "./testCloudStorage";
 
 export class TestModule implements CloudModule {
   private static isTestEnvironment(): boolean {
