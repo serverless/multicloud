@@ -1,6 +1,10 @@
 import os from "os";
 import MockFactory from "../test/mockFactory";
-import { TelemetryOptions, TelemetryService, CloudContext, App, TelemetryServiceMiddleware, TestContext } from "..";
+import { CloudContext } from "../cloudContext";
+import { TestContext } from "../test/testContext";
+import { App } from "../app";
+import { TelemetryService, TelemetryOptions } from "../services/telemetry";
+import { TelemetryServiceMiddleware } from "./telemetryMiddleware";
 
 describe("TelemetryServiceMiddleware should", () => {
   jest.mock("os");

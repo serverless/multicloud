@@ -1,5 +1,8 @@
-import { RequestLoggingMiddleware, LoggingOptions, Logger, LogLevel, App, TestContext } from "..";
 import MockFactory from "../test/mockFactory";
+import { TestContext } from "../test/testContext";
+import { Logger, LogLevel } from "../services/logger";
+import { RequestLoggingMiddleware, LoggingOptions } from "./requestLoggingMiddleware";
+import { App } from "../app";
 
 describe("requestLoggingServiceMiddleware should", () => {
   class TestLogger implements Logger {

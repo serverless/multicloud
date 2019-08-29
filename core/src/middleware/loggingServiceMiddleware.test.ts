@@ -1,4 +1,8 @@
-import { CloudContext, TestContext, Logger, LogLevel, ConsoleLogger, LoggingServiceMiddleware } from "..";
+import { CloudContext } from "../cloudContext";
+import { TestContext } from "../test/testContext";
+import { LoggingServiceMiddleware } from "./loggingServiceMiddleware";
+import { Logger, LogLevel } from "../services/logger";
+import { ConsoleLogger } from "../services/consoleLogger";
 
 describe("LoggingServiceMiddleware should", () => {
   class TestLogger implements Logger {

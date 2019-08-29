@@ -1,14 +1,14 @@
-import {
-  PerformanceMiddleware, RequestIdResponseHeader, DurationResponseHeader,
-  TestContext, TestResponse, ConsoleLogger
-} from "..";
+import { TestContext } from "../test/testContext";
+import { TestResponse } from "../test/testResponse";
+import { ConsoleLogger } from "../services/consoleLogger";
+import { PerformanceMiddleware, DurationResponseHeader, RequestIdResponseHeader } from "./performanceMiddleware"
 
 describe("PerformanceMiddleware should", () => {
   let context;
 
   beforeEach(() => {
     context = new TestContext();
-    context.res = new TestResponse(context);
+    context.res = new TestResponse();
     context.logger = new ConsoleLogger();
     context.logger.info = jest.fn();
   })

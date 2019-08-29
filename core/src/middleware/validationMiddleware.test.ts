@@ -1,7 +1,7 @@
-import {
-  createValidationMiddleware, ValidationOptions, ValidationResult,
-  Middleware, TestContext, CloudContext
-} from "..";
+import { CloudContext } from "../cloudContext";
+import { Middleware } from "../app";
+import { TestContext } from "../test/testContext";
+import { createValidationMiddleware, ValidationResult, ValidationOptions } from "./validationMiddleware";
 
 describe("Validation Middleware", () => {
   const successValidation: ValidationResult = {

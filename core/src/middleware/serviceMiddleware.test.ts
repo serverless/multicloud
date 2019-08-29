@@ -1,4 +1,9 @@
-import { CloudContainer, TestModule, TestContext, TestCloudService, CloudContext, ServiceMiddleware } from "..";
+import { CloudContext } from "../cloudContext";
+import { CloudContainer } from "../cloudContainer";
+import { TestModule } from "../test/testModule";
+import { TestCloudService } from "../test/testCloudService";
+import { TestContext } from "../test/testContext";
+import { ServiceMiddleware } from "./serviceMiddleware";
 
 describe("ServiceMiddleware should", () => {
   let context: CloudContext;

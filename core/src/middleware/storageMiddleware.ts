@@ -1,4 +1,7 @@
-import { CloudContext, CloudStorage, ComponentType, Middleware } from "..";
+import { Middleware } from "../app";
+import { CloudContext } from "../cloudContext";
+import { CloudStorage } from "../services/cloudStorage";
+import { ComponentType } from "../cloudContainer";
 
 /**
  * Middleware for adding the storage service to the context object.

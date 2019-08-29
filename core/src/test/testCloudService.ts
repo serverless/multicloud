@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { injectable } from "inversify";
-import { CloudService } from "..";
+import { CloudService } from "../services/cloudService";
 
 @injectable()
 export class TestCloudService implements CloudService {

@@ -1,5 +1,7 @@
 import { cpus, totalmem, freemem } from "os";
-import { Middleware, CloudContext, TelemetryOptions } from "..";
+import { TelemetryOptions } from "../services/telemetry";
+import { Middleware } from "../app";
+import { CloudContext } from "../cloudContext";
 
 /**
  *

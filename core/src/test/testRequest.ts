@@ -1,6 +1,9 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import { CloudRequest, ComponentType, CloudContext, StringParams } from "..";
+import { CloudRequest } from "../cloudRequest";
+import { ComponentType } from "../cloudContainer";
+import { CloudContext } from "../cloudContext";
+import { StringParams } from "../common/stringParams";
 
 @injectable()
 export class TestRequest implements CloudRequest {

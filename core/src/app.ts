@@ -1,6 +1,8 @@
 import Guard from "./common/guard";
 import { ensurePromise } from "./common/util";
-import { CloudContext, TestModule, ComponentType, CloudContainer, CloudModule } from ".";
+import { CloudContainer, CloudModule, ComponentType } from "./cloudContainer";
+import { TestModule } from "./test/testModule";
+import { CloudContext } from "./cloudContext";
 
 /**
  * Base level app. Handles registration for all cloud modules and

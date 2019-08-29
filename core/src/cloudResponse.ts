@@ -1,4 +1,4 @@
-import { StringParams } from ".";
+import { StringParams } from "./common/stringParams";
 
 /**
  * Common HTTP Response for Serverless functions
@@ -6,6 +6,8 @@ import { StringParams } from ".";
 export interface CloudResponse {
   /** Headers of response */
   headers?: StringParams;
+  body: string;
+  status: number;
 
   /**
    * Send response

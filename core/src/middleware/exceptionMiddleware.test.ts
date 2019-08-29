@@ -1,5 +1,7 @@
-import { App, TestContext, ExceptionMiddleware, ExceptionOptions } from "..";
 import MockFactory from "../test/mockFactory";
+import { TestContext } from "../test/testContext";
+import { App } from "../app";
+import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";
 
 describe("Tests of ExceptionMiddleware should", () => {
   let options: ExceptionOptions = {

@@ -1,6 +1,7 @@
-import { App } from "./app";
-import { CloudContext, TestContext } from ".";
 import MockFactory from "./test/mockFactory";
+import { CloudContext } from "./cloudContext";
+import { App } from "./app";
+import { TestContext } from "./test/testContext";
 
 const errorMiddleware = (spy: Function) => async (
   context: CloudContext
