@@ -1,4 +1,4 @@
-import Guard from "../common/guard";
+import { Guard } from "../common/guard";
 import { CloudContext } from "../cloudContext";
 import { TestContext } from "./testContext";
 import { TestRequest } from "./testRequest";

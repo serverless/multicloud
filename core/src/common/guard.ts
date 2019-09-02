@@ -1,4 +1,4 @@
-export default class Guard {
+export class Guard {
   /**
    * Validates the string express is not null or empty, otherwise throws an exception
    * @param value - The value to validate

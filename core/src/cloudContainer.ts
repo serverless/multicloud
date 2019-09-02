@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Container, ContainerModule, interfaces } from "inversify";
-import Guard from "./common/guard";
+import { Guard } from "./common/guard";
 
 /**
  * Module that can be registered within CloudContainer

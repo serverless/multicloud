@@ -1,4 +1,4 @@
-import Guard from "./common/guard";
+import { Guard } from "./common/guard";
 import { ensurePromise } from "./common/util";
 import { CloudContainer, CloudModule, ComponentType } from "./cloudContainer";
 import { TestModule } from "./test/testModule";
