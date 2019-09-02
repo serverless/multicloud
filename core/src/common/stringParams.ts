@@ -1,4 +1,4 @@
-import Guard from "./guard";
+import { Guard } from "./guard";
 
 /**
  * Create a case insensitive string parameter map

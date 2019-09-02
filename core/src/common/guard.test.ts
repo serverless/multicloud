@@ -1,4 +1,4 @@
-import Guard from "./guard";
+import { Guard } from "./guard";
 
 describe("Guard", () => {
   function methodWithRequiredName(name: string) {
