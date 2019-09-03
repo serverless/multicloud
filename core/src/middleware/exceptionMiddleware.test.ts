@@ -1,4 +1,4 @@
-import MockFactory from "../test/mockFactory";
+import { MockFactory } from "../test/mockFactory";
 import { TestContext } from "../test/testContext";
 import { App } from "../app";
 import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";

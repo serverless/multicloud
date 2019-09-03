@@ -5,3 +5,4 @@ export * from "./testModule"
 export * from "./testCloudService";
 export * from "./testCloudStorage";
 export * from "./cloudContextBuilder";
+export * from "./mockFactory";

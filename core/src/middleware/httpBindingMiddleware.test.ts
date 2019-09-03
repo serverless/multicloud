@@ -1,4 +1,4 @@
-import MockFactory from "../test/mockFactory";
+import { MockFactory } from "../test/mockFactory";
 import { App, Handler } from "../app";
 import { CloudContext } from "../cloudContext";
 import { HTTPBindingMiddleware } from "./httpBindingMiddleware";

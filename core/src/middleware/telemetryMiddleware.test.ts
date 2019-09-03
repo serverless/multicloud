@@ -1,5 +1,5 @@
 import os from "os";
-import MockFactory from "../test/mockFactory";
+import { MockFactory } from "../test/mockFactory";
 import { CloudContext } from "../cloudContext";
 import { TestContext } from "../test/testContext";
 import { App } from "../app";

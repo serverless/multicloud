@@ -1,7 +1,7 @@
 import { Middleware, Handler } from "../app";
 import { CloudContext } from "../cloudContext";
 
-export default class MockFactory {
+export class MockFactory {
   /**
    * Creates a middleware that executes the specified spy
    * @param spy The spy function to call
