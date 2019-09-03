@@ -4,7 +4,7 @@ import { TestContext } from "./testContext";
 import { TestRequest } from "./testRequest";
 import { TestResponse } from "./testResponse";
 import { Middleware } from "../app";
-import MockFactory from "./mockFactory";
+import { MockFactory } from "./mockFactory";
 
 interface SimpleMap<T = any> {
   [key: string]: T;
