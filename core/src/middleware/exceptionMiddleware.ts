@@ -18,7 +18,14 @@ export const ExceptionMiddleware = (options: ExceptionOptions): Middleware =>
   (context: CloudContext, next: () => Promise<void>): Promise<void> => {
     function onError(err) {
       options.log(err);
-      context.send(err, 500);
+
+      const result = {
+        requestId: context.id,
+        message: err.toString(),
+        timestamp: new Date()
+      };
+
+      context.send(result, 500);
     }
 
     try {
