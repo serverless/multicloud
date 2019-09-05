@@ -44,13 +44,13 @@ describe("Azure context", () => {
   it("when send() calls response.send() on httpTrigger", () => {
     const body = { message: "Hello World" };
     context.send(body);
-    expect(context.res.send).toHaveBeenCalledWith(body, 200);
+    expect(context.res.send).toBeCalledWith(body, 200);
   });
 
   it("when send() calls response.send() on httpTrigger with custom status", () => {
     const body = { message: "oh Crap!" };
     context.send(body, 400);
-    expect(context.res.send).toHaveBeenCalledWith(body, 400);
+    expect(context.res.send).toBeCalledWith(body, 400);
   });
 
   it("send() calls runtime done() on fail status code", () => {
@@ -62,6 +62,11 @@ describe("Azure context", () => {
   it("send() calls context.done() on success status code", () => {
     context.send("test", 200);
     expect(context.done).toBeCalled();
+  });
+
+  it("send() with no params uses default values", () => {
+    context.send();
+    expect(context.res.send).toBeCalledWith(null, 200);
   });
 
   it("flush() calls response.flush()", () => {

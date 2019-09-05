@@ -132,6 +132,17 @@ describe("Azure Response", () => {
     });
   });
 
+  it("send with empty body should default to null value", () => {
+    const azureContext = createAzureContext(defaultParams);
+
+    azureContext.res.send();
+    expect(azureContext.res).toMatchObject({
+      body: null,
+      headers: expect.any(StringParams),
+      status: 200,
+    });
+  });
+
   it("flush() calls runtime callback when non-default output binding has not been defined", () => {
     const azureContext = createAzureContext(defaultParams);
     const doneSpy = jest.spyOn(azureContext.runtime.context, "done");

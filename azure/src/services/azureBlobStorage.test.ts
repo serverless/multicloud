@@ -23,7 +23,7 @@ describe("Azure Blob Storage adapter should", () => {
     StorageURL.newPipeline = jest.fn();
 
     new AzureBlobStorage();
-    expect(SharedKeyCredential).toHaveBeenCalledWith(account, accountKey)
+    expect(SharedKeyCredential).toBeCalledWith(account, accountKey)
     expect(StorageURL.newPipeline).toHaveBeenCalled();
 
     process.env = OLD_ENV;

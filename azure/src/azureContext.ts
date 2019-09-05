@@ -52,7 +52,7 @@ export class AzureContext implements CloudContext {
    * @param body Body of response
    * @param status Status code of response
    */
-  public send(body: any, status: number = 200): void {
+  public send(body: any = null, status: number = 200): void {
     try {
       if (this.res) {
         this.res.send(body, status);
