@@ -173,7 +173,7 @@ describe("Azure Response", () => {
     azureContext.res.send("OK", 200);
     azureContext.flush();
 
-    expect(doneSpy).not.toBeCalled();
+    expect(doneSpy).toBeCalled();
     expect(azureContext.runtime.context.res).toEqual({
       headers: azureContext.runtime.context.res.headers,
       body: azureContext.runtime.context.res.body,

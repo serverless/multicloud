@@ -78,6 +78,7 @@ export class AzureResponse implements CloudResponse {
     // The Azure functions framework will then set the output bindings to the value of runtime.res
     if (outputBinding && outputBinding.name !== "$return") {
       this.runtime.context.res = response;
+      this.runtime.context.done();
     } else { // Otherwise call the done callback with the response
       this.runtime.context.done(null, response);
     }
