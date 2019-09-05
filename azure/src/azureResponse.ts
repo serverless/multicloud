@@ -43,7 +43,9 @@ export class AzureResponse implements CloudResponse {
    * @param body Body of HTTP response
    * @param status Status code of HTTP response
    */
-  public send(body: any, status: number = 200): void {
+  public send(body: any = null, status: number = 200): void {
+    // If body was left as `undefined` vs `null` the azure functions runtime
+    // incorrectly returns the full `response` object as the `body` of the response object
     this.body = body;
     this.status = status;
 
