@@ -1,53 +1,77 @@
 import { MockFactory } from "../test/mockFactory";
-import { TestContext } from "../test/testContext";
 import { App } from "../app";
 import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";
+import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
+import { CloudContextBuilder } from "../test/cloudContextBuilder";
 
-describe("Tests of ExceptionMiddleware should", () => {
+describe("Exception Middleware", () => {
   let options: ExceptionOptions = {
     log: jest.fn()
   };
 
   const handler = MockFactory.createMockHandler();
-  const errorStatus = 500;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("catch exception and log error", async () => {
+  it("logs error and outputs 500 response when sync exception occurs within a handler", async () => {
     const errorMessage = "Fail";
     const error = new Error(errorMessage);
 
-    const failHandler = MockFactory.createMockHandler(() => {
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
+    const failHandler = app.use(middlewares, () => {
       throw error;
     });
-    const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App();
-    await app.use([ExceptionMiddleware(options)], failHandler)();
+
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(failHandler);
+
     expect(options.log).toHaveBeenCalledWith(error);
-    expect(sendSpy).toHaveBeenCalledWith(error, errorStatus);
+
+    expect(context.res).toMatchObject({
+      body: {
+        requestId: expect.any(String),
+        message: error.toString(),
+        timestamp: expect.any(Date),
+      },
+      status: 500
+    });
   });
 
-  it("call next without calling exception or logging", async () => {
-    const context = new TestContext();
+  it("calls next when no exception occurs", async () => {
+    const builder = new CloudContextBuilder();
+    const context = builder.build();
+
     const next = jest.fn(() => Promise.resolve());
     await ExceptionMiddleware(options)(context, next);
+
     expect(next).toHaveBeenCalled();
     expect(options.log).not.toHaveBeenCalled();
-    expect(context.send).not.toHaveBeenCalled();
   });
 
-  it("call next middleware after exceptionMiddleware using App", async () => {
+  it("calls next middleware/handler in app pipeline when no exception occurs", async () => {
     const mockMiddleware = MockFactory.createMockMiddleware();
 
     const app = new App();
-    await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware(), mockMiddleware];
+    const mockHandler = app.use(middlewares, handler);
+
+    const builder = new CloudContextBuilder()
+    await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(mockHandler);
+
     expect(mockMiddleware).toHaveBeenCalled();
     expect(handler).toHaveBeenCalled();
   });
 
-  it("call next middleware and receive error, call exception and log error", async () => {
+  it("logs error and outputs 500 response when exception occurs within a middleware", async () => {
     const errorMessage = "Fail";
     const error = new Error(errorMessage);
 
@@ -56,39 +80,80 @@ describe("Tests of ExceptionMiddleware should", () => {
     };
     const mockMiddleware = MockFactory.createMockMiddleware(failNext);
 
-    const sendSpy = jest.spyOn(TestContext.prototype, "send");
     const app = new App();
-    await app.use([ExceptionMiddleware(options), mockMiddleware], handler)();
-    expect(sendSpy).toHaveBeenCalledWith(error, errorStatus);
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware(), mockMiddleware];
+    const failHandler = app.use(middlewares, handler);
+
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(failHandler);
+
     expect(options.log).toHaveBeenCalledWith(error);
+    expect(context.res).toMatchObject({
+      body: {
+        requestId: expect.any(String),
+        message: error.toString(),
+        timestamp: expect.any(Date),
+      },
+      status: 500
+    });
   });
 
-  it("catches and logs errors when promise is rejected in handler", async () => {
-    const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App();
+  it("logs errors and outputs 500 response when promise is rejected within a handler", async () => {
     const errorMessage = "promise rejected";
-    const failHandler = MockFactory.createMockHandler(() => {
+
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
+    const failHandler = app.use(middlewares, () => {
       return Promise.reject(errorMessage);
     });
 
-    await app.use([ExceptionMiddleware(options)], failHandler)();
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(failHandler);
 
-    expect(sendSpy).toBeCalledWith(errorMessage, 500);
-    expect(options.log).toBeCalledWith(errorMessage);
+    expect(options.log).toHaveBeenCalledWith(errorMessage);
+
+    expect(context.res).toMatchObject({
+      body: {
+        requestId: expect.any(String),
+        message: errorMessage,
+        timestamp: expect.any(Date),
+      },
+      status: 500
+    });
   });
 
-  it("catches and logs error when promise is rejected in other middleware", async () => {
-    const sendSpy = jest.spyOn(TestContext.prototype, "send");
-    const app = new App();
-    const errorMessage = "promise rejected";
-    const handler = MockFactory.createMockHandler();
-    const failMiddleware = MockFactory.createMockMiddleware(() => {
+  it("logs error and outputs 500 response when promise is rejected within a middleware", async () => {
+    const errorMessage = "project rejected";
+
+    const failNext = () => {
       return Promise.reject(errorMessage);
+    };
+    const mockMiddleware = MockFactory.createMockMiddleware(failNext);
+
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware(), mockMiddleware];
+    const failHandler = app.use(middlewares, handler);
+
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(failHandler);
+
+    expect(options.log).toHaveBeenCalledWith(errorMessage);
+    expect(context.res).toMatchObject({
+      body: {
+        requestId: expect.any(String),
+        message: errorMessage,
+        timestamp: expect.any(Date),
+      },
+      status: 500
     });
-
-    await app.use([ExceptionMiddleware(options), failMiddleware], handler)();
-
-    expect(sendSpy).toBeCalledWith(errorMessage, 500);
-    expect(options.log).toBeCalledWith(errorMessage);
   });
 });
