@@ -43,6 +43,6 @@ steps:
   inputs:
     command: custom
     workingDir: core
-    customCommand: run publish --tag=beta --access public
+    customCommand: publish --tag=beta --access public
     publishEndpoint: NPM
     verbose: true
