@@ -41,8 +41,8 @@ steps:
 
 - task: Npm@1
   inputs:
-    command: publish
+    command: custom
     workingDir: core
-    arguments: --tag=beta
+    customCommand: run publish --tag=beta --access public
     publishEndpoint: NPM
     verbose: true
