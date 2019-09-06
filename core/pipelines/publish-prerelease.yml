@@ -28,6 +28,11 @@ steps:
   persistCredentials: true
   fetchDepth: 1
 
+- task: npmAuthenticate@0
+  displayName: 'npm Authenticate core/.npmrc'
+  inputs:
+    workingFile: core/.npmrc
+
 - task: Bash@3
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
@@ -37,11 +42,15 @@ steps:
     arguments: '@multicloud/sls-core'
     workingDirectory: core
   env:
+    NPM_TOKEN: $(NPM_TOKEN)
     SOURCE_BRANCH: $(Build.SourceBranch)
 
-- task: Npm@1
+- task: Bash@3
+  displayName: 'Publish sls-core to AzDO NPM'
   inputs:
-    command: publish --tag=beta --access public
-    workingDir: core
-    publishEndpoint: NPM
-    verbose: true
+    targetType: filePath
+    filePath: ./scripts/publish.sh
+    arguments: 'prerelease'
+    workingDirectory: core
+  env:
+    NPM_TOKEN: $(NPM_TOKEN)
