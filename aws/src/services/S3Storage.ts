@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
+import { CloudStorage, ReadBlobOptions, WriteBlobOptions, convertToStream, Guard, WriteBlobOutput } from "@multicloud/sls-core";
 import { Stream } from "stream";
 import { injectable } from "inversify";
 import "reflect-metadata";
@@ -30,5 +30,30 @@ export class S3Storage implements CloudStorage {
     };
     const result = await this.s3.getObject(params).promise()
     return result.Body as Stream
+  }
+
+  /**
+   * Write an object to an S3 bucket
+   * @param opts Container (bucket), blob (object) and body to write to S3
+   */
+  public async write(opts: WriteBlobOptions): Promise<WriteBlobOutput> {
+    Guard.empty(opts.container, "container");
+    Guard.empty(opts.path, "path");
+    Guard.null(opts.body, "body");
+
+    const streamBody = convertToStream(opts.body);
+    const params = {
+      ...opts.options,
+      Bucket: opts.container,
+      Key: opts.path,
+      Body: streamBody,
+      ContentLength: streamBody.readableLength
+    };
+    const result = await this.s3.putObject(params).promise();
+
+    return {
+      version: result.VersionId,
+      eTag: result.ETag
+    };
   }
 }
