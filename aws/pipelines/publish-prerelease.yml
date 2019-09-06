@@ -14,6 +14,8 @@ trigger:
     include:
     - aws/*
 
+pr: none
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -27,11 +29,6 @@ steps:
   clean: true
   persistCredentials: true
   fetchDepth: 1
-
-- task: npmAuthenticate@0
-  displayName: 'npm Authenticate aws/.npmrc'
-  inputs:
-    workingFile: aws/.npmrc
 
 - task: Bash@3
   name: BumpNpmVersion
