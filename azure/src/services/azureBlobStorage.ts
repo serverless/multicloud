@@ -4,9 +4,11 @@ import {
   ServiceURL,
   StorageURL,
   SharedKeyCredential,
-  ContainerURL
+  ContainerURL,
+  BlockBlobURL,
+  uploadStreamToBlockBlob
 } from "@azure/storage-blob";
-import { CloudStorage, ReadBlobOptions } from "@multicloud/sls-core";
+import { CloudStorage, ReadBlobOptions, WriteBlobOptions, Guard, convertToStream, WriteBlobOutput } from "@multicloud/sls-core";
 import { injectable } from "inversify";
 import { Stream } from "stream";
 import "reflect-metadata";
@@ -45,5 +47,29 @@ export class AzureBlobStorage implements CloudStorage {
 
     const stream = await blobURL.download(Aborter.none, 0)
     return stream.readableStreamBody
+  }
+
+  /**
+   * Write a blob to Azure Storage account
+   * @param opts Specifies container and blob to write
+   */
+  public async write(opts: WriteBlobOptions): Promise<WriteBlobOutput> {
+    Guard.empty(opts.container);
+    Guard.empty(opts.path);
+    Guard.null(opts.body);
+
+    const containerURL = ContainerURL.fromServiceURL(this.service, opts.container);
+    const blockBlobURL = BlockBlobURL.fromContainerURL(containerURL, opts.path);
+
+    const stream = convertToStream(opts.body);
+
+    const bufferSize = 4*1024*1024;
+    const maxBuffers = 5;
+    const result = await uploadStreamToBlockBlob(Aborter.none, stream, blockBlobURL, bufferSize, maxBuffers);
+
+    return {
+      eTag: result.eTag,
+      version: result.version,
+    };
   }
 }

@@ -3,12 +3,20 @@ import {
   BlobURL,
   StorageURL,
   SharedKeyCredential,
-  ContainerURL
+  ContainerURL,
+  BlockBlobURL,
+  uploadStreamToBlockBlob
 } from "@azure/storage-blob";
+import { WriteBlobOptions } from "@multicloud/sls-core";
 
 jest.mock("@azure/storage-blob");
 
 describe("Azure Blob Storage adapter should", () => {
+  const response = {
+    eTag: "foo",
+    version: "1.0"
+  };
+
   it("connect to blob service when initialize", () => {
     const OLD_ENV = process.env;
 
@@ -65,4 +73,78 @@ describe("Azure Blob Storage adapter should", () => {
 
     await expect(sut.read(fileOptions)).rejects.toThrow(err);
   });
+
+  it("write a string file successfully", async () => {
+    ContainerURL.fromServiceURL = jest.fn();
+    BlockBlobURL.fromContainerURL = jest.fn()
+
+    uploadStreamToBlockBlob.mockResolvedValue(response);
+
+    const sut = new AzureBlobStorage();
+    const writeOptions: WriteBlobOptions = {
+      container: "foo",
+      path: "bar",
+      body: "hotSpotsBody"
+    };
+
+    expect(await sut.write(writeOptions)).toEqual(response);
+  });
+
+  it("write a stream file successfully", async () => {
+    ContainerURL.fromServiceURL = jest.fn();
+    BlockBlobURL.fromContainerURL = jest.fn();
+
+    uploadStreamToBlockBlob.mockResolvedValue(response);
+
+    var Readable = require("stream").Readable;
+    var stream = new Readable;
+    stream.push("hotSpotsBody");
+    stream.push(null);
+
+    const sut = new AzureBlobStorage();
+    const writeOptions: WriteBlobOptions = {
+      container: "foo",
+      path: "bar",
+      body: stream
+    };
+
+    expect(await sut.write(writeOptions)).toEqual(response);
+  });
+
+  it("write a buffer file successfully", async () => {
+    ContainerURL.fromServiceURL = jest.fn();
+    BlockBlobURL.fromContainerURL = jest.fn();
+
+    uploadStreamToBlockBlob.mockResolvedValue(response);
+
+    const buffer = Buffer.from("hotSpotBody");
+
+    const sut = new AzureBlobStorage();
+    const writeOptions: WriteBlobOptions = {
+      container: "foo",
+      path: "bar",
+      body: buffer
+    };
+
+    expect(await sut.write(writeOptions)).toEqual(response);
+  });
+
+  it("throw an error when writing a file", async () => {
+    const err = "fail";
+
+    ContainerURL.fromServiceURL = jest.fn();
+    BlockBlobURL.fromContainerURL = jest.fn()
+
+    uploadStreamToBlockBlob.mockRejectedValue(new Error(err));
+
+    const sut = new AzureBlobStorage();
+    const writeOptions: WriteBlobOptions = {
+      container: "foo",
+      path: "bar",
+      body: "hotSpotsBody"
+    };
+
+    await expect(sut.write(writeOptions)).rejects.toThrow(err);
+  });
+
 });
