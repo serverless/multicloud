@@ -13,6 +13,7 @@ describe("Aws Cloud Module", () => {
 
   describe("when aws request", () => {
     beforeAll(() => {
+      process.env.NODE_ENV = "test-aws";
       container = new CloudContainer();
       container.registerModule(awsModule);
       container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
