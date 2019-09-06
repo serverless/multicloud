@@ -21,11 +21,6 @@ steps:
   inputs:
     versionSpec: 10.x
 
-- task: npmAuthenticate@0
-  displayName: 'npm Authenticate aws/.npmrc'
-  inputs:
-    workingFile: aws/.npmrc
-
 - task: Bash@3
   displayName: 'Build sls-aws'
   inputs:
