@@ -84,6 +84,14 @@ describe("Azure Response", () => {
     expect(azureContext.res.headers.get("Content-Type")).toEqual("text/html");
   });
 
+  it("should set content-type to application/json for array object", () => {
+    const azureContext = createAzureContext(defaultParams);
+    azureContext.res.send(["a", "b", "c"]);
+
+    expect(azureContext.res.headers.has("Content-Type"));
+    expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
+  });
+
   it("should have status = 400", () => {
     const expectedStatusStatus = 400;
     const azureContext = createAzureContext(defaultParams);

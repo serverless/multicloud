@@ -53,11 +53,13 @@ export class AzureResponse implements CloudResponse {
       return;
     }
 
-    if (body.constructor.name === "Object") {
+    const bodyType = body.constructor.name;
+
+    if (["Object", "Array"].includes(bodyType)) {
       this.headers.set("Content-Type", "application/json");
     }
 
-    if (typeof (body) === "string") {
+    if (["String"].includes(bodyType)) {
       this.headers.set("Content-Type", "text/html");
     }
   }
