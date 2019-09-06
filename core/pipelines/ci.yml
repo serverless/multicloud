@@ -21,11 +21,6 @@ steps:
   inputs:
     versionSpec: 10.x
 
-- task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
-  inputs:
-    workingFile: core/.npmrc
-
 - task: Bash@3
   displayName: 'Build sls-core'
   inputs:
