@@ -40,6 +40,15 @@ describe("test of response", () => {
     expect(response.headers.get("Content-Type")).toEqual("application/json");
   });
 
+  it("should set content-type to application/json for array object", () => {
+    const context = new AwsContext([{}, {}]);
+    const response = new AwsResponse(context);
+    response.send(["a", "b", "c"]);
+
+    expect(response.headers.has("Content-Type"));
+    expect(response.headers.get("Content-Type")).toEqual("application/json");
+  });
+
   it("should set content-type to text/html for string object", () => {
     const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);
