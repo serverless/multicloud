@@ -66,7 +66,7 @@ export class AwsResponse implements CloudResponse {
 
   public flush(): void {
     this.callback(null, {
-      headers: this.headers,
+      headers: this.headers.toJSON(),
       body: this.body,
       statusCode: this.status || 200,
     });

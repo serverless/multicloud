@@ -84,7 +84,7 @@ describe("test of response", () => {
     expect(callback).toBeCalledWith(
       null,
       {
-        headers: response.headers,
+        headers: response.headers.toJSON(),
         body: response.body,
         statusCode: response.status,
       }
