@@ -160,7 +160,7 @@ describe("Azure Response", () => {
 
     expect(azureContext.runtime.context.res).toEqual({});
     expect(doneSpy).toBeCalledWith(null, {
-      headers: azureContext.res.headers,
+      headers: azureContext.res.headers.toJSON(),
       body: azureContext.res.body,
       status: azureContext.res.status,
     });
