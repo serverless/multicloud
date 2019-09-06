@@ -19,7 +19,7 @@ export class App {
   public constructor(...modules: CloudModule[]) {
     Guard.null(modules);
 
-    if (modules.length === 0 && process.env.NODE_ENV === "test") {
+    if (modules.length === 0 || process.env.NODE_ENV === "test") {
       modules.push(new TestModule());
     }
 

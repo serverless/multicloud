@@ -1,7 +1,5 @@
-import { ContainerModule } from "inversify";
 import { MockFactory } from "./test/mockFactory";
 import { CloudContext } from "./cloudContext";
-import { CloudModule, ComponentType } from "./cloudContainer";
 import { App } from "./app";
 import { TestContext } from "./test/testContext";
 
@@ -166,43 +164,5 @@ describe("App", () => {
 
       expect(current).not.toBe(next);
     }
-  });
-
-  it("initialized with empty modules adds the TestModule to the list", async () => {
-    const app = new App();
-
-    const handler = async (context: CloudContext) => {
-      expect(context).toBeInstanceOf(TestContext);
-      context.done();
-    };
-
-    await app.use([], handler)();
-  });
-
-  it("initialized with a module doesn't add the TestModule to the list", async () => {
-    const context = {
-      providerType: "test",
-      id: "123",
-      event: "GET",
-      send: jest.fn(() => context.done()),
-      done: jest.fn(),
-      flush: jest.fn()
-    };
-
-    const mockModule: CloudModule = {
-      create: () => {
-        return new ContainerModule((bind) => {
-          bind<CloudContext>(ComponentType.CloudContext).toConstantValue(context);
-        });
-      }
-    };
-    const app = new App(mockModule);
-
-    const handler = async (context: CloudContext) => {
-      expect(context).not.toBeInstanceOf(TestContext);
-      context.done();
-    };
-
-    await app.use([], handler)();
   });
 });
