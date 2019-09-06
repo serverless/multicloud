@@ -28,6 +28,7 @@ describe("Azure Cloud Module", () => {
 
   describe("when azure request", () => {
     beforeAll(() => {
+      process.env.NODE_ENV = "test-azure";
       container = new CloudContainer();
       container.registerModule(azureModule);
       container.bind(ComponentType.RuntimeArgs).toConstantValue(params);
