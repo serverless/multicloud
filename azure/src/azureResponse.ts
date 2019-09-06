@@ -68,7 +68,7 @@ export class AzureResponse implements CloudResponse {
     const response = {
       status: this.status,
       body: this.body,
-      headers: this.headers,
+      headers: this.headers.toJSON(),
     };
 
     // Find the registered output binding for the function
