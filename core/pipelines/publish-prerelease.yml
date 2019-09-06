@@ -28,11 +28,6 @@ steps:
   persistCredentials: true
   fetchDepth: 1
 
-- task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
-  inputs:
-    workingFile: core/.npmrc
-
 - task: Bash@3
   name: BumpNpmVersion
   displayName: Bump NPM Prerelease Version
