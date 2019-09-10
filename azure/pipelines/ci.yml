@@ -8,6 +8,10 @@
 # integrations that can only be configured via AzDO UI.
 trigger: none
 
+pr:
+  - master
+  - dev
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -16,11 +20,6 @@ steps:
   displayName: 'Use Node 10.x'
   inputs:
     versionSpec: 10.x
-
-- task: npmAuthenticate@0
-  displayName: 'npm Authenticate azure/.npmrc'
-  inputs:
-    workingFile: azure/.npmrc
 
 - task: Bash@3
   displayName: 'Build sls-azure'
