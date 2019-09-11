@@ -59,7 +59,7 @@ steps:
     SOURCE_BRANCH: $(Build.SourceBranch)
 
 - task: Bash@3
-  displayName: 'Publish sls-aws to AzDO NPM'
+  displayName: 'Publish sls-aws to NPM'
   inputs:
     targetType: filePath
     filePath: ./scripts/publish.sh
