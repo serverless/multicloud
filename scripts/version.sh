@@ -7,6 +7,8 @@ NPM_RELEASE_TYPE=${2-"prerelease"}
 # Get full branch name excluding refs/head from the env var SOURCE_BRANCH
 SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/heads\/}
 
+export GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
 # Configure git to commit as Azure Dev Ops
 git config --local --add url."git@github.com:".insteadOf "https://github.com/"
 git config --local user.email "Multicloud Admin"
@@ -31,7 +33,6 @@ SHA=`git rev-parse HEAD`
 
 git tag ${PACKAGE_NAME}-${NPM_VERSION}
 
-export GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 git remote add authOrigin git@github.com:serverless/multicloud.git
 git push authOrigin ${SOURCE_BRANCH_NAME} --tags
 
