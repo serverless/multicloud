@@ -7,9 +7,12 @@ NPM_RELEASE_TYPE=${2-"prerelease"}
 # Get full branch name excluding refs/head from the env var SOURCE_BRANCH
 SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/heads\/}
 
+export GIT_SSH_COMMAND="ssh -vv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
 # Configure git to commit as Azure Dev Ops
-git config --local user.email "Azure Pipelines"
-git config --local user.name "azuredevops@microsoft.com"
+git config --local --add url."git@github.com:".insteadOf "https://github.com/"
+git config --local user.email "Multicloud Admin"
+git config --local user.name "multicloud@serverless.com"
 
 git pull origin ${SOURCE_BRANCH_NAME}
 git checkout ${SOURCE_BRANCH_NAME}
@@ -25,10 +28,12 @@ git add package-lock.json
 # Since there isn't a package.json at the root of repo
 # and we have multiple packages within same repo
 # we need to manually commit and tag in order to create unique tag names
-git commit -m "Bumping NPM package ${PACKAGE_NAME} prerelease to version ${NPM_VERSION} ***NO_CI***"
+git commit -m "release: Bumping NPM package ${PACKAGE_NAME} ${NPM_RELEASE_TYPE} to version ${NPM_VERSION} ***NO_CI***"
 SHA=`git rev-parse HEAD`
 
 git tag ${PACKAGE_NAME}-${NPM_VERSION}
-git push origin ${SOURCE_BRANCH_NAME} --tags
+
+git remote add authOrigin git@github.com:serverless/multicloud.git
+git push authOrigin ${SOURCE_BRANCH_NAME} --tags
 
 echo Pushed new tag: ${PACKAGE_NAME}-${NPM_VERSION} @ SHA: ${SHA:0:8}
