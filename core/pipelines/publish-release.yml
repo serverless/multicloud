@@ -13,21 +13,33 @@ pr: none
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+- group: GitHub-Deploy-Creds
+- group: npm-release-credentials
+
 steps:
 - task: NodeTool@0
   displayName: 'Use Node 10.x'
   inputs:
     versionSpec: 10.x
 
-- checkout: self
-  clean: true
-  persistCredentials: true
-  fetchDepth: 1
-
-- task: npmAuthenticate@0
-  displayName: 'npm Authenticate core/.npmrc'
+# Download secure file
+# Download a secure file to the agent machine
+- task: DownloadSecureFile@1
+  # name: sshKey # The name with which to reference the secure file's path on the agent, like $(mySecureFile.secureFilePath)
   inputs:
-    workingFile: core/.npmrc
+    secureFile: multicloud_id_rsa
+
+# Install an SSH key prior to a build or deployment
+- task: InstallSSHKey@0 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/install-ssh-key?view=azure-devops
+  inputs:
+    knownHostsEntry: $(KNOWN_HOSTS_ENTRY)
+    sshPublicKey: $(SSH_PUBLIC_KEY)
+    #sshPassphrase: $(SSH_PASS_PHRASE)
+    sshKeySecureFile: multicloud_id_rsa
+  env:
+    KNOWN_HOSTS_ENTRY: $(KNOWN_HOSTS_ENTRY)
+    SSH_PUBLIC_KEY: $(SSH_PUBLIC_KEY)  # map to the right format (camelCase) that Azure credentials understand
 
 - task: Bash@3
   name: BumpNpmVersion
@@ -38,11 +50,10 @@ steps:
     arguments: '@multicloud/sls-core $(NPM_RELEASE_TYPE)'
     workingDirectory: core
   env:
-    NPM_TOKEN: $(NPM_TOKEN)
     SOURCE_BRANCH: $(Build.SourceBranch)
 
 - task: Bash@3
-  displayName: 'Publish sls-core to AzDO NPM'
+  displayName: 'Publish sls-core to NPM'
   inputs:
     targetType: filePath
     filePath: ./scripts/publish.sh
