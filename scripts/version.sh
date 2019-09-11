@@ -1,10 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Environment Variables Needed:
-# SOURCE_BRANCH
-# GITHUB_ACCESS_TOKEN
-
 PACKAGE_NAME=$1
 NPM_RELEASE_TYPE=${2-"prerelease"}
 
@@ -29,12 +25,13 @@ git add package-lock.json
 # Since there isn't a package.json at the root of repo
 # and we have multiple packages within same repo
 # we need to manually commit and tag in order to create unique tag names
-git commit -m "release: Bumping NPM package ${PACKAGE_NAME} prerelease to version ${NPM_VERSION} ***NO_CI***"
+git commit -m "release: Bumping NPM package ${PACKAGE_NAME} ${NPM_RELEASE_TYPE} to version ${NPM_VERSION} ***NO_CI***"
 SHA=`git rev-parse HEAD`
 
 git tag ${PACKAGE_NAME}-${NPM_VERSION}
 
-git remote add authOrigin https://${GITHUB_ACCESS_TOKEN}@github.com/serverless/multicloud.git
+export GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+git remote add authOrigin git@github.com:serverless/multicloud.git
 git push authOrigin ${SOURCE_BRANCH_NAME} --tags
 
 echo Pushed new tag: ${PACKAGE_NAME}-${NPM_VERSION} @ SHA: ${SHA:0:8}
