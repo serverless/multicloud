@@ -41,7 +41,7 @@ steps:
   inputs:
     knownHostsEntry: $(KNOWN_HOSTS_ENTRY)
     sshPublicKey: $(SSH_PUBLIC_KEY)
-    sshPassphrase: $(SSH_PASS_PHRASE)
+    #sshPassphrase: $(SSH_PASS_PHRASE)
     sshKeySecureFile: multicloud_id_rsa
   env:
     KNOWN_HOSTS_ENTRY: $(KNOWN_HOSTS_ENTRY)

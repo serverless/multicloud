@@ -8,8 +8,8 @@ NPM_RELEASE_TYPE=${2-"prerelease"}
 SOURCE_BRANCH_NAME=${SOURCE_BRANCH/refs\/heads\/}
 
 # Configure git to commit as Azure Dev Ops
-git config --local user.email "Wallace Breza"
-git config --local user.name "wallace@breza.me"
+git config --local user.email "Multicloud Admin"
+git config --local user.name "multicloud@serverless.com"
 
 git pull origin ${SOURCE_BRANCH_NAME}
 git checkout ${SOURCE_BRANCH_NAME}
