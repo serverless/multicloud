@@ -8,17 +8,17 @@ In addition to a normalized API the @multicloud library supports reusable middle
 The following is a list of the currently support cloud providers:
 
 ### Multicloud Core (@multicloud/sls-core)
-See [Core readme](./core/readme.md) for additional information
+See [Core readme](./core/README.md) for additional information
 
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-core%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=3&branchName=dev)
 
 ### Microsoft Azure (@multicloud/sls-azure)
-See [Azure readme](./azure/readme.md) for additional information
+See [Azure readme](./azure/README.md) for additional information
 
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-azure%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=2&branchName=dev)
 
 ### Amazon Web Services (@multicloud/sls-aws)
-See [AWS readme](./aws/readme.md) for additional information
+See [AWS readme](./aws/README.md) for additional information
 
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-aws%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=1&branchName=dev)
 
