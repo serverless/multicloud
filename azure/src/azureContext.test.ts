@@ -44,13 +44,22 @@ describe("Azure context", () => {
   it("when send() calls response.send() on httpTrigger", () => {
     const body = { message: "Hello World" };
     context.send(body);
-    expect(context.res.send).toBeCalledWith(body, 200);
+
+    expect(context.res.send).toBeCalledWith(body, 200, undefined);
   });
 
   it("when send() calls response.send() on httpTrigger with custom status", () => {
     const body = { message: "oh Crap!" };
     context.send(body, 400);
-    expect(context.res.send).toBeCalledWith(body, 400);
+    expect(context.res.send).toBeCalledWith(body, 400, undefined);
+  });
+
+  it("when send() calls response.send() on httpTrigger with contentType", () => {
+    const body = { message: "oh Crap!" };
+    const expectedContentType = "image/jpg";
+
+    context.send(body, 200, expectedContentType);
+    expect(context.res.send).toBeCalledWith(body, 200, expectedContentType);
   });
 
   it("send() calls runtime done() on fail status code", () => {
@@ -66,7 +75,7 @@ describe("Azure context", () => {
 
   it("send() with no params uses default values", () => {
     context.send();
-    expect(context.res.send).toBeCalledWith(null, 200);
+    expect(context.res.send).toBeCalledWith(null, 200, undefined);
   });
 
   it("flush() calls response.flush()", () => {

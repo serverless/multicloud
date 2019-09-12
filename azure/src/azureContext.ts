@@ -51,11 +51,12 @@ export class AzureContext implements CloudContext {
    * Send response from Azure Function
    * @param body Body of response
    * @param status Status code of response
+   * @param contentType ContentType to apply it to response
    */
-  public send(body: any = null, status: number = 200): void {
+  public send(body: any = null, status: number = 200, contentType?: string): void {
     try {
       if (this.res) {
-        this.res.send(body, status);
+        this.res.send(body, status, contentType);
       }
 
       this.done();

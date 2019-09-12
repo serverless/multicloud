@@ -92,6 +92,16 @@ describe("Azure Response", () => {
     expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
   });
 
+  it("should set content-type to content-type received for buffer", () => {
+    const azureContext = createAzureContext(defaultParams);
+    const expectedContentType = "image/jpg";
+
+    azureContext.res.send(new Buffer("hello"), 200, expectedContentType);
+
+    expect(azureContext.res.headers.has("Content-Type"));
+    expect(azureContext.res.headers.get("Content-Type")).toEqual(expectedContentType);
+  });
+
   it("should have status = 400", () => {
     const expectedStatusStatus = 400;
     const azureContext = createAzureContext(defaultParams);
