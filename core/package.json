@@ -6,6 +6,12 @@
     "type": "git",
     "url": "https://github.com/serverless/multicloud"
   },
+  "keywords": [
+    "serverless",
+    "sls",
+    "serverless framework",
+    "multicloud"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
