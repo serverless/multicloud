@@ -2,7 +2,7 @@
 
 Welcome, and thanks in advance for your help! Please follow these simple guidelines :+1:
 
-# How to contribute to Serverless
+# How to contribute to Serverless Multicloud Library
 
 ## When you propose a new feature or bug fix
 
@@ -16,7 +16,7 @@ Welcome, and thanks in advance for your help! Please follow these simple guideli
 
 **Note:** Please write a quick comment in the corresponding issue and ask if the feature is still relevant and that you want to jump into the implementation.
 
-Check out our [help wanted](https://github.com/serverless/serverless/labels/help%20wanted) or [good first issue](https://github.com/serverless/serverless/labels/good%20first%20issue) labels to find issues we want to move forward on with your help.
+Check out our [help wanted](https://github.com/serverless/multicloud/labels/help%20wanted) or [good first issue](https://github.com/serverless/multicloud/labels/good%20first%20issue) labels to find issues we want to move forward on with your help.
 
 We will do our best to respond/review/merge your PR according to priority. We hope that you stay engaged with us during this period to insure QA. Please note that the PR will be closed if there hasn't been any activity for a long time (~ 30 days) to keep us focused and keep the repo clean.
 
@@ -32,13 +32,11 @@ Our documentation lives on GitHub in the [docs](docs) directory. Do you see a ty
 
 The easiest thing you can do to help us move forward and make an impact on our progress is to simply provide support to other people having difficulties with their Serverless projects.
 
-You can do that by replying to [issues on Github](https://github.com/serverless/serverless/issues), chatting with other community members in [our Chat](http://chat.serverless.com) or helping with questions in [our Forum](http://forum.serverless.com).
-
----
+You can do that by replying to [issues on Github](https://github.com/serverless/multicloud/issues), chatting with other community members in [our Chat](http://chat.serverless.com) or helping with questions in [our Forum](http://forum.serverless.com).
 
 # Code Style
 
-We aim for clean, consistent code style. We're using ESlint to check for codestyle issues using the Airbnb preset.
+We aim for clean, consistent code style. We're using ESlint to check for codestyle issues using the eslint/recommended preset.
 
 ## Verifying linting style
 
@@ -69,30 +67,6 @@ Please follow these Testing guidelines when writing your unit tests:
 - For each method, include an `it('should do something')` test case for each logical edge case in your changes
 - As you write tests, check the code coverage and make sure all lines of code are covered. If not, just add more test cases until everything is covered
 - For reference and inspiration, please check our `tests` directory
-
-## Testing templates
-
-If you add a new template or want to test a template after changing it you can run the template integration tests. Make sure you have `docker` and `docker-compose` installed as they are required. The `docker` containers we're using through compose are automatically including your `$HOME/.aws` folder so you can deploy to AWS.
-
-To run all integration tests run:
-
-```
-./tests/templates/test-all-templates
-```
-
-To run only a specific integration test run:
-
-```
-tests/templates/integration-test-template TEMPLATE_NAME BUILD_COMMAND
-```
-
-so for example:
-
-```
-tests/templates/integration-test-template aws-java-maven mvn package
-```
-
-If you add a new template make sure to add it to the `test-all-templates` file and configure the `docker-compose.yml` file for your template.
 
 # Our Code of Conduct
 

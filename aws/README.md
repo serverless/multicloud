@@ -1,4 +1,4 @@
-# Serverless Multicloud for Amazon Web Services
+# Serverless Multicloud Library for Amazon Web Services
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-aws%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=1&branchName=dev)
 [![npm (scoped)](https://img.shields.io/npm/v/@multicloud/sls-aws)](https://www.npmjs.com/package/@multicloud/sls-aws)
 

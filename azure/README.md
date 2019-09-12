@@ -1,4 +1,4 @@
-# Serverless Multicloud for Microsoft Azure
+# Serverless Multicloud Library for Microsoft Azure
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-azure%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=2&branchName=dev)
 [![npm (scoped)](https://img.shields.io/npm/v/@multicloud/sls-azure)](https://www.npmjs.com/package/@multicloud/sls-azure)
 

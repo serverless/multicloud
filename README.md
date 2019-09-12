@@ -1,4 +1,4 @@
-# Serverless Multicloud
+# Serverless Multicloud Library
 
 The Serverless @multicloud library provides an easy way to build Serverless handlers in NodeJS using a cloud agnostic library that can then be deployed to supported cloud providers.
 
