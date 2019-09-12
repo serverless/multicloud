@@ -73,3 +73,4 @@ Welcome, and thanks in advance for your help! Please follow these simple guideli
 Serverless is licensed under the [MIT License](./LICENSE.txt).
 
 All files located in the node_modules and external directories are externally maintained libraries used by this software which have their own licenses; we recommend you read them, as their terms may differ from the terms in the MIT License.
+
