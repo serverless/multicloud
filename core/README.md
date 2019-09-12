@@ -10,15 +10,18 @@ In addition to a normalized API the @multicloud library supports reusable middle
 ## Supported Cloud Providers
 The following is a list of the currently support cloud providers:
 
-### Microsoft Azure (@multicloud/sls-azure)
-See [Azure readme](../azure/README.md) for additional information
-
+#### Microsoft Azure (@multicloud/sls-azure)
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-azure%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=2&branchName=dev)
 
-### Amazon Web Services (@multicloud/sls-aws)
-See [AWS readme](../aws/README.md) for additional information
+The Azure package contains Azure specific implementations of core components.
+See [Azure readme](../azure/README.md) for additional information
 
+
+#### Amazon Web Services (@multicloud/sls-aws)
 [![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-aws%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=1&branchName=dev)
+
+The AWS package contains AWS specific implementations of core components.
+See [AWS readme](../aws/README.md) for additional information
 
 ## Installation
 Serverless @multicloud library for Node can be installed via NPM
