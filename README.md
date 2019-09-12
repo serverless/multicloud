@@ -1,54 +1,57 @@
-# MultiCloud Middleware
+# Serverless Multicloud
 
-- [Prerequisites](#Prerequisites)
-- [Installation](#Installation)
-- [Running Tests](#Running-Tests)
+The Serverless @multicloud library provides an easy way to build Serverless handlers in NodeJS using a cloud agnostic library that can then be deployed to support cloud providers.
 
-## Prerequisites
-[Configure NPM](NPM.md) to be able to fetch common packages from a private NPM server.
+In addition to a normalized API the @multicloud library supports reusable middleware pipeline similar to the Express framework
 
-[New Developer instructions](https://dev.azure.com/711digital/ServerlessApps/_git/wiki?_a=contents&path=%2FNewDevOnboarding.md&version=GBmaster)
+## Supported Cloud Providers
+The following is a list of the currently support cloud providers:
+
+### Multicloud Core (@multicloud/sls-core)
+See [Core readme](core/readme.md) for additional information
+
+[![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-core%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=3&branchName=dev)
+
+### Microsoft Azure (@multicloud/sls-azure)
+See [Azure readme](azure/readme.md) for additional information
+
+[![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-azure%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=2&branchName=dev)
+
+### Amazon Web Services (@multicloud/sls-aws)
+See [AWS readme](aws/readme.md) for additional information
+
+[![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-aws%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=1&branchName=dev)
 
 ## Installation
+Serverless @multicloud library for Node can be installed via NPM
 
-- *IMPORTANT:* **Open this project from the root folder**
-
-- **Install dependencies and compile the code** (There is a package.json file in each folder, so is necessary to do it in each one)
-
-Beginning  from the root folder, **execute the following commands**:
-
-```
-cd core && npm install && npm run build && cd ..
+```bash
+# Installs core components as as well as run-time dependencies for Azure & AWS
+npm install @multicloud/sls-core @multicloud/sls-azure @multicloud/sls-aws --save
 ```
 
-```
-cd azure && npm install && npm run build && cd ..
+## Example
+```javascript
+const { App } = require("@multicloud/sls-core");
+const { AzureModule } = require("@multicloud/sls-azure");
+const { AwsModule } = require("@multicloud/sls-aws");
+const app = new App(new AzureModule(), new AwsModule());
+
+module.exports.handler = app.use([], async (context) => {
+  const { req } = context;
+  const name = req.query.get("name");
+
+  if (name) {
+    context.send(`Hello ${name}`, 200);
+  }
+  else {
+    context.send("Please pass a name on the query string or in the request body", 400);
+  }
+});
 ```
 
-```
-cd aws && npm install && npm run build && cd ..
-```
+## Licensing
 
-If for any reason you notice that the dependencies are not linked in VS Code
+Serverless is licensed under the [MIT License](./LICENSE.txt).
 
-```
-cd core && npm link
-```
-
-```
-cd aws && npm link@multicloud/sls-core
-```
-
-```
-cd azure && npm link@multicloud/sls-core
-```
-
-## Running tests
-
-In the terminal, execute the following command
-
-```
-npm run test
-```
-
-In addition, this command can be executed using some of the following [options](https://jestjs.io/docs/en/cli)
+All files located in the node_modules and external directories are externally maintained libraries used by this software which have their own licenses; we recommend you read them, as their terms may differ from the terms in the MIT License.
