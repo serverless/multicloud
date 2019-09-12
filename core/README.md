@@ -1,4 +1,7 @@
 # Serverless Multicloud
+[![Build Status](https://dev.azure.com/serverless-inc/multicloud/_apis/build/status/CI/%5Bsls-core%5D%20ci?branchName=dev)](https://dev.azure.com/serverless-inc/multicloud/_build/latest?definitionId=3&branchName=dev)
+[![npm (scoped)](https://img.shields.io/npm/v/@multicloud/sls-core)](https://www.npmjs.com/package/@multicloud/sls-core)
+
 
 The Serverless @multicloud library provides an easy way to build Serverless handlers in NodeJS using a cloud agnostic library that can then be deployed to supported cloud providers.
 
