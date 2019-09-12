@@ -1,6 +1,6 @@
 # Serverless Multicloud
 
-The Serverless @multicloud library provides an easy way to build Serverless handlers in NodeJS using a cloud agnostic library that can then be deployed to support cloud providers.
+The Serverless @multicloud library provides an easy way to build Serverless handlers in NodeJS using a cloud agnostic library that can then be deployed to supported cloud providers.
 
 In addition to a normalized API the @multicloud library supports reusable middleware pipeline similar to the Express framework
 
@@ -49,6 +49,18 @@ module.exports.handler = app.use([], async (context) => {
   }
 });
 ```
+
+## Contributing
+### [Code of Conduct](./CODE_OF_CONDUCT.md)
+In the interest of fostering an open and welcoming environment, we as
+contributors and maintainers pledge to making participation in our project and
+our community a harassment-free experience for everyone, regardless of age, body
+size, disability, ethnicity, gender identity and expression, level of experience,
+nationality, personal appearance, race, religion, or sexual identity and
+orientation.
+
+### [Contriubtion Guidelines](./CONTRIBUTING.md)
+Welcome, and thanks in advance for your help! Please follow these simple guidelines :+1:
 
 ## Licensing
 
