@@ -1,11 +1,17 @@
 {
   "name": "@multicloud/sls-core",
   "version": "0.1.1-14",
-  "description": "Core middleware and components for multi-cloud serverless.",
+  "description": "Core middleware and components for Serverless @multicloud.",
   "repository": {
     "type": "git",
-    "url": "https://dev.azure.com/711digital/ServerlessApps/_git/common-library"
+    "url": "https://github.com/serverless/multicloud"
   },
+  "keywords": [
+    "serverless",
+    "sls",
+    "serverless framework",
+    "multicloud"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -22,8 +28,8 @@
   "files": [
     "lib/"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Microsoft Corporation, 7-Eleven & Serverless Inc",
+  "license": "MIT",
   "dependencies": {
     "inversify": "5.0.1",
     "reflect-metadata": "0.1.13"
