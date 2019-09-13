@@ -48,10 +48,11 @@ export class AwsContext implements CloudContext {
    * Send response from AWS Lambda
    * @param body Body of response
    * @param status Status code of response
+   * @param contentType ContentType to apply it to response
    */
-  public send(body: any, status: number = 200): void {
+  public send(body: any, status: number = 200, contentType?: string): void {
     if (this.res) {
-      this.res.send(body, status);
+      this.res.send(body, status, contentType);
     }
 
     this.done();

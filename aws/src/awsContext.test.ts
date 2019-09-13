@@ -31,7 +31,7 @@ describe("AWS context", () => {
     context.res.send = jest.fn();
     context.send(body);
 
-    expect(context.res.send).toBeCalledWith(body, 200);
+    expect(context.res.send).toBeCalledWith(body, 200, undefined);
   });
 
   it("send() calls response.send() on httpTrigger with custom status", () => {
@@ -41,7 +41,7 @@ describe("AWS context", () => {
     context.res.send = jest.fn();
     context.send(body, 400);
 
-    expect(context.res.send).toHaveBeenCalledWith(body, 400);
+    expect(context.res.send).toHaveBeenCalledWith(body, 400, undefined);
   });
 
   it("send() calls context.done() to signal handler is complete", () => {
@@ -49,6 +49,19 @@ describe("AWS context", () => {
     context.send("test", 200);
 
     expect(context.done).toBeCalled();
+  });
+
+  it("when send() calls response.send() on httpTrigger with contentType", () => {
+    const context = createAwsContext(awsEvent, awsContext),
+      expectedContentType = "image/jpg",
+      expectedBody = "test",
+      expectedStatus = 200;
+
+    context.res = new AwsResponse(context);
+    context.res.send = jest.fn();
+
+    context.send(expectedBody, expectedStatus, expectedContentType);
+    expect(context.res.send).toBeCalledWith(expectedBody, expectedStatus, expectedContentType);
   });
 
   it("flush() calls response.flush() to call final AWS callback", () => {

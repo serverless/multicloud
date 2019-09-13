@@ -17,6 +17,9 @@ export class AwsResponse implements CloudResponse {
   /** The AWS runtime callback */
   private callback: Function;
 
+  /** Property to accept binary objects in the response */
+  public isBase64Encoded: boolean;
+
   /** The HTTP response body */
   public body: any;
 
@@ -39,9 +42,9 @@ export class AwsResponse implements CloudResponse {
    * Send HTTP response via provided callback
    * @param body Body of HTTP response
    * @param status Status code of HTTP response
-   * @param callback Callback function to call with response
+   * @param contentType ContentType to apply it to response
    */
-  public send(body: any, status: number = 200): void {
+  public send(body: any, status: number = 200, contentType?: string): void {
     const responseBody = typeof (body) !== "string"
       ? JSON.stringify(body)
       : body;
@@ -55,6 +58,12 @@ export class AwsResponse implements CloudResponse {
 
     const bodyType = body.constructor.name;
 
+    if (["Buffer"].includes(bodyType)) {
+      this.isBase64Encoded = true;
+      this.body = (body as Buffer).toString("base64");
+      this.headers.set("Content-Type", contentType);
+    }
+
     if (["Object", "Array"].includes(bodyType)) {
       this.headers.set("Content-Type", "application/json");
     }
@@ -66,9 +75,10 @@ export class AwsResponse implements CloudResponse {
 
   public flush(): void {
     this.callback(null, {
+      isBase64Encoded: this.isBase64Encoded,
       headers: this.headers.toJSON(),
       body: this.body,
-      statusCode: this.status || 200,
+      statusCode: this.status || 200
     });
   }
 }
