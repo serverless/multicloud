@@ -18,8 +18,12 @@ export function ensurePromise<T>(value: T | Promise<T>) {
  * Converts the input to Stream
  * @param input Data to be converted to Stream
  */
-export function convertToStream(input: string | Buffer | Stream): Readable {
+export function convertToStream(input: string | Buffer | Stream | Uint8Array): Readable {
   Guard.null(input, "input");
+
+  if (input instanceof Uint8Array) {
+    input = Buffer.from(input.buffer);
+  }
 
   let readable;
 
