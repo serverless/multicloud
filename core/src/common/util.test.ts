@@ -63,6 +63,15 @@ describe("util", () => {
       });
     });
 
+    it("receives a Uint8Array and returns a Stream", (done) => {
+      const actualStream = convertToStream(new Uint8Array(Buffer.from(input)));
+      streamToString(actualStream, (result) => {
+        expect(result).toEqual(input);
+        expect(actualStream).toBeInstanceOf(Readable);
+        done();
+      });
+    });
+
     it("throws an exception when input value is not string/Buffer/Stream", (done) => {
       const value = 100
       expect(() => convertToStream(value as unknown as string)).toThrowError();
