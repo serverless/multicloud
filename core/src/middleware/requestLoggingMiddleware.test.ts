@@ -1,5 +1,5 @@
-import { MockFactory } from "../test/mockFactory";
-import { TestContext } from "../test/testContext";
+import { MockFactory } from "../testUtilities/mockFactory";
+import { TestContext } from "../testUtilities/testContext";
 import { Logger, LogLevel } from "../services/logger";
 import { RequestLoggingMiddleware, LoggingOptions } from "./requestLoggingMiddleware";
 import { App } from "../app";

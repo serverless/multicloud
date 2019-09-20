@@ -9,4 +9,4 @@ export * from "./cloudContainer";
 export * from "./cloudMessage";
 export * from "./middleware";
 export * from "./services";
-export * from "./test";
+export * from "./testUtilities";

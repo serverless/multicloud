@@ -1,6 +1,6 @@
 import { CloudContext } from "../cloudContext";
 import { Middleware } from "../app";
-import { TestContext } from "../test/testContext";
+import { TestContext } from "../testUtilities/testContext";
 import { createValidationMiddleware, ValidationResult, ValidationOptions } from "./validationMiddleware";
 
 describe("Validation Middleware", () => {

@@ -1,5 +1,5 @@
-import { TestContext } from "../test/testContext";
-import { TestResponse } from "../test/testResponse";
+import { TestContext } from "../testUtilities/testContext";
+import { TestResponse } from "../testUtilities/testResponse";
 import { ConsoleLogger } from "../services/consoleLogger";
 import { PerformanceMiddleware, DurationResponseHeader, RequestIdResponseHeader } from "./performanceMiddleware"
 
