@@ -1,7 +1,7 @@
 import os from "os";
-import { MockFactory } from "../test/mockFactory";
+import { MockFactory } from "../testUtilities/mockFactory";
 import { CloudContext } from "../cloudContext";
-import { TestContext } from "../test/testContext";
+import { TestContext } from "../testUtilities/testContext";
 import { App } from "../app";
 import { TelemetryService, TelemetryOptions } from "../services/telemetry";
 import { TelemetryServiceMiddleware } from "./telemetryMiddleware";

@@ -1,4 +1,4 @@
-import { MockFactory } from "../test/mockFactory";
+import { MockFactory } from "../testUtilities/mockFactory";
 import { CloudContextBuilder } from "./cloudContextBuilder"
 import { CloudContext } from "../cloudContext";
 import { TestContext } from "./testContext";

@@ -1,8 +1,8 @@
-import { MockFactory } from "../test/mockFactory";
+import { MockFactory } from "../testUtilities/mockFactory";
 import { App } from "../app";
 import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";
 import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
-import { CloudContextBuilder } from "../test/cloudContextBuilder";
+import { CloudContextBuilder } from "../testUtilities/cloudContextBuilder";
 
 describe("Exception Middleware", () => {
   let options: ExceptionOptions = {

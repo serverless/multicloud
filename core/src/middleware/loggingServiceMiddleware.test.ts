@@ -1,5 +1,5 @@
 import { CloudContext } from "../cloudContext";
-import { TestContext } from "../test/testContext";
+import { TestContext } from "../testUtilities/testContext";
 import { LoggingServiceMiddleware } from "./loggingServiceMiddleware";
 import { Logger, LogLevel } from "../services/logger";
 import { ConsoleLogger } from "../services/consoleLogger";
