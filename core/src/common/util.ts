@@ -1,4 +1,4 @@
-import { Stream, Readable } from "stream";
+import { Stream, Readable, PassThrough } from "stream";
 import { Guard } from "./guard";
 
 /**
@@ -18,8 +18,20 @@ export function ensurePromise<T>(value: T | Promise<T>) {
  * Converts the input to Stream
  * @param input Data to be converted to Stream
  */
-export function convertToStream(input: string | Buffer | Stream | Uint8Array): Readable {
+export async function convertToStream(input: string | Buffer | Stream | Uint8Array): Promise<Readable> {
   Guard.null(input, "input");
+
+  if (input instanceof PassThrough) {
+    console.log("ES PASSTHROUGH");
+    let chunk = "";
+    input = await new Promise(res => {
+      (input as PassThrough).on("data", function (data) {
+        chunk += data;
+      }).on("finish", function () {
+        res(chunk);
+      });
+    });
+  }
 
   if (input instanceof Uint8Array) {
     input = Buffer.from(input.buffer);

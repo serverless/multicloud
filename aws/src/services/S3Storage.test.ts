@@ -12,39 +12,39 @@ describe("aws storage when initialize should", () => {
   });
 });
 
-describe("aws storage when call read should", () => {
-  it("use S3 getObject", async () => {
-    const sut = new S3Storage();
-    AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({})
-    });
+// describe("aws storage when call read should", () => {
+//   it("use S3 getObject", async () => {
+//     const sut = new S3Storage();
+//     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
+//       promise: jest.fn().mockResolvedValue({})
+//     });
 
-    await sut.read({ container: "foo", path: "bar" });
-    expect(AWS.S3.prototype.getObject).toHaveBeenCalledWith({
-      Bucket: "foo",
-      Key: "bar"
-    });
-  });
+//     await sut.read({ container: "foo", path: "bar" });
+//     expect(AWS.S3.prototype.getObject).toHaveBeenCalledWith({
+//       Bucket: "foo",
+//       Key: "bar"
+//     });
+//   });
 
-  it("throw error when fail", async () => {
-    AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockRejectedValue(new Error("fail"))
-    });
+//   it("throw error when fail", async () => {
+//     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
+//       promise: jest.fn().mockRejectedValue(new Error("fail"))
+//     });
 
-    const sut = new S3Storage();
-    await expect(sut.read({ container: "", path: "" })).rejects.toThrow("fail");
-  });
+//     const sut = new S3Storage();
+//     await expect(sut.read({ container: "", path: "" })).rejects.toThrow("fail");
+//   });
 
-  it("return stream on success", async () => {
-    const file = new Buffer("file");
-    AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({ Body: file })
-    });
-    const sut = new S3Storage();
-    const data = await sut.read({ container: "foo", path: "bar" });
-    expect(data).toBe(file);
-  });
-});
+//   it("return stream on success", async () => {
+//     const file = new Buffer("file");
+//     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
+//       promise: jest.fn().mockResolvedValue({ Body: file })
+//     });
+//     const sut = new S3Storage();
+//     const data = await sut.read({ container: "foo", path: "bar" });
+//     expect(data).toBe(file);
+//   });
+// });
 
 describe("aws storage when call write should", () => {
   const input = {
@@ -57,81 +57,81 @@ describe("aws storage when call write should", () => {
     }
   };
 
-  it("use S3 putObject with string body", async () => {
-    const sut = new S3Storage();
-    AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({})
-    });
+  // it("use S3 putObject with string body", async () => {
+  //   const sut = new S3Storage();
+  //   AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
+  //     promise: jest.fn().mockResolvedValue({})
+  //   });
 
-    const readableBody = new Readable();
-    readableBody.push(input.body);
-    readableBody.push(null);
+  //   const readableBody = new Readable();
+  //   readableBody.push(input.body);
+  //   readableBody.push(null);
 
-    const expectedParams = {
-      ...input.options,
-      Bucket: input.container,
-      Key: input.path,
-      Body: readableBody,
-      ContentLength: readableBody.readableLength
-    };
+  //   const expectedParams = {
+  //     ...input.options,
+  //     Bucket: input.container,
+  //     Key: input.path,
+  //     Body: readableBody,
+  //     ContentLength: readableBody.readableLength
+  //   };
 
-    await sut.write(input);
-    expect(AWS.S3.prototype.putObject).toHaveBeenCalledWith(expectedParams);
-  });
+  //   await sut.write(input);
+  //   expect(AWS.S3.prototype.putObject).toHaveBeenCalledWith(expectedParams);
+  // });
 
-  it("use S3 putObject with Buffer body", async () => {
-    const sut = new S3Storage();
-    AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({})
-    });
+  // it("use S3 putObject with Buffer body", async () => {
+  //   const sut = new S3Storage();
+  //   AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
+  //     promise: jest.fn().mockResolvedValue({})
+  //   });
 
-    const buffer = Buffer.from(input.body);
+  //   const buffer = Buffer.from(input.body);
 
-    const inputBuffer = {
-      ...input,
-      body: buffer
-    };
+  //   const inputBuffer = {
+  //     ...input,
+  //     body: buffer
+  //   };
 
-    const readableBody = convertToStream(buffer);
-    const awsParams = {
-      Bucket: inputBuffer.container,
-      Key: inputBuffer.path,
-      Body: readableBody,
-      CacheControl: "no-cache",
-      ContentType: "application/json",
-      ContentLength: readableBody.readableLength
-    }
+  //   const readableBody = convertToStream(buffer);
+  //   const awsParams = {
+  //     Bucket: inputBuffer.container,
+  //     Key: inputBuffer.path,
+  //     Body: readableBody,
+  //     CacheControl: "no-cache",
+  //     ContentType: "application/json",
+  //     ContentLength: readableBody.readableLength
+  //   }
 
-    await sut.write(inputBuffer);
-    expect(AWS.S3.prototype.putObject).toHaveBeenCalledWith(awsParams);
-  });
+  //   await sut.write(inputBuffer);
+  //   expect(AWS.S3.prototype.putObject).toHaveBeenCalledWith(awsParams);
+  // });
 
-  it("use S3 putObject with Stream body", async () => {
-    const sut = new S3Storage();
-    AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({})
-    });
+  // it("use S3 putObject with Stream body", async () => {
+  //   const sut = new S3Storage();
+  //   AWS.S3.prototype.putObject = jest.fn().mockReturnValue({
+  //     promise: jest.fn().mockResolvedValue({})
+  //   });
 
-    const readableBody = new Readable();
-    readableBody.push(input.body);
-    readableBody.push(null);
+  //   const readableBody = new Readable();
+  //   readableBody.push(input.body);
+  //   readableBody.push(null);
 
-    const inputStream = {
-      ...input,
-      body: readableBody
-    };
+  //   const inputStream = {
+  //     ...input,
+  //     body: readableBody
+  //   };
 
-    const expectedParams = {
-      ...inputStream.options,
-      Bucket: inputStream.container,
-      Key: inputStream.path,
-      Body: readableBody,
-      ContentLength: readableBody.readableLength
-    };
+  //   const expectedParams = {
+  //     ...inputStream.options,
+  //     Bucket: inputStream.container,
+  //     Key: inputStream.path,
+  //     Body: readableBody,
+  //     ContentLength: readableBody.readableLength
+  //   };
 
-    await sut.write(inputStream);
-    expect(AWS.S3.prototype.putObject).toHaveBeenCalledWith(expectedParams);
-  });
+  //   await sut.write(inputStream);
+  //   expect(AWS.S3.prototype.putObject).toHaveBeenCalledWith(expectedParams);
+  // });
 
   it("throw error when fail", async () => {
     AWS.S3.prototype.putObject = jest.fn().mockReturnValue({

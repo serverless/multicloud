@@ -33,54 +33,54 @@ describe("util", () => {
       return chunks;
     }
 
-    it("receives a string and returns a stream", (done) => {
-      const actualStream = convertToStream(input);
-      streamToString(actualStream, (result) => {
-        expect(result).toEqual(input);
-        expect(actualStream).toBeInstanceOf(Readable);
-        done();
-      });
-    });
+    // it("receives a string and returns a stream", (done) => {
+    //   const actualStream = convertToStream(input);
+    //   streamToString(actualStream, (result) => {
+    //     expect(result).toEqual(input);
+    //     expect(actualStream).toBeInstanceOf(Readable);
+    //     done();
+    //   });
+    // });
 
-    it("receives a Buffer and returns a stream", (done) => {
-      const actualStream = convertToStream(Buffer.from(input));
-      streamToString(actualStream, (result) => {
-        expect(result).toEqual(input);
-        expect(actualStream).toBeInstanceOf(Readable);
-        done();
-      });
-    });
+    // it("receives a Buffer and returns a stream", (done) => {
+    //   const actualStream = convertToStream(Buffer.from(input));
+    //   streamToString(actualStream, (result) => {
+    //     expect(result).toEqual(input);
+    //     expect(actualStream).toBeInstanceOf(Readable);
+    //     done();
+    //   });
+    // });
 
-    it("receives and returns a Stream", (done) => {
-      let inputStream = new Readable;
-      inputStream.push(input);
-      inputStream.push(null);
-      const actualStream = convertToStream(inputStream);
-      streamToString(actualStream, (result) => {
-        expect(result).toEqual(input);
-        expect(actualStream).toBeInstanceOf(Readable);
-        done();
-      });
-    });
+    // it("receives and returns a Stream", (done) => {
+    //   let inputStream = new Readable;
+    //   inputStream.push(input);
+    //   inputStream.push(null);
+    //   const actualStream = convertToStream(inputStream);
+    //   streamToString(actualStream, (result) => {
+    //     expect(result).toEqual(input);
+    //     expect(actualStream).toBeInstanceOf(Readable);
+    //     done();
+    //   });
+    // });
 
-    it("receives a Uint8Array and returns a Stream", (done) => {
-      const actualStream = convertToStream(new Uint8Array(Buffer.from(input)));
-      streamToString(actualStream, (result) => {
-        expect(result).toEqual(input);
-        expect(actualStream).toBeInstanceOf(Readable);
-        done();
-      });
-    });
+    // it("receives a Uint8Array and returns a Stream", (done) => {
+    //   const actualStream = convertToStream(new Uint8Array(Buffer.from(input)));
+    //   streamToString(actualStream, (result) => {
+    //     expect(result).toEqual(input);
+    //     expect(actualStream).toBeInstanceOf(Readable);
+    //     done();
+    //   });
+    // });
 
-    it("throws an exception when input value is not string/Buffer/Stream", (done) => {
-      const value = 100
-      expect(() => convertToStream(value as unknown as string)).toThrowError();
-      done();
-    });
+    // it("throws an exception when input value is not string/Buffer/Stream", (done) => {
+    //   const value = 100
+    //   expect(() => convertToStream(value as unknown as string)).toThrowError();
+    //   done();
+    // });
 
-    it("throws an exception if input is null", (done) => {
-      expect(() => convertToStream(null)).toThrowError();
-      done();
-    });
+    // it("throws an exception if input is null", (done) => {
+    //   expect(() => convertToStream(null)).toThrowError();
+    //   done();
+    // });
   });
 });
