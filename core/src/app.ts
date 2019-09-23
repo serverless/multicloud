@@ -3,6 +3,7 @@ import { ensurePromise } from "./common/util";
 import { CloudContainer, CloudModule, ComponentType } from "./cloudContainer";
 import { TestModule } from "./test/testModule";
 import { CloudContext } from "./cloudContext";
+import { CloudPlugin, CloudPipelineEvent } from "./cloudPlugin";
 
 /**
  * Base level app. Handles registration for all cloud modules and
@@ -11,6 +12,7 @@ import { CloudContext } from "./cloudContext";
 export class App {
   private container: CloudContainer;
   private modules: CloudModule[];
+  private plugins: CloudPlugin[];
 
   /**
    * Initialize IoC container and register all modules
@@ -26,6 +28,7 @@ export class App {
     this.modules = modules;
     this.container = new CloudContainer();
     this.container.registerModule(...modules);
+    this.plugins = this.container.resolve("CloudPlugin");
   }
 
   /**
@@ -56,6 +59,7 @@ export class App {
 
       try {
         const next = () => {
+          this.invokePluginEvent(CloudPipelineEvent.BeforeMiddleware, context);
           const middleware = middlewares[index];
           let result = null;
 
@@ -64,6 +68,8 @@ export class App {
             index++;
             result = middleware(context, next);
           } else { // When we are out of middlewares, execute the handler
+            this.invokePluginEvent(CloudPipelineEvent.AfterMiddleware, context);
+            this.invokePluginEvent(CloudPipelineEvent.BeforeHandler, context);
             result = new Promise((resolve, reject) => {
               context.done = resolve;
               return ensurePromise(handler(context)).catch(reject);
@@ -74,7 +80,10 @@ export class App {
         };
 
         // Executes the middleware chain and handler
+        this.invokePluginEvent(CloudPipelineEvent.BeforePipeline, context);
         await next();
+        this.invokePluginEvent(CloudPipelineEvent.AfterHandler, context);
+        this.invokePluginEvent(CloudPipelineEvent.AfterPipeline, context);
       } finally {
         // Flush the final response to the cloud provider
         context.flush();
@@ -82,6 +91,15 @@ export class App {
 
       return context;
     };
+  }
+
+  private invokePluginEvent(eventName: CloudPipelineEvent, context: CloudContext) {
+    this.plugins.forEach((plugin) => {
+      const handler = plugin.on(eventName);
+      if (handler) {
+        handler(context);
+      }
+    });
   }
 }
 
