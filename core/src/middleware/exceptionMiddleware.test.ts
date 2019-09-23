@@ -3,6 +3,7 @@ import { App } from "../app";
 import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";
 import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
 import { CloudContextBuilder } from "../testUtilities/cloudContextBuilder";
+import { CloudContext } from "../cloudContext";
 
 describe("Exception Middleware", () => {
   let options: ExceptionOptions = {
@@ -155,5 +156,53 @@ describe("Exception Middleware", () => {
       },
       status: 500
     });
+  });
+
+  it("logs errors throw in callback", async () => {
+    const spy = jest.fn();
+
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options)];
+
+    const handlerWithCallback = app.use(middlewares, (context: CloudContext) => {
+      const callback = (cb) => {
+        const error = new Error("Thrown from inside callback");
+        throw error;
+      };
+
+      callback(() => {
+        spy();
+        context.send("callback", 200);
+      });
+    });
+
+    const builder = new CloudContextBuilder();
+    await expect(builder.invokeHandler(handlerWithCallback)).rejects.not.toBeNull();
+    expect(spy).not.toBeCalled();
+  });
+
+  it("logs errors throw in nested callback", async () => {
+    const spy = jest.fn();
+
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options)];
+
+    const handlerWithNestedCallback = app.use(middlewares, (context: CloudContext) => {
+      const nestedCallbacks = (cb) => {
+        MockFactory.simulateCallback(null, () => {
+          const error = new Error("Thrown from inside callback");
+          MockFactory.simulateCallback(error, cb);
+        });
+      };
+
+      nestedCallbacks(() => {
+        spy();
+        context.send("callback", 200);
+      });
+    });
+
+    const builder = new CloudContextBuilder();
+    await expect(builder.invokeHandler(handlerWithNestedCallback)).rejects.not.toBeNull();
+    expect(spy).not.toBeCalled();
   });
 });
