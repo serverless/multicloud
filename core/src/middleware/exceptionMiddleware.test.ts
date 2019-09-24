@@ -3,6 +3,7 @@ import { App } from "../app";
 import { ExceptionMiddleware, ExceptionOptions } from "./exceptionMiddleware";
 import { HTTPBindingMiddleware } from "./httpBindingMiddleware";
 import { CloudContextBuilder } from "../testUtilities/cloudContextBuilder";
+import { CloudContext } from "../cloudContext";
 
 describe("Exception Middleware", () => {
   let options: ExceptionOptions = {
@@ -154,6 +155,73 @@ describe("Exception Middleware", () => {
         timestamp: expect.any(Date),
       },
       status: 500
+    });
+  });
+
+  it("logs errors thrown in callback", async () => {
+    const spy = jest.fn();
+    const expectedError = new Error("Thrown from inside callback");
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
+
+    const handlerWithCallback = app.use(middlewares, (context: CloudContext) => {
+      const callback = (cb) => {
+        throw expectedError;
+        cb();
+      };
+
+      callback(() => {
+        spy();
+        context.send("callback", 200);
+      });
+    });
+
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(handlerWithCallback);
+
+    expect(spy).not.toBeCalled();
+    expect(context.res).toMatchObject({
+      body: { message: expectedError.toString() },
+      status: 500
+    });
+  });
+
+  it("logs errors thrown in nested callback", async () => {
+    const spy = jest.fn();
+    const expectedError = new Error("Thrown from inside callback");
+    const expectedStatusCode = 503;
+
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
+
+    const handlerWithNestedCallback = app.use(middlewares, (context: CloudContext) => {
+      const nestedCallbacks = (callback) => {
+        MockFactory.simulateCallback(null, () => {
+          MockFactory.simulateCallback(null, () => {
+            context.error(expectedError, expectedStatusCode);
+          });
+        });
+      };
+
+      nestedCallbacks(() => {
+        spy();
+        context.send("callback", 200);
+      });
+    });
+
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(handlerWithNestedCallback);
+
+    expect(spy).not.toBeCalled();
+    expect(context.res).toMatchObject({
+      body: { message: expectedError.toString() },
+      status: expectedStatusCode
     });
   });
 });
