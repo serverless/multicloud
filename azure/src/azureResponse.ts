@@ -42,8 +42,9 @@ export class AzureResponse implements CloudResponse {
    * Send HTTP response
    * @param body Body of HTTP response
    * @param status Status code of HTTP response
+   * @param contentType ContentType to apply it to response
    */
-  public send(body: any = null, status: number = 200): void {
+  public send(body: any = null, status: number = 200, contentType?: string): void {
     // If body was left as `undefined` vs `null` the azure functions runtime
     // incorrectly returns the full `response` object as the `body` of the response object
     this.body = body;
@@ -54,6 +55,10 @@ export class AzureResponse implements CloudResponse {
     }
 
     const bodyType = body.constructor.name;
+
+    if (["Buffer"].includes(bodyType)) {
+      this.headers.set("Content-Type", contentType);
+    }
 
     if (["Object", "Array"].includes(bodyType)) {
       this.headers.set("Content-Type", "application/json");
