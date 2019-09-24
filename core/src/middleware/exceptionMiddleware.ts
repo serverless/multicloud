@@ -16,7 +16,7 @@ export interface ExceptionOptions {
  */
 export const ExceptionMiddleware = (options: ExceptionOptions): Middleware =>
   (context: CloudContext, next: () => Promise<void>): Promise<void> => {
-    function onError(err) {
+    function onError(err: any, status: number = 500) {
       options.log(err);
 
       const result = {
@@ -25,10 +25,11 @@ export const ExceptionMiddleware = (options: ExceptionOptions): Middleware =>
         timestamp: new Date()
       };
 
-      context.send(result, 500);
+      context.send(result, status);
     }
 
     try {
+      context.error = onError;
       return next().catch(onError);
     } catch (err) {
       onError(err);

@@ -158,16 +158,16 @@ describe("Exception Middleware", () => {
     });
   });
 
-  it("logs errors throw in callback", async () => {
+  it("logs errors thrown in callback", async () => {
     const spy = jest.fn();
-
+    const expectedError = new Error("Thrown from inside callback");
     const app = new App();
-    const middlewares = [ExceptionMiddleware(options)];
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
 
     const handlerWithCallback = app.use(middlewares, (context: CloudContext) => {
       const callback = (cb) => {
-        const error = new Error("Thrown from inside callback");
-        throw error;
+        throw expectedError;
+        cb();
       };
 
       callback(() => {
@@ -177,21 +177,32 @@ describe("Exception Middleware", () => {
     });
 
     const builder = new CloudContextBuilder();
-    await expect(builder.invokeHandler(handlerWithCallback)).rejects.not.toBeNull();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(handlerWithCallback);
+
     expect(spy).not.toBeCalled();
+    expect(context.res).toMatchObject({
+      body: { message: expectedError.toString() },
+      status: 500
+    });
   });
 
-  it("logs errors throw in nested callback", async () => {
+  it("logs errors thrown in nested callback", async () => {
     const spy = jest.fn();
+    const expectedError = new Error("Thrown from inside callback");
+    const expectedStatusCode = 503;
 
     const app = new App();
-    const middlewares = [ExceptionMiddleware(options)];
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
 
     const handlerWithNestedCallback = app.use(middlewares, (context: CloudContext) => {
-      const nestedCallbacks = (cb) => {
+      const nestedCallbacks = (callback) => {
         MockFactory.simulateCallback(null, () => {
-          const error = new Error("Thrown from inside callback");
-          MockFactory.simulateCallback(error, cb);
+          MockFactory.simulateCallback(null, () => {
+            context.error(expectedError, expectedStatusCode);
+          });
         });
       };
 
@@ -202,7 +213,15 @@ describe("Exception Middleware", () => {
     });
 
     const builder = new CloudContextBuilder();
-    await expect(builder.invokeHandler(handlerWithNestedCallback)).rejects.not.toBeNull();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(handlerWithNestedCallback);
+
     expect(spy).not.toBeCalled();
+    expect(context.res).toMatchObject({
+      body: { message: expectedError.toString() },
+      status: expectedStatusCode
+    });
   });
 });
