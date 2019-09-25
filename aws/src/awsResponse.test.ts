@@ -59,6 +59,18 @@ describe("test of response", () => {
     expect(response.headers.get("Content-Type")).toEqual("text/html");
   });
 
+  it("should set content-type to content-type received for buffer", () => {
+    const response = new AwsResponse(
+      new AwsContext([{}, {}])
+    );
+    const contentType = "image/jpg";
+
+    response.send(new Buffer("hello"), 200, contentType);
+
+    expect(response.headers.has("Content-Type"));
+    expect(response.headers.get("Content-Type")).toEqual(contentType);
+  });
+
   it("send() should stringify the body if complex object", () => {
     const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);
@@ -68,6 +80,18 @@ describe("test of response", () => {
 
     expect(response.body).toEqual(JSON.stringify(jsonBody));
     expect(response.status).toEqual(200);
+  });
+
+  it("send() should encode to base64 the body if buffer object", () => {
+    const response = new AwsResponse(
+      new AwsContext([{}, {}])
+    );
+    const expectedContentType = "image/jpg";
+    const body = new Buffer("hello");
+
+    response.send(body, 200, expectedContentType);
+
+    expect(response.body).toEqual(new Buffer(body).toString("base64"));
   });
 
   it("flush() calls AWS runtime callback with correct parameters", () => {
@@ -86,7 +110,29 @@ describe("test of response", () => {
       {
         headers: response.headers.toJSON(),
         body: response.body,
+        statusCode: response.status
+      }
+    );
+  });
+
+  it("flush() calls AWS runtime callback with isBase64Encoded parameter set to true", () => {
+    const callback = jest.fn();
+    const context = new AwsContext([{}, {}, callback]);
+    const response = new AwsResponse(context);
+
+    const body = new Buffer("hello");
+    const status = 200;
+
+    response.send(body, status);
+    response.flush();
+
+    expect(callback).toBeCalledWith(
+      null,
+      {
+        headers: response.headers.toJSON(),
+        body: response.body,
         statusCode: response.status,
+        isBase64Encoded: true
       }
     );
   });
