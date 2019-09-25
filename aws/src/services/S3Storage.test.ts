@@ -14,16 +14,34 @@ describe("aws storage when initialize should", () => {
 
 describe("aws storage when call read should", () => {
   it("use S3 getObject", async () => {
-    const sut = new S3Storage();
     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
       createReadStream: jest.fn().mockReturnValue()
     });
 
-    await sut.read({ container: "foo", path: "bar" });
+    const sut = new S3Storage();
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    await sut.read(options);
+
     expect(AWS.S3.prototype.getObject).toHaveBeenCalledWith({
-      Bucket: "foo",
-      Key: "bar"
+      Bucket: options.container,
+      Key: options.path
     });
+  });
+
+  it("fail when using S3 getObject", async () => {
+    AWS.S3.prototype.getObject = jest.fn().mockReturnValue(null);
+
+    const sut = new S3Storage();
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    await expect(sut.read(options)).rejects.toThrow(expect.any(Error));
   });
 
   it("throw error when createReadStream method fails", async () => {
