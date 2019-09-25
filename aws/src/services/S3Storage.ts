@@ -35,7 +35,7 @@ export class S3Storage implements CloudStorage {
       throw new Error(`An error ocurred trying to retrieve the '${params.Key}' from the '${params.Bucket}' bucket`);
     }
 
-    return request.createReadStream();
+    return Promise.resolve(request.createReadStream());
   }
 
   /**

@@ -37,8 +37,8 @@ describe("aws storage when call read should", () => {
 
     const sut = new S3Storage();
     const options = {
-      container: "foo",
-      path: "bar"
+      container: "",
+      path: ""
     };
 
     await expect(sut.read(options)).rejects.toThrow(expect.any(Error));
@@ -52,7 +52,12 @@ describe("aws storage when call read should", () => {
     });
 
     const sut = new S3Storage();
-    await expect(sut.read({ container: "", path: "" })).rejects.toThrow("fail");
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    await expect(sut.read(options)).rejects.toThrow(expect.any(Error));
   });
 
   it("emit error event if the stream fails", async (done) => {
@@ -64,16 +69,16 @@ describe("aws storage when call read should", () => {
       })
     });
 
+    const sut = new S3Storage();
     const options = {
       container: "foo",
       path: "bar"
     };
 
-    const sut = new S3Storage();
-    const data = await sut.read(options);
+    const result = await sut.read(options);
 
-    data.on("error", error => {
-      expect(error.message).toEqual("fail");
+    result.on("error", error => {
+      expect(error).toEqual(expect.any(Error));
       done();
     });
   });
@@ -84,15 +89,16 @@ describe("aws storage when call read should", () => {
       createReadStream: jest.fn().mockReturnValue(file)
     });
 
+    const sut = new S3Storage();
     const options = {
       container: "foo",
       path: "bar"
     };
 
-    const sut = new S3Storage();
-    const data = await sut.read(options);
-    expect(data).toEqual(file);
-    expect(data).toBeInstanceOf(Stream);
+    const result = await sut.read(options);
+
+    expect(result).toEqual(file);
+    expect(result).toBeInstanceOf(Stream);
   });
 });
 
