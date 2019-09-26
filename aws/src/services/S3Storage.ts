@@ -31,7 +31,7 @@ export class S3Storage implements CloudStorage {
 
     const request = this.s3.getObject(params);
 
-    if(!request) {
+    if (!request) {
       throw new Error(`An error ocurred trying to retrieve the '${params.Key}' from the '${params.Bucket}' bucket`);
     }
 

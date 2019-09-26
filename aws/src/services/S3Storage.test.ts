@@ -46,9 +46,7 @@ describe("aws storage when call read should", () => {
 
   it("throw error when createReadStream method fails", async () => {
     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      createReadStream: jest.fn().mockImplementation(() => {
-        throw new Error("fail");
-      })
+      createReadStream: jest.fn().mockRejectedValue(new Error("fail"))
     });
 
     const sut = new S3Storage();
@@ -60,12 +58,12 @@ describe("aws storage when call read should", () => {
     await expect(sut.read(options)).rejects.toThrow(expect.any(Error));
   });
 
-  it("emit error event if the stream fails", async (done) => {
+  it("emit error event if the stream fails", async () => {
     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
       createReadStream: jest.fn().mockImplementation(() => {
         const file = new Readable();
         setImmediate(() => file.emit("error", new Error("fail")));
-        return file;
+        return Promise.resolve(file);
       })
     });
 
@@ -79,7 +77,6 @@ describe("aws storage when call read should", () => {
 
     result.on("error", error => {
       expect(error).toEqual(expect.any(Error));
-      done();
     });
   });
 
