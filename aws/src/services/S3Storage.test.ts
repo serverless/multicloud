@@ -1,6 +1,6 @@
 import { S3Storage } from ".";
 import AWS from "aws-sdk";
-import { Readable } from "stream";
+import { Stream, Readable } from "stream";
 import { convertToStream } from "@multicloud/sls-core";
 
 jest.mock("aws-sdk");
@@ -14,35 +14,88 @@ describe("aws storage when initialize should", () => {
 
 describe("aws storage when call read should", () => {
   it("use S3 getObject", async () => {
-    const sut = new S3Storage();
     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({})
+      createReadStream: jest.fn().mockReturnValue()
     });
 
-    await sut.read({ container: "foo", path: "bar" });
+    const sut = new S3Storage();
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    await sut.read(options);
+
     expect(AWS.S3.prototype.getObject).toHaveBeenCalledWith({
-      Bucket: "foo",
-      Key: "bar"
+      Bucket: options.container,
+      Key: options.path
     });
   });
 
-  it("throw error when fail", async () => {
+  it("fail when using S3 getObject", async () => {
+    AWS.S3.prototype.getObject = jest.fn().mockReturnValue(null);
+
+    const sut = new S3Storage();
+    const options = {
+      container: "",
+      path: ""
+    };
+
+    await expect(sut.read(options)).rejects.toThrow(expect.any(Error));
+  });
+
+  it("throw error when createReadStream method fails", async () => {
     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockRejectedValue(new Error("fail"))
+      createReadStream: jest.fn().mockRejectedValue(new Error("fail"))
     });
 
     const sut = new S3Storage();
-    await expect(sut.read({ container: "", path: "" })).rejects.toThrow("fail");
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    await expect(sut.read(options)).rejects.toThrow(expect.any(Error));
+  });
+
+  it("emit error event if the stream fails", async () => {
+    AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
+      createReadStream: jest.fn().mockImplementation(() => {
+        const file = new Readable();
+        setImmediate(() => file.emit("error", new Error("fail")));
+        return Promise.resolve(file);
+      })
+    });
+
+    const sut = new S3Storage();
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    const result = await sut.read(options);
+
+    result.on("error", error => {
+      expect(error).toEqual(expect.any(Error));
+    });
   });
 
   it("return stream on success", async () => {
-    const file = new Buffer("file");
+    const file = convertToStream("file");
     AWS.S3.prototype.getObject = jest.fn().mockReturnValue({
-      promise: jest.fn().mockResolvedValue({ Body: file })
+      createReadStream: jest.fn().mockReturnValue(file)
     });
+
     const sut = new S3Storage();
-    const data = await sut.read({ container: "foo", path: "bar" });
-    expect(data).toBe(file);
+    const options = {
+      container: "foo",
+      path: "bar"
+    };
+
+    const result = await sut.read(options);
+
+    expect(result).toEqual(file);
+    expect(result).toBeInstanceOf(Stream);
   });
 });
 

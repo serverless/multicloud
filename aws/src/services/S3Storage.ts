@@ -28,8 +28,14 @@ export class S3Storage implements CloudStorage {
       Bucket: opts.container,
       Key: opts.path
     };
-    const result = await this.s3.getObject(params).promise()
-    return result.Body as Stream
+
+    const request = this.s3.getObject(params);
+
+    if (!request) {
+      throw new Error(`An error ocurred trying to retrieve the '${params.Key}' from the '${params.Bucket}' bucket`);
+    }
+
+    return Promise.resolve(request.createReadStream());
   }
 
   /**
