@@ -1,4 +1,10 @@
-import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext } from "@multicloud/sls-core";
+import {
+  CloudService,
+  ContainerResolver,
+  CloudServiceOptions,
+  CloudContext,
+  StringParams
+} from "@multicloud/sls-core";
 import axios, { AxiosRequestConfig } from "axios";
 import { ComponentType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
@@ -20,12 +26,13 @@ export interface AzureCloudServiceOptions extends CloudServiceOptions {
  */
 @injectable()
 export class AzureFunctionCloudService implements CloudService {
-
   /**
    * Initialize a new Azure Function Cloud Service with the IoC container
    * @param containerResolver IoC container for service resolution
    */
-  public constructor(@inject(ComponentType.CloudContext) context: CloudContext) {
+  public constructor(
+    @inject(ComponentType.CloudContext) context: CloudContext
+  ) {
     this.containerResolver = context.container;
   }
 
@@ -37,12 +44,19 @@ export class AzureFunctionCloudService implements CloudService {
    * @param fireAndForget Wait for response if false (default behavior)
    * @param payload Body of HTTP request
    */
-  public async invoke<T>(name: string, fireAndForget = false, payload: any = null) {
+  public async invoke<T>(
+    name: string,
+    fireAndForget = false,
+    payload: any = null,
+    headers: StringParams = new StringParams()
+  ) {
     if (!name || name.length === 0) {
       throw Error("Name is needed");
     }
 
-    const context = this.containerResolver.resolve<AzureCloudServiceOptions>(name);
+    const context = this.containerResolver.resolve<AzureCloudServiceOptions>(
+      name
+    );
     if (!context.method || !context.http) {
       throw Error("Missing Data");
     }
@@ -51,10 +65,11 @@ export class AzureFunctionCloudService implements CloudService {
       url: context.http,
       method: context.method,
       data: payload,
+      headers: headers.toJSON()
     };
 
     if (fireAndForget) {
-      axios.request(axiosRequestConfig)
+      axios.request(axiosRequestConfig);
       return Promise.resolve(undefined);
     } else {
       return await axios.request<T>(axiosRequestConfig);
