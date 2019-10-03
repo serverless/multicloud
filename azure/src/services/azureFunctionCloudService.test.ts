@@ -1,12 +1,17 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ContainerResolver, CloudContainer, CloudService } from "@multicloud/sls-core"
-import { AzureFunctionCloudService, AzureCloudServiceOptions } from "."
+import {
+  ContainerResolver,
+  CloudContainer,
+  CloudService,
+  StringParams
+} from "@multicloud/sls-core";
+import { AzureFunctionCloudService, AzureCloudServiceOptions } from ".";
 
 const getCartAzureCloudService: AzureCloudServiceOptions = {
   name: "azure-getCart",
   http: "test-url",
-  method: "GET",
-}
+  method: "GET"
+};
 
 describe("Azure Cloud Service should", () => {
   let container: CloudContainer;
@@ -18,9 +23,11 @@ describe("Azure Cloud Service should", () => {
     container = new CloudContainer();
     context = {
       container
-    }
+    };
     cloudService = new AzureFunctionCloudService(context);
-    container.bind(getCartAzureCloudService.name).toConstantValue(getCartAzureCloudService);
+    container
+      .bind(getCartAzureCloudService.name)
+      .toConstantValue(getCartAzureCloudService);
   });
 
   it("call axios.request with the configuration", async () => {
@@ -28,6 +35,7 @@ describe("Azure Cloud Service should", () => {
       url: "test-url",
       method: "GET",
       data: null,
+      headers: {}
     };
     axios.request = jest.fn().mockReturnValue(Promise.resolve());
     await cloudService.invoke<Promise<any>>("azure-getCart", false);
@@ -39,9 +47,13 @@ describe("Azure Cloud Service should", () => {
       url: "test-url",
       method: "GET",
       data: null,
+      headers: {}
     };
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
-    const response = await cloudService.invoke<Promise<any>>("azure-getCart", false);
+    const response = await cloudService.invoke<Promise<any>>(
+      "azure-getCart",
+      false
+    );
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).toEqual("Response");
   });
@@ -51,9 +63,13 @@ describe("Azure Cloud Service should", () => {
       url: "test-url",
       method: "GET",
       data: null,
+      headers: {}
     };
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
-    const response = await cloudService.invoke<Promise<any>>("azure-getCart", true);
+    const response = await cloudService.invoke<Promise<any>>(
+      "azure-getCart",
+      true
+    );
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).toBeUndefined();
   });
@@ -76,8 +92,24 @@ describe("Azure Cloud Service should", () => {
       url: "test-url",
       method: "GET",
       data: payload,
+      headers: {}
     };
     const response = cloudService.invoke("azure-getCart", false, payload);
+    expect(axios.request).toBeCalledWith(axiosRequestConfig);
+    expect(response).not.toBeNull();
+  });
+
+  it("makes request with headers when defined", async () => {
+    axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
+    const headers = new StringParams({ key: 123 });
+
+    const axiosRequestConfig: AxiosRequestConfig = {
+      url: "test-url",
+      method: "GET",
+      data: null,
+      headers: headers.toJSON()
+    };
+    const response = cloudService.invoke("azure-getCart", false, null, headers);
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).not.toBeNull();
   });
@@ -93,7 +125,7 @@ describe("Azure Cloud Service should", () => {
       resolve: <T>(): T => {
         return (EmptyContainer as unknown) as T;
       }
-    }
+    };
     context.container = newResolver;
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
     const sut = new AzureFunctionCloudService(context);
