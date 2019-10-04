@@ -46,19 +46,19 @@ export class AzureFunctionCloudService implements CloudService {
    */
   public async invoke<T>(
     name: string,
-    fireAndForget = false,
+    fireAndForget,
     payload: any = null,
     headers: StringParams = new StringParams()
   ) {
     if (!name || name.length === 0) {
-      throw Error("Name is needed");
+      return Promise.reject("Name is needed");
     }
 
     const context = this.containerResolver.resolve<AzureCloudServiceOptions>(
       name
     );
     if (!context.method || !context.http) {
-      throw Error("Missing Data");
+      return Promise.reject("Missing Data");
     }
 
     const axiosRequestConfig: AxiosRequestConfig = {
@@ -71,8 +71,10 @@ export class AzureFunctionCloudService implements CloudService {
     if (fireAndForget) {
       axios.request(axiosRequestConfig);
       return Promise.resolve(undefined);
-    } else {
-      return await axios.request<T>(axiosRequestConfig);
     }
+
+    const response = await axios.request<T>(axiosRequestConfig);
+
+    return Promise.resolve(response.data);
   }
 }
