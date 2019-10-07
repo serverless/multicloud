@@ -62,6 +62,15 @@ describe("Azure Response", () => {
     expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
   });
 
+  it("should set content-type to application/json by default", () => {
+    const azureContext = createAzureContext(defaultParams);
+
+    azureContext.res.send();
+
+    expect(azureContext.res.headers.has("Content-Type"));
+    expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
+  });
+
   it("should set content-type to application/json for JSON objects", () => {
     const azureContext = createAzureContext(defaultParams);
 

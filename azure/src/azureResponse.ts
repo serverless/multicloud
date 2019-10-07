@@ -35,6 +35,7 @@ export class AzureResponse implements CloudResponse {
   ) {
     this.runtime = context.runtime;
     this.headers = new StringParams(this.runtime.context.res.headers);
+    this.headers.set("Content-Type", "application/json");
     this.headers.set(CloudProviderResponseHeader, ProviderType.Azure);
   }
 
@@ -58,10 +59,6 @@ export class AzureResponse implements CloudResponse {
 
     if (["Buffer"].includes(bodyType)) {
       this.headers.set("Content-Type", contentType);
-    }
-
-    if (["Object", "Array"].includes(bodyType)) {
-      this.headers.set("Content-Type", "application/json");
     }
 
     if (["String"].includes(bodyType)) {
