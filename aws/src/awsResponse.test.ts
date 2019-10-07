@@ -26,6 +26,16 @@ describe("test of response", () => {
     expect(response.status).toEqual(httpStatus);
   });
 
+  it("should set content-type to application/json by default", () => {
+    const context = new AwsContext([{}, {}]);
+    const response = new AwsResponse(context);
+
+    response.send();
+
+    expect(response.headers.has("Content-Type"));
+    expect(response.headers.get("Content-Type")).toEqual("application/json");
+  });
+
   it("should set content-type to application/json for JSON objects", () => {
     const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);

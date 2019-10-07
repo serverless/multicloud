@@ -34,6 +34,7 @@ export class AwsResponse implements CloudResponse {
    * @param context Current CloudContext
    */
   public constructor(@inject(ComponentType.CloudContext) context: AwsContext) {
+    this.headers.set("Content-Type", "application/json");
     this.headers.set(CloudProviderResponseHeader, ProviderType.AWS);
     this.callback = context.runtime.callback;
   }
@@ -44,7 +45,7 @@ export class AwsResponse implements CloudResponse {
    * @param status Status code of HTTP response
    * @param contentType ContentType to apply it to response
    */
-  public send(body: any, status: number = 200, contentType?: string): void {
+  public send(body: any = null, status: number = 200, contentType?: string): void {
     const responseBody = typeof (body) !== "string"
       ? JSON.stringify(body)
       : body;
@@ -62,10 +63,6 @@ export class AwsResponse implements CloudResponse {
       this.isBase64Encoded = true;
       this.body = (body as Buffer).toString("base64");
       this.headers.set("Content-Type", contentType);
-    }
-
-    if (["Object", "Array"].includes(bodyType)) {
-      this.headers.set("Content-Type", "application/json");
     }
 
     if (["String"].includes(bodyType)) {
