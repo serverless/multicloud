@@ -42,6 +42,7 @@ describe("Storage Queue Middleware", () => {
           properties: {
             contentType: "text/plain",
             length: 123,
+            created: "2019-08-05T23:58:10+00:00",
             lastModified: "2019-08-05T23:58:10+00:00"
           }
         },
@@ -66,6 +67,52 @@ describe("Storage Queue Middleware", () => {
         body: expect.anything(),
         timestamp: expect.any(Date),
         eventSource: "azure:storageBlob",
+        eventName: "ObjectCreated:Put"
+      }]
+    })
+    expect(next).toBeCalled();
+  });
+
+  it("transforms the azure event into a generic cloud message with empty eventName", async () => {
+    const testMessage = "this is a test";
+    const originalEvent = Buffer.from(testMessage);
+    const runtimeArgs: any[] = [
+      {
+        invocationID: "ID123",
+        log: {},
+        bindingData: {
+          id: "ABC123",
+          blobTrigger: "container/item.txt",
+          insertionTime: new Date().toUTCString(),
+          properties: {
+            contentType: "text/plain",
+            length: 123,
+            created: "2019-08-05T23:58:10+00:00",
+            lastModified: "2019-10-05T17:33:10+00:00"
+          }
+        },
+        bindingDefinitions: [],
+      },
+      originalEvent,
+    ];
+
+    const next = jest.fn();
+    const context = new AzureContext(runtimeArgs);
+    await middleware(context, next);
+
+    const actualBody = await streamToString(context.event.records[0].body);
+
+    expect(actualBody).toEqual(testMessage);
+    expect(context.event).toEqual({
+      records: [{
+        id: runtimeArgs[0].bindingData.blobTrigger,
+        contentType: runtimeArgs[0].bindingData.properties.contentType,
+        length: runtimeArgs[0].bindingData.properties.length,
+        properties: runtimeArgs[0].bindingData.properties,
+        body: expect.anything(),
+        timestamp: expect.any(Date),
+        eventSource: "azure:storageBlob",
+        eventName: ""
       }]
     })
     expect(next).toBeCalled();

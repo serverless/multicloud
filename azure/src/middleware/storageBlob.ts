@@ -8,17 +8,20 @@ import { createReadStream } from "streamifier";
  */
 export const StorageBlobMiddleware = (): Middleware => async (context: AzureContext, next: () => Promise<void>) => {
   if (context instanceof AzureContext) {
-    const bindingData = context.runtime.context.bindingData;
+    const { blobTrigger, properties } = context.runtime.context.bindingData;
     const buffer = context.event;
+    const timeDiff = new Date(properties.lastModified).getTime() - new Date(properties.created).getTime();
+    const eventName = timeDiff === 0 ? "ObjectCreated:Put" : "";
 
     const message: CloudMessage = {
-      id: bindingData.blobTrigger,
-      contentType: bindingData.properties.contentType,
-      length: bindingData.properties.length,
+      id: blobTrigger,
+      contentType: properties.contentType,
+      length: properties.length,
       body: createReadStream(buffer),
-      timestamp: new Date(bindingData.properties.lastModified),
-      properties: bindingData.properties,
+      timestamp: new Date(properties.lastModified),
+      properties,
       eventSource: "azure:storageBlob",
+      eventName
     };
 
     context.event = {
