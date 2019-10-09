@@ -43,25 +43,52 @@ export class LambdaCloudService implements CloudService {
    * @param fireAndForget Wait for response if false (default behavior)
    * @param payload Body of HTTP request
    */
-  public invoke<T>(name: string, fireAndForget = false, payload: any) {
+  public async invoke<T>(name: string, fireAndForget, payload: any): Promise<T> {
     if (!name || name.length === 0) {
-      throw Error("Name is needed");
-    }
+      return Promise.reject("Name is needed");
+	  }
+
     const context = this.containerResolver.resolve<AWSCloudServiceOptions>(name);
+    const requestPayload = {
+      body: payload
+    };
 
     if (!context.region || !context.arn) {
-      throw Error("Region and ARN are needed for Lambda calls");
+      return Promise.reject("Region and ARN are needed for Lambda calls");
     }
+
     const lambda = new AWS.Lambda({ region: context.region });
 
-    return (lambda
+    const response = lambda
       .invoke({
         FunctionName: context.arn,
-        Payload: payload,
+        Payload: JSON.stringify(requestPayload),
         InvocationType: fireAndForget
           ? AWSInvokeType.fireAndForget
           : AWSInvokeType.fireAndWait
       })
-      .promise() as unknown) as T;
+	    .createReadStream();
+
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+
+      response.on("error", error => {
+        response.destroy();
+        reject(error);
+      });
+
+      response.on("data", data => {
+        chunks.push(data);
+      });
+
+      response.on("end", () => {
+        // In case of "RequestResponse" invocation type
+        // the invoke response body is parsed to JSON
+        resolve(fireAndForget
+          ? undefined
+          : JSON.parse(JSON.parse(chunks.toString()).body)
+        );
+      });
+    });
   }
 }
