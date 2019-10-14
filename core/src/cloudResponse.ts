@@ -6,7 +6,7 @@ import { StringParams } from "./common/stringParams";
 export interface CloudResponse {
   /** Headers of response */
   headers?: StringParams;
-  body: string;
+  body: any;
   status: number;
 
   /**

@@ -5,13 +5,21 @@ import { Guard } from "./guard";
  * Used in HTTP request / response for headers, query strings & path params
  */
 export class StringParams<T = any> extends Map<string, T> {
+  [key: string]: any;
 
   public constructor(entries?: Iterable<[string, T]> | any) {
     if (entries && entries.constructor && entries.constructor.name === "Object") {
       entries = Object.keys(entries).map((key) => [key, entries[key]]);
     }
 
-    super(entries)
+    super(entries);
+
+    if (entries) {
+      // This allows accessing the keys similar to that of a POJO
+      Array.from(entries).forEach((value) => {
+        this[value[0]] = value[1];
+      });
+    }
   }
 
   /**

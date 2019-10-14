@@ -198,7 +198,7 @@ describe("Exception Middleware", () => {
     const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
 
     const handlerWithNestedCallback = app.use(middlewares, (context: CloudContext) => {
-      const nestedCallbacks = (callback) => {
+      const nestedCallbacks = (_) => {
         MockFactory.simulateCallback(null, () => {
           MockFactory.simulateCallback(null, () => {
             context.error(expectedError, expectedStatusCode);

@@ -18,6 +18,8 @@ export interface CloudProviderRuntime {
  * Common context for Serverless functions
  */
 export interface CloudContext {
+  /** Generic property bag for additional extensions */
+  [key: string]: any;
   /** Cloud provider type */
   providerType: string;
   /** Request ID */
