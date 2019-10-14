@@ -165,4 +165,36 @@ describe("App", () => {
       expect(current).not.toBe(next);
     }
   });
+
+  it("Will invoke default registered middleware when handler is executed", async () => {
+    const app = new App();
+
+    // Register default middleware
+    const defaultMiddleware = MockFactory.createMockMiddleware();
+    app.registerMiddleware(defaultMiddleware);
+
+    const handler = MockFactory.createMockHandler();
+
+    await app.use(handler)();
+
+    expect(defaultMiddleware).toBeCalled();
+    expect(handler).toBeCalled();
+  });
+
+  it("Will invoke default registered middleware and app specific middleware when handler is executed", async () => {
+    const app = new App();
+
+    // Register default middleware
+    const defaultMiddleware = MockFactory.createMockMiddleware();
+    const requestMiddleware = MockFactory.createMockMiddleware();
+    app.registerMiddleware(defaultMiddleware);
+
+    const handler = MockFactory.createMockHandler();
+
+    await app.use([requestMiddleware], handler)();
+
+    expect(defaultMiddleware).toBeCalled();
+    expect(requestMiddleware).toBeCalled();
+    expect(handler).toBeCalled();
+  });
 });
