@@ -10,7 +10,8 @@ import { CloudContext } from "./cloudContext";
  */
 export class App {
   private container: CloudContainer;
-  private modules: CloudModule[];
+  private modules: CloudModule[] = [];
+  private middlewares: Middleware[] = [];
 
   /**
    * Initialize IoC container and register all modules
@@ -29,12 +30,39 @@ export class App {
   }
 
   /**
-   * Apply middleware array and initialize handler function
-   * @param middlewares Array of middlewares to apply *in order* in application
+   * Array of default middleware components to apply *in order* in application
+   * @param middlewares
+   */
+  public registerMiddleware(...middlewares: Middleware[]) {
+    Guard.null(middlewares);
+    this.middlewares = middlewares;
+  }
+
+  /**
+   * Initialize handler function using default middleware pipeline
    * @param handler Serverless Handler function
    */
-  public use(middlewares: Middleware[], handler: Handler): Function {
+  public use(handler: Handler): Function;
+
+  /**
+   * Apply middleware pipeline and initialize handler function
+   * @param middlewares Array of middlewares to apply *in order* in application (Appended to default middlewares)
+   * @param handler Serverless Handler function
+   */
+  public use(middlewares: Middleware[], handler: Handler): Function;
+
+  public use(middlewaresOrHandler: Middleware[] | Handler, handler?: Handler): Function {
     return async (...args: any[]): Promise<CloudContext> => {
+      // Define the default middlewares for the request
+      let requestMiddlewares = [...this.middlewares];
+
+      if (handler) {
+        // Append request specific middlewares to the pipeline
+        requestMiddlewares = [...requestMiddlewares, ...middlewaresOrHandler as Middleware[]];
+      } else {
+        handler = middlewaresOrHandler as Handler;
+      }
+
       // Creates a child IoC container for each request into the app
       // This allows multiple calls to the container to reuse the same instance
       // of singleton components such as the `CloudContext`
@@ -46,7 +74,7 @@ export class App {
       requestContainer.bind(ComponentType.RuntimeArgs).toConstantValue(args);
 
       // Retrieve the cloud provider specific cloud context based on the
-      // IoC container component registrions & constrints
+      // IoC container component registrations & constraints
       // Each cloud provider registers constraints based on the incoming runtime arguments
       const context = requestContainer.resolve<CloudContext>(ComponentType.CloudContext);
       context.container = requestContainer;
@@ -56,7 +84,7 @@ export class App {
 
       try {
         const next = () => {
-          const middleware = middlewares[index];
+          const middleware = requestMiddlewares[index];
           let result = null;
 
           // Recursively loop through the middleware pipeline

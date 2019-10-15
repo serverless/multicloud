@@ -198,6 +198,7 @@ describe("Exception Middleware", () => {
     const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware()];
 
     const handlerWithNestedCallback = app.use(middlewares, (context: CloudContext) => {
+      /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
       const nestedCallbacks = (callback) => {
         MockFactory.simulateCallback(null, () => {
           MockFactory.simulateCallback(null, () => {

@@ -1,7 +1,7 @@
 import { StringParams } from "./stringParams";
 
 describe("String Params", () => {
-  it("entries can be retieved in any case", () => {
+  it("entries can be retrieved in any case", () => {
     const expected = "ABC123";
 
     const params = new StringParams();
@@ -105,5 +105,31 @@ describe("String Params", () => {
 
     const params = new StringParams(original);
     expect(JSON.stringify(params)).toEqual(JSON.stringify(expected));
+  });
+
+  it("entries can be accessed using original casing directly off object", () => {
+    const original: any = {
+      userId: "dk39dk32",
+      resourceId: "94kdZdk"
+    };
+
+    const params = new StringParams(original);
+    expect(params.userId).toEqual(original.userId);
+    expect(params.resourceId).toEqual(original.resourceId);
+  });
+
+  it("can serialize top level keys correctly", () => {
+    const original: any = {
+      userId: "dk39dk32",
+      resourceId: "94kdZdk"
+    };
+
+    const expected = JSON.stringify({
+      userid: original.userId,
+      resourceid: original.resourceId
+    });
+
+    const params = new StringParams(original);
+    expect(JSON.stringify(params)).toEqual(expected);
   });
 });
