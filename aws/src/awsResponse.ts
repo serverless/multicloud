@@ -46,16 +46,17 @@ export class AwsResponse implements CloudResponse {
    * @param contentType ContentType to apply it to response
    */
   public send(body: any = null, status: number = 200, contentType?: string): void {
-    const responseBody = typeof (body) !== "string"
-      ? JSON.stringify(body)
-      : body;
-
-    this.body = responseBody;
     this.status = status;
 
     if (!body) {
       return;
     }
+
+    const responseBody = typeof (body) !== "string"
+      ? JSON.stringify(body)
+      : body;
+
+    this.body = responseBody;
 
     const bodyType = body.constructor.name;
 

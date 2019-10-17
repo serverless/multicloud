@@ -92,6 +92,16 @@ describe("test of response", () => {
     expect(response.status).toEqual(200);
   });
 
+  it("send() should not set the body if null", () => {
+    const context = new AwsContext([{}, {}]);
+    const response = new AwsResponse(context);
+
+    response.send();
+
+    expect(response.body).toBeUndefined();
+    expect(response.status).toEqual(200);
+  });
+
   it("send() should encode to base64 the body if buffer object", () => {
     const response = new AwsResponse(
       new AwsContext([{}, {}])
