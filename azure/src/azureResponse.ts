@@ -5,7 +5,8 @@ import {
   ComponentType,
   ProviderType,
   CloudProviderResponseHeader,
-  StringParams
+  StringParams,
+  CloudResponseLike
 } from "@multicloud/sls-core";
 import { AzureContext } from "./azureContext";
 
@@ -45,25 +46,24 @@ export class AzureResponse implements CloudResponse {
    * @param status Status code of HTTP response
    * @param contentType ContentType to apply it to response
    */
-  public send(body: any = null, status: number = 200, contentType?: string): void {
+  public send(response: CloudResponseLike = {}): void {
     // If body was left as `undefined` vs `null` the azure functions runtime
     // incorrectly returns the full `response` object as the `body` of the response object
-    this.body = body;
-    this.status = status;
+    this.body = response.body || null;
+    this.status = response.status || 200;
+    response.headers = response.headers || {};
 
-    if (!body) {
-      return;
+    if (response.body) {
+      const bodyType = response.body.constructor.name;
+
+      if (["String"].includes(bodyType)) {
+        response.headers["Content-Type"] = "text/html";
+      }
     }
 
-    const bodyType = body.constructor.name;
-
-    if (["Buffer"].includes(bodyType)) {
-      this.headers.set("Content-Type", contentType);
-    }
-
-    if (["String"].includes(bodyType)) {
-      this.headers.set("Content-Type", "text/html");
-    }
+    Object.keys(response.headers).forEach((key) => {
+      this.headers.set(key, response.headers[key]);
+    });
   }
 
   public flush() {

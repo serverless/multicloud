@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { AzureRequest, AzureResponse } from ".";
-import { CloudContext, ComponentType } from "@multicloud/sls-core";
+import { CloudContext, ComponentType, CloudResponseLike } from "@multicloud/sls-core";
 import { CloudStorage, ProviderType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions";
@@ -47,16 +47,41 @@ export class AzureContext implements CloudContext {
   /** Signals to the runtime that the request is complete */
   public done: () => void;
 
+
+  /**
+   * Send response from Azure Function
+   * @param response The HTTP respoinse
+   */
+  public send(response: CloudResponseLike): void;
+
   /**
    * Send response from Azure Function
    * @param body Body of response
    * @param status Status code of response
    * @param contentType ContentType to apply it to response
    */
-  public send(body: any = null, status: number = 200, contentType?: string): void {
+  public send(body?: any, status?: number, contentType?: string): void
+
+  /**
+   * Send response from Azure Function
+   * @param body Body of response
+   * @param status Status code of response
+   * @param contentType ContentType to apply it to response
+   */
+  public send(bodyOrResponse?: any, status?: number, contentType?: string): void {
     try {
       if (this.res) {
-        this.res.send(body, status, contentType);
+        const response: CloudResponseLike = {
+          body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse) : null,
+          status: status ? status : (bodyOrResponse ? bodyOrResponse.status : 200),
+          headers: bodyOrResponse ? bodyOrResponse.headers || {} : {}
+        };
+
+        if (contentType) {
+          response.headers["Content-Type"] = contentType;
+        }
+
+        this.res.send(response);
       }
 
       this.done();
