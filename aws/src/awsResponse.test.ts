@@ -19,7 +19,7 @@ describe("test of response", () => {
     const httpBody = "test";
     const httpStatus = 200;
 
-    response.send(httpBody, httpStatus);
+    response.send({ body: httpBody, status: httpStatus });
 
     expect(response.headers.get(CloudProviderResponseHeader)).toEqual(ProviderType.AWS);
     expect(response.body).toEqual(httpBody);
@@ -41,9 +41,11 @@ describe("test of response", () => {
     const response = new AwsResponse(context);
 
     response.send({
-      a: 1,
-      b: 2,
-      c: 3
+      body: {
+        a: 1,
+        b: 2,
+        c: 3
+      }
     });
 
     expect(response.headers.has("Content-Type"));
@@ -53,7 +55,7 @@ describe("test of response", () => {
   it("should set content-type to application/json for array object", () => {
     const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);
-    response.send(["a", "b", "c"]);
+    response.send({ body: ["a", "b", "c"] });
 
     expect(response.headers.has("Content-Type"));
     expect(response.headers.get("Content-Type")).toEqual("application/json");
@@ -63,7 +65,7 @@ describe("test of response", () => {
     const context = new AwsContext([{}, {}]);
     const response = new AwsResponse(context);
 
-    response.send("<div>hello</div>");
+    response.send({ body: "<div>hello</div>" });
 
     expect(response.headers.has("Content-Type"));
     expect(response.headers.get("Content-Type")).toEqual("text/html");
@@ -75,10 +77,33 @@ describe("test of response", () => {
     );
     const contentType = "image/jpg";
 
-    response.send(new Buffer("hello"), 200, contentType);
+    response.send({
+      body: new Buffer("hello"),
+      status: 200,
+      headers: {
+        "Content-Type": contentType
+      }
+    });
 
     expect(response.headers.has("Content-Type"));
     expect(response.headers.get("Content-Type")).toEqual(contentType);
+  });
+
+  it("should set headers on response", () => {
+    const context = new AwsContext([{}, {}]);
+    context.res = new AwsResponse(context);
+
+    const expectedHeaders = {
+      "x-header-1": "header1",
+      "x-header-2": "header2"
+    };
+
+    context.res.send({
+      headers: expectedHeaders
+    });
+
+    expect(context.res.headers.get("x-header-1")).toEqual(expectedHeaders["x-header-1"]);
+    expect(context.res.headers.get("x-header-2")).toEqual(expectedHeaders["x-header-2"])
   });
 
   it("send() should stringify the body if complex object", () => {
@@ -86,7 +111,7 @@ describe("test of response", () => {
     const response = new AwsResponse(context);
     const jsonBody = { foo: "bar" };
 
-    response.send(jsonBody, 200);
+    response.send({ body: jsonBody, status: 200 });
 
     expect(response.body).toEqual(JSON.stringify(jsonBody));
     expect(response.status).toEqual(200);
@@ -109,7 +134,13 @@ describe("test of response", () => {
     const expectedContentType = "image/jpg";
     const body = new Buffer("hello");
 
-    response.send(body, 200, expectedContentType);
+    response.send({
+      body,
+      status: 200,
+      headers: {
+        "Content-Type": expectedContentType
+      }
+    });
 
     expect(response.body).toEqual(new Buffer(body).toString("base64"));
   });
@@ -122,7 +153,7 @@ describe("test of response", () => {
     const body = "OK";
     const status = 200;
 
-    response.send(body, status);
+    response.send({ body, status });
     response.flush();
 
     expect(callback).toBeCalledWith(
@@ -143,7 +174,7 @@ describe("test of response", () => {
     const body = new Buffer("hello");
     const status = 200;
 
-    response.send(body, status);
+    response.send({ body, status });
     response.flush();
 
     expect(callback).toBeCalledWith(

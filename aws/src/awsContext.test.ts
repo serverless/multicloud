@@ -31,7 +31,11 @@ describe("AWS context", () => {
     context.res.send = jest.fn();
     context.send(body);
 
-    expect(context.res.send).toBeCalledWith(body, 200, undefined);
+    expect(context.res.send).toBeCalledWith({
+      body,
+      status: 200,
+      headers: {}
+    });
   });
 
   it("send() calls response.send() on httpTrigger with custom status", () => {
@@ -41,7 +45,11 @@ describe("AWS context", () => {
     context.res.send = jest.fn();
     context.send(body, 400);
 
-    expect(context.res.send).toHaveBeenCalledWith(body, 400, undefined);
+    expect(context.res.send).toHaveBeenCalledWith({
+      body,
+      status: 400,
+      headers: {}
+    });
   });
 
   it("send() calls context.done() to signal handler is complete", () => {
@@ -61,7 +69,11 @@ describe("AWS context", () => {
     context.res.send = jest.fn();
 
     context.send(expectedBody, expectedStatus, expectedContentType);
-    expect(context.res.send).toBeCalledWith(expectedBody, expectedStatus, expectedContentType);
+    expect(context.res.send).toBeCalledWith({
+      body: expectedBody,
+      status: expectedStatus,
+      headers: { "Content-Type": expectedContentType }
+    });
   });
 
   it("flush() calls response.flush() to call final AWS callback", () => {

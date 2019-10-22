@@ -4,7 +4,8 @@ import {
   ComponentType,
   ProviderType,
   CloudProviderResponseHeader,
-  StringParams
+  StringParams,
+  CloudResponseLike
 } from "@multicloud/sls-core";
 import { AwsContext } from ".";
 import { injectable, inject } from "inversify";
@@ -45,30 +46,31 @@ export class AwsResponse implements CloudResponse {
    * @param status Status code of HTTP response
    * @param contentType ContentType to apply it to response
    */
-  public send(body: any = null, status: number = 200, contentType?: string): void {
-    this.status = status;
+  public send(response: CloudResponseLike = {}): void {
+    this.status = response.status || 200;
+    response.headers = response.headers || {};
 
-    if (!body) {
-      return;
+    if (response.body) {
+      const responseBody = typeof (response.body) !== "string"
+        ? JSON.stringify(response.body)
+        : response.body;
+
+      this.body = responseBody;
+      const bodyType = response.body.constructor.name;
+
+      if (["Buffer"].includes(bodyType)) {
+        this.isBase64Encoded = true;
+        this.body = (response.body as Buffer).toString("base64");
+      }
+
+      if (["String"].includes(bodyType)) {
+        response.headers["Content-Type"] = "text/html";
+      }
     }
 
-    const responseBody = typeof (body) !== "string"
-      ? JSON.stringify(body)
-      : body;
-
-    this.body = responseBody;
-
-    const bodyType = body.constructor.name;
-
-    if (["Buffer"].includes(bodyType)) {
-      this.isBase64Encoded = true;
-      this.body = (body as Buffer).toString("base64");
-      this.headers.set("Content-Type", contentType);
-    }
-
-    if (["String"].includes(bodyType)) {
-      this.headers.set("Content-Type", "text/html");
-    }
+    Object.keys(response.headers).forEach((key) => {
+      this.headers.set(key, response.headers[key]);
+    });
   }
 
   public flush(): void {

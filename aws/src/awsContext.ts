@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { AwsRequest, AwsResponse } from ".";
-import { CloudContext, ComponentType } from "@multicloud/sls-core";
+import { CloudContext, ComponentType, CloudResponseLike } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 import { AwsLambdaRuntime } from "./models/awsLamda";
 
@@ -50,9 +50,19 @@ export class AwsContext implements CloudContext {
    * @param status Status code of response
    * @param contentType ContentType to apply it to response
    */
-  public send(body: any, status: number = 200, contentType?: string): void {
+  public send(bodyOrResponse?: any, status?: number, contentType?: string): void {
     if (this.res) {
-      this.res.send(body, status, contentType);
+      const response: CloudResponseLike = {
+        body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse) : null,
+        status: status || (status ? status : (bodyOrResponse ? bodyOrResponse.status : 200)) || 200,
+        headers: bodyOrResponse ? bodyOrResponse.headers || {} : {}
+      };
+
+      if (contentType) {
+        response.headers["Content-Type"] = contentType;
+      }
+
+      this.res.send(response);
     }
 
     this.done();
