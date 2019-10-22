@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
 import { CloudRequest } from "../cloudRequest";
-import { CloudResponse } from "../cloudResponse";
+import { CloudResponse, CloudResponseLike } from "../cloudResponse";
 import { CloudContext, CloudProviderRuntime } from "../cloudContext";
 import { ComponentType } from "../cloudContainer";
 
@@ -33,9 +33,22 @@ export class TestContext implements CloudContext {
   public service?;
   public telemetry?;
 
-  public send(body: any, status: number) {
+  public send(response: CloudResponseLike): void;
+  public send(body: any, status?: number, contentType?: string): void
+
+  public send(bodyOrResponse?: any, status?: number, contentType?: string) {
     if (this.res) {
-      this.res.send(body, status);
+      const response: CloudResponseLike = {
+        body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse): null,
+        status: status || 200,
+        headers: {}
+      };
+
+      if (contentType) {
+        response.headers["Content-Type"] = contentType;
+      }
+
+      this.res.send(response);
     }
 
     this.done();

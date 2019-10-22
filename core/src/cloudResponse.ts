@@ -1,5 +1,11 @@
 import { StringParams } from "./common/stringParams";
 
+export interface CloudResponseLike {
+  headers?: any;
+  body?: any;
+  status?: number;
+}
+
 /**
  * Common HTTP Response for Serverless functions
  */
@@ -15,7 +21,7 @@ export interface CloudResponse {
    * @param status Status code for response
    * @param contentType ContentType to apply it to response
    */
-  send: (body: any, status: number, contentType?: string) => void;
+  send: (response: CloudResponseLike) => void;
 
   /**
    * Flushes final response and signals cloud provider runtime that request is complete
