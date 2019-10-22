@@ -44,8 +44,8 @@ export interface CloudContext {
   telemetry?: TelemetryService;
   /** Send response */
   send: {
-    (body: any, status?: number, contentType?: string): void;
-    (response: CloudResponseLike): void;
+    (body?: any, status?: number, contentType?: string): void;
+    (response?: CloudResponseLike): void;
   };
   /** Signals the runtime that the handler has completed with an error */
   error?: (error: any, status: number) => void;

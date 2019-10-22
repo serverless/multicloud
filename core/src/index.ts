@@ -3,6 +3,7 @@ export * from "./common/guard";
 export * from "./common/stringParams";
 export * from "./common/util";
 export * from "./cloudContext";
+export * from "./cloudContextBase";
 export * from "./cloudRequest";
 export * from "./cloudResponse";
 export * from "./cloudContainer";

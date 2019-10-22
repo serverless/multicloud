@@ -1,13 +1,16 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
 import { CloudRequest } from "../cloudRequest";
-import { CloudResponse, CloudResponseLike } from "../cloudResponse";
+import { CloudResponse } from "../cloudResponse";
 import { CloudContext, CloudProviderRuntime } from "../cloudContext";
 import { ComponentType } from "../cloudContainer";
+import { CloudContextBase } from "../cloudContextBase";
 
 @injectable()
-export class TestContext implements CloudContext {
+export class TestContext extends CloudContextBase implements CloudContext {
   public constructor(@inject(ComponentType.RuntimeArgs) args?: any[]) {
+    super();
+
     if (args && args.length) {
       this.runtime.context = args[0];
       this.runtime.event = args[1];
@@ -33,29 +36,9 @@ export class TestContext implements CloudContext {
   public service?;
   public telemetry?;
 
-  public send(response: CloudResponseLike): void;
-  public send(body: any, status?: number, contentType?: string): void
-
-  public send(bodyOrResponse?: any, status?: number, contentType?: string) {
-    if (this.res) {
-      const response: CloudResponseLike = {
-        body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse): null,
-        status: status || 200,
-        headers: {}
-      };
-
-      if (contentType) {
-        response.headers["Content-Type"] = contentType;
-      }
-
-      this.res.send(response);
-    }
-
-    this.done();
-  };
-
   public done: () => void;
 
   public flush() {
-  };
+    // Intentionally left blank
+  }
 }
