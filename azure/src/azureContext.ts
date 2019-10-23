@@ -64,12 +64,6 @@ export class AzureContext extends CloudContextBase implements CloudContext {
     }
   }
 
-  public flush() {
-    if (this.res) {
-      this.res.flush();
-    }
-  }
-
   /**
    * Processing the incoming Azure Functions bindings and attaches the
    * values onto the CloudContext for easy retrieval.
