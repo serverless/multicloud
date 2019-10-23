@@ -1,4 +1,4 @@
-import { CloudContext, Middleware, ConsoleLogger } from "@multicloud/sls-core";
+import { CloudContext, Middleware, ConsoleLogger, convertToStream } from "@multicloud/sls-core";
 import { AwsContext } from "../awsContext";
 import { Readable } from "stream";
 import { SimpleStorageMiddleware } from "..";
@@ -51,7 +51,7 @@ describe("Simple Storage Middleware", () => {
         ]
       };
 
-      let runtimeArgs = [
+      const runtimeArgs = [
         originalEvent,
         {
           awsRequestId: "ID123",
@@ -116,11 +116,9 @@ describe("Simple Storage Middleware", () => {
         ]
       };
 
-      const stream = new Readable();
-      stream.push("hi");
-      stream.push(null);
+      const stream = convertToStream("hi");
 
-      let runtimeArgs = [
+      const runtimeArgs = [
         eventWithSpaces,
         {
           awsRequestId: "ID123",
