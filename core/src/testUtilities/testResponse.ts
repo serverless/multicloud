@@ -2,7 +2,6 @@ import "reflect-metadata";
 import { injectable } from "inversify";
 import { CloudResponse, CloudResponseLike } from "../cloudResponse";
 import { StringParams } from "../common/stringParams";
-import { Guard } from "../common/guard";
 
 @injectable()
 export class TestResponse implements CloudResponse {
@@ -10,9 +9,7 @@ export class TestResponse implements CloudResponse {
   public status: number;
   public headers: StringParams = new StringParams();
 
-  public send(response: CloudResponseLike) {
-    Guard.null(response, "response");
-
+  public send(response: CloudResponseLike = {}) {
     this.body = response.body || null;
     this.status = response.status || 200;
     response.headers = response.headers || {};

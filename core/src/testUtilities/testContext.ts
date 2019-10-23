@@ -37,8 +37,4 @@ export class TestContext extends CloudContextBase implements CloudContext {
   public telemetry?;
 
   public done: () => void;
-
-  public flush() {
-    // Intentionally left blank
-  }
 }
