@@ -2,9 +2,6 @@ import { MockFactory } from "./testUtilities/mockFactory";
 import { CloudContext } from "./cloudContext";
 import { App } from "./app";
 import { TestContext } from "./testUtilities/testContext";
-import { CloudContextBuilder } from "./testUtilities/cloudContextBuilder";
-import { HTTPBindingMiddleware } from "./middleware/httpBindingMiddleware";
-import { CloudResponseLike } from "./cloudResponse";
 
 const errorMiddleware = (spy: Function) => async (
   context: CloudContext
@@ -178,10 +175,14 @@ describe("App", () => {
 
     const handler = MockFactory.createMockHandler();
 
-    await app.use(handler)();
+    const multicloudHandler = app.use(handler);
+
+    // Ensure the handler is called the expected number of times
+    multicloudHandler();
+    multicloudHandler();
 
     expect(defaultMiddleware).toBeCalled();
-    expect(handler).toBeCalled();
+    expect(handler).toBeCalledTimes(2);
   });
 
   it("Will invoke default registered middleware and app specific middleware when handler is executed", async () => {
@@ -199,111 +200,5 @@ describe("App", () => {
     expect(defaultMiddleware).toBeCalled();
     expect(requestMiddleware).toBeCalled();
     expect(handler).toBeCalled();
-  });
-
-  it("Will set response body from async return value of handler function", async () => {
-    const app = new App();
-    app.registerMiddleware(HTTPBindingMiddleware());
-
-    const expectedBody = {
-      foo: "bar"
-    };
-
-    const handler = app.use(() => {
-      return Promise.resolve(expectedBody);
-    });
-
-    const builder = new CloudContextBuilder();
-    const context = await builder
-      .asHttpRequest()
-      .withRequestMethod("GET")
-      .invokeHandler(handler);
-
-    expect(context.res).toMatchObject({
-      body: expectedBody,
-      status: 200
-    });
-  });
-
-  it("Will set response body from sync return value of handler function", async () => {
-    const app = new App();
-    app.registerMiddleware(HTTPBindingMiddleware());
-
-    const expectedBody = {
-      foo: "bar"
-    };
-
-    const handler = app.use(() => {
-      return expectedBody;
-    });
-
-    const builder = new CloudContextBuilder();
-    const context = await builder
-      .asHttpRequest()
-      .withRequestMethod("GET")
-      .invokeHandler(handler);
-
-    expect(context.res).toMatchObject({
-      body: expectedBody,
-      status: 200
-    });
-  });
-
-  it("Will set response from sync return of CloudResponse like object from handler function", async () => {
-    const app = new App();
-    app.registerMiddleware(HTTPBindingMiddleware());
-
-    const expectedBody = {
-      foo: "bar"
-    };
-
-    const handler = app.use(() => {
-      const response = {
-        body: expectedBody,
-        status: 200,
-      };
-
-      return Promise.resolve(response);
-    });
-
-    const builder = new CloudContextBuilder();
-    const context = await builder
-      .asHttpRequest()
-      .withRequestMethod("GET")
-      .invokeHandler(handler);
-
-    expect(context.res).toMatchObject({
-      body: expectedBody,
-      status: 200
-    });
-  });
-
-  it("Will set response from sync return CloudResponse from handler function", async () => {
-    const app = new App();
-    app.registerMiddleware(HTTPBindingMiddleware());
-
-    const expectedBody: CloudResponseLike = {
-      body: { foo: "bar" }
-    };
-
-    const handler = app.use(() => {
-      const response = {
-        body: expectedBody,
-        status: 200,
-      };
-
-      return response;
-    });
-
-    const builder = new CloudContextBuilder();
-    const context = await builder
-      .asHttpRequest()
-      .withRequestMethod("GET")
-      .invokeHandler(handler);
-
-    expect(context.res).toMatchObject({
-      body: expectedBody,
-      status: 200
-    });
   });
 });
