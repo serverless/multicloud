@@ -15,19 +15,22 @@ export const SimpleStorageMiddleware = (): Middleware => async (context: CloudCo
     const tasks: Promise<CloudMessage>[] = context.runtime.event.Records.map(async (message) => {
       let stream: Stream;
 
+      let objectKey = message.s3.object.key;
+      objectKey = objectKey.replace(/\+/g, " ");
+
       try {
         stream = await context.storage.read({
           container: message.s3.bucket.name,
-          path: message.s3.object.key,
+          path: objectKey,
         });
       } catch (e) {
-        logger.warn(`Error reading object, container: ${message.s3.bucket.name}, path: ${message.s3.object.key}`);
+        logger.warn(`Error reading object, container: ${message.s3.bucket.name}, path: ${objectKey}`);
         logger.error(e);
         stream = null;
       }
 
       const cloudMessage = {
-        id: `${message.s3.bucket.name}/${message.s3.object.key}`,
+        id: `${message.s3.bucket.name}/${objectKey}`,
         body: stream,
         timestamp: new Date(message.eventTime),
         eventName: message.eventName,
