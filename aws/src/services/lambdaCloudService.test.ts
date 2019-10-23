@@ -1,7 +1,18 @@
 import AWS from "aws-sdk";
 import { Readable } from "stream";
-import { LambdaCloudService, AWSCloudServiceOptions, AWSInvokeType } from ".";
-import { CloudContainer, CloudContext, CloudContextBuilder, convertToStream } from "@multicloud/sls-core";
+import {
+  CloudContainer,
+  CloudContext,
+  CloudContextBuilder,
+  convertToStream
+} from "@multicloud/sls-core";
+import {
+  AWSCloudServiceOptions,
+  AWSInvokeType,
+  ensureString,
+  LambdaCloudService,
+  normalizePayload
+} from "./lambdaCloudService";
 
 jest.mock("aws-sdk");
 
@@ -28,9 +39,7 @@ describe("LambdaCloudService", () => {
   let invokeResponse;
   beforeEach(() => {
     invokeResponse = convertToStream(
-      JSON.stringify({
-        body: JSON.stringify(invokeResponseBody)
-      })
+      normalizePayload(invokeResponseBody)
     );
 
     AWS.Lambda.prototype.invoke = jest.fn().mockReturnValue({
@@ -48,7 +57,7 @@ describe("LambdaCloudService", () => {
     const payload = {};
     const options = {
       FunctionName: getCartAWSCloudService.arn,
-      Payload: JSON.stringify({ body: payload }),
+      Payload: normalizePayload(payload),
       InvocationType: AWSInvokeType.fireAndWait
     };
 
@@ -61,7 +70,7 @@ describe("LambdaCloudService", () => {
     const payload = {};
     const options = {
       FunctionName: getCartAWSCloudService.arn,
-      Payload: JSON.stringify({ body: payload }),
+      Payload: normalizePayload(payload),
       InvocationType: AWSInvokeType.fireAndForget
     };
 
@@ -75,7 +84,7 @@ describe("LambdaCloudService", () => {
     const payload = {};
     const options = {
       FunctionName: getCartAWSCloudService.arn,
-      Payload: JSON.stringify({ body: payload }),
+      Payload: normalizePayload(payload),
       InvocationType: AWSInvokeType.fireAndWait
     };
 
@@ -122,6 +131,96 @@ describe("LambdaCloudService", () => {
 
     const sut = new LambdaCloudService(context);
     await expect(sut.invoke<any>("aws-getCart", false, {})).rejects.toMatch("Region and ARN are needed for Lambda calls");
+  });
+
+});
+
+describe("normalizePayload", () => {
+
+  it("receives an input type different than an object and throws an error", () => {
+    const input = "foo";
+    expect(() => normalizePayload(input)).toThrow();
+  })
+
+  it("receives an input null and returns the normalized payload with null body", () => {
+    const input = null;
+    const output = ensureString({
+      body: null
+    });
+
+    const sut = normalizePayload(input);
+
+    expect(sut).toEqual(output);
+    expect(typeof sut).toEqual("string");
+  });
+
+  it("receives an input without body property and returns the normalized payload with the input as body", () => {
+    const input = {
+      foo: "bar"
+    };
+    const output = ensureString({
+      body: ensureString(input)
+    });
+
+    const sut = normalizePayload(input);
+
+    expect(sut).toEqual(output);
+    expect(typeof sut).toEqual("string");
+  });
+
+  it("receives an input with body property and returns the normalized payload", () => {
+    const input = {
+      requestContext: {
+        authorizer: {
+          principalId: 123
+        }
+      },
+      body: {
+        foo: "bar"
+      }
+    };
+    const output = ensureString({
+      ...input,
+      body: ensureString(input.body)
+    });
+
+    const sut = normalizePayload(input);
+
+    expect(sut).toEqual(output);
+    expect(typeof sut).toEqual("string");
+  });
+
+});
+
+describe("ensureString", () => {
+
+  it("receives an input type string and returns the same value", () => {
+    const input = "foo";
+
+    const sut = ensureString(input);
+
+    expect(sut).toEqual(input);
+    expect(typeof sut).toEqual("string");
+  });
+
+  it("receives an input null and returns the same value as string", () => {
+    const input = null;
+
+    const sut = ensureString(input);
+
+    expect(sut).toEqual(JSON.stringify(input));
+    expect(typeof sut).toEqual("string");
+  });
+
+  it("receives an input type oject and returns the same value as JSON string", () => {
+    const input = {
+      foo: "bar"
+    };
+
+    const sut = ensureString(input);
+
+    expect(sut).toEqual(JSON.stringify(input));
+    expect(typeof sut).toEqual("string");
   });
 
 });

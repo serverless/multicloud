@@ -26,6 +26,47 @@ export interface AWSCloudServiceOptions extends CloudServiceOptions {
 }
 
 /**
+ * Ensures the input to be a JSON String
+ *
+ * @param input value to be parsed to string
+ */
+export const ensureString = (input: any) => {
+  return typeof (input) !== "string"
+    ? JSON.stringify(input)
+    : input;
+}
+
+/**
+ * Normalizes the payload to comply the Input Format of a Lambda Function for Proxy Integration
+ * More information: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
+ *
+ * @param input value to be normalized as payload with the Input Format
+ */
+export const normalizePayload = (input: any) => {
+  if (typeof input !== "object") {
+    throw new Error("input type must be an object");
+  }
+
+  let payload = {
+    body: null
+  };
+
+  if (input && input.hasOwnProperty("body")) {
+    // Case when the `input` already has the input format for Lambda Proxy Integration
+    payload = {
+      ...input,
+      body: input.body && ensureString(input.body)
+    };
+  }
+  else {
+    // Case when the `input` is the actual body
+    payload.body = input && ensureString(input)
+  }
+
+  return ensureString(payload);
+}
+
+/**
  * Implementation of Cloud Service for AWS Lambda. Invokes Lambda Functions
  * with exposed HTTP endpoints via API Gateway
  */
@@ -49,9 +90,6 @@ export class LambdaCloudService implements CloudService {
 	  }
 
     const context = this.containerResolver.resolve<AWSCloudServiceOptions>(name);
-    const requestPayload = {
-      body: payload
-    };
 
     if (!context.region || !context.arn) {
       return Promise.reject("Region and ARN are needed for Lambda calls");
@@ -62,7 +100,7 @@ export class LambdaCloudService implements CloudService {
     const response = lambda
       .invoke({
         FunctionName: context.arn,
-        Payload: JSON.stringify(requestPayload),
+        Payload: normalizePayload(payload),
         InvocationType: fireAndForget
           ? AWSInvokeType.fireAndForget
           : AWSInvokeType.fireAndWait
