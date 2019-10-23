@@ -3,6 +3,7 @@ import { ensurePromise } from "./common/util";
 import { CloudContainer, CloudModule, ComponentType } from "./cloudContainer";
 import { TestModule } from "./testUtilities/testModule";
 import { CloudContext } from "./cloudContext";
+import { CloudResponseLike } from "./cloudResponse";
 
 /**
  * Base level app. Handles registration for all cloud modules and
@@ -51,7 +52,7 @@ export class App {
    */
   public use(middlewares: Middleware[], handler: Handler): Function;
 
-  public use(middlewaresOrHandler: Middleware[] | Handler, handler?: Handler): Function {
+  public use(middlewaresOrHandler: Middleware[] | Handler, handler?: Handler): (...args: any[]) => Promise<CloudContext> {
     return async (...args: any[]): Promise<CloudContext> => {
       // Define the default middlewares for the request
       let requestMiddlewares = [...this.middlewares];
@@ -94,7 +95,9 @@ export class App {
           } else { // When we are out of middlewares, execute the handler
             result = new Promise((resolve, reject) => {
               context.done = resolve;
-              return ensurePromise(handler(context)).catch(reject);
+              ensurePromise(handler(context))
+                .then((handlerResult) => handlerResult && context.send(handlerResult))
+                .catch(reject)
             });
           }
 
@@ -124,4 +127,6 @@ export type Middleware = (context: CloudContext, next: () => Promise<void>) => P
  * Serverless Handler type
  * @param context Cloud Context for Serverless function
  */
-export type Handler = (context: CloudContext) => Promise<void> | void;
+export type Handler = (context: CloudContext) => HandlerResponse;
+
+export type HandlerResponse = Promise<CloudResponseLike> | CloudResponseLike | Promise<any> | any | void;

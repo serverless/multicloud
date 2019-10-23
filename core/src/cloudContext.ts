@@ -1,6 +1,6 @@
 import { CloudContainer } from "./cloudContainer";
 import { CloudRequest } from "./cloudRequest";
-import { CloudResponse } from "./cloudResponse";
+import { CloudResponse, CloudResponseLike } from "./cloudResponse";
 import { CloudStorage } from "./services/cloudStorage";
 import { Logger } from "./services/logger";
 import { CloudService } from "./services/cloudService";
@@ -43,7 +43,10 @@ export interface CloudContext {
   /** Telemetry Service */
   telemetry?: TelemetryService;
   /** Send response */
-  send: (body: any, status: number, contentType?: string) => void;
+  send: {
+    (body?: any, status?: number, contentType?: string): void;
+    (response?: CloudResponseLike): void;
+  };
   /** Signals the runtime that the handler has completed with an error */
   error?: (error: any, status: number) => void;
   /** Signals the runtime that the handler has completed */

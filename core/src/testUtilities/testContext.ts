@@ -4,10 +4,13 @@ import { CloudRequest } from "../cloudRequest";
 import { CloudResponse } from "../cloudResponse";
 import { CloudContext, CloudProviderRuntime } from "../cloudContext";
 import { ComponentType } from "../cloudContainer";
+import { CloudContextBase } from "../cloudContextBase";
 
 @injectable()
-export class TestContext implements CloudContext {
+export class TestContext extends CloudContextBase implements CloudContext {
   public constructor(@inject(ComponentType.RuntimeArgs) args?: any[]) {
+    super();
+
     if (args && args.length) {
       this.runtime.context = args[0];
       this.runtime.event = args[1];
@@ -33,16 +36,5 @@ export class TestContext implements CloudContext {
   public service?;
   public telemetry?;
 
-  public send(body: any, status: number) {
-    if (this.res) {
-      this.res.send(body, status);
-    }
-
-    this.done();
-  };
-
   public done: () => void;
-
-  public flush() {
-  };
 }
