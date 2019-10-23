@@ -56,12 +56,13 @@ export class App {
     return async (...args: any[]): Promise<CloudContext> => {
       // Define the default middlewares for the request
       let requestMiddlewares = [...this.middlewares];
+      let requestHandler = handler;
 
       if (handler) {
         // Append request specific middlewares to the pipeline
         requestMiddlewares = [...requestMiddlewares, ...middlewaresOrHandler as Middleware[]];
       } else {
-        handler = middlewaresOrHandler as Handler;
+        requestHandler = middlewaresOrHandler as Handler;
       }
 
       // Creates a child IoC container for each request into the app
@@ -95,7 +96,7 @@ export class App {
           } else { // When we are out of middlewares, execute the handler
             result = new Promise((resolve, reject) => {
               context.done = resolve;
-              ensurePromise(handler(context))
+              ensurePromise(requestHandler(context))
                 .then((handlerResult) => handlerResult && context.send(handlerResult))
                 .catch(reject)
             });
