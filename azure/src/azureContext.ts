@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { AzureRequest, AzureResponse } from ".";
-import { CloudContext, ComponentType, CloudResponseLike } from "@multicloud/sls-core";
+import { CloudContext, CloudContextBase, ComponentType } from "@multicloud/sls-core";
 import { CloudStorage, ProviderType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions";
@@ -9,12 +9,14 @@ import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions
  * Implementation of Cloud Context for Azure Functions
  */
 @injectable()
-export class AzureContext implements CloudContext {
+export class AzureContext extends CloudContextBase implements CloudContext {
   /**
    * Initializes new AzureContext, injects runtime arguments of Azure Functions
    * @param args Runtime arguments for Azure function
    */
   public constructor(@inject(ComponentType.RuntimeArgs) private args: any[]) {
+    super();
+
     this.providerType = ProviderType.Azure;
     this.runtime = {
       context: args[0],
@@ -47,21 +49,6 @@ export class AzureContext implements CloudContext {
   /** Signals to the runtime that the request is complete */
   public done: () => void;
 
-
-  /**
-   * Send response from Azure Function
-   * @param response The HTTP respoinse
-   */
-  public send(response: CloudResponseLike): void;
-
-  /**
-   * Send response from Azure Function
-   * @param body Body of response
-   * @param status Status code of response
-   * @param contentType ContentType to apply it to response
-   */
-  public send(body?: any, status?: number, contentType?: string): void
-
   /**
    * Send response from Azure Function
    * @param body Body of response
@@ -70,21 +57,7 @@ export class AzureContext implements CloudContext {
    */
   public send(bodyOrResponse?: any, status?: number, contentType?: string): void {
     try {
-      if (this.res) {
-        const response: CloudResponseLike = {
-          body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse) : null,
-          status: status ? status : (bodyOrResponse ? bodyOrResponse.status : 200),
-          headers: bodyOrResponse ? bodyOrResponse.headers || {} : {}
-        };
-
-        if (contentType) {
-          response.headers["Content-Type"] = contentType;
-        }
-
-        this.res.send(response);
-      }
-
-      this.done();
+      super.send(bodyOrResponse, status, contentType);
     }
     finally {
       this.restoreConsole();
