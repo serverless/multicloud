@@ -1,4 +1,4 @@
-import { ProviderType } from "@multicloud/sls-core";
+import { ProviderType, CloudResponseLike } from "@multicloud/sls-core";
 import { AzureContext, AzureRequest, AzureResponse } from ".";
 
 jest.mock("./azureResponse");
@@ -45,13 +45,21 @@ describe("Azure context", () => {
     const body = { message: "Hello World" };
     context.send(body);
 
-    expect(context.res.send).toBeCalledWith(body, 200, undefined);
+    expect(context.res.send).toBeCalledWith({
+      body,
+      status: 200,
+      headers: {}
+    });
   });
 
   it("when send() calls response.send() on httpTrigger with custom status", () => {
     const body = { message: "oh no!" };
     context.send(body, 400);
-    expect(context.res.send).toBeCalledWith(body, 400, undefined);
+    expect(context.res.send).toBeCalledWith({
+      body,
+      status: 400,
+      headers: {}
+    });
   });
 
   it("when send() calls response.send() on httpTrigger with contentType", () => {
@@ -59,7 +67,11 @@ describe("Azure context", () => {
     const expectedContentType = "image/jpg";
 
     context.send(body, 200, expectedContentType);
-    expect(context.res.send).toBeCalledWith(body, 200, expectedContentType);
+    expect(context.res.send).toBeCalledWith({
+      body,
+      status: 200,
+      headers: { "Content-Type": expectedContentType }
+    });
   });
 
   it("send() calls runtime done() on fail status code", () => {
@@ -75,7 +87,26 @@ describe("Azure context", () => {
 
   it("send() with no params uses default values", () => {
     context.send();
-    expect(context.res.send).toBeCalledWith(null, 200, undefined);
+    expect(context.res.send).toBeCalledWith({
+      body: null,
+      status: 200,
+      headers: {}
+    });
+  });
+
+  it("send() with response like object", () => {
+    const response: CloudResponseLike = {
+      body: { message: "Param is required!" },
+      status: 400
+    };
+
+    context.send(response);
+
+    expect(context.res.send).toBeCalledWith({
+      body: response.body,
+      status: response.status,
+      headers: {}
+    });
   });
 
   it("flush() calls response.flush()", () => {

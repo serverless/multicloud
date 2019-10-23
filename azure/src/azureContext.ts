@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { AzureRequest, AzureResponse } from ".";
-import { CloudContext, ComponentType } from "@multicloud/sls-core";
+import { CloudContext, CloudContextBase, ComponentType } from "@multicloud/sls-core";
 import { CloudStorage, ProviderType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions";
@@ -9,12 +9,14 @@ import { AzureFunctionsRuntime, BindingDirection } from "./models/azureFunctions
  * Implementation of Cloud Context for Azure Functions
  */
 @injectable()
-export class AzureContext implements CloudContext {
+export class AzureContext extends CloudContextBase implements CloudContext {
   /**
    * Initializes new AzureContext, injects runtime arguments of Azure Functions
    * @param args Runtime arguments for Azure function
    */
   public constructor(@inject(ComponentType.RuntimeArgs) private args: any[]) {
+    super();
+
     this.providerType = ProviderType.Azure;
     this.runtime = {
       context: args[0],
@@ -53,22 +55,12 @@ export class AzureContext implements CloudContext {
    * @param status Status code of response
    * @param contentType ContentType to apply it to response
    */
-  public send(body: any = null, status: number = 200, contentType?: string): void {
+  public send(bodyOrResponse?: any, status?: number, contentType?: string): void {
     try {
-      if (this.res) {
-        this.res.send(body, status, contentType);
-      }
-
-      this.done();
+      super.send(bodyOrResponse, status, contentType);
     }
     finally {
       this.restoreConsole();
-    }
-  }
-
-  public flush() {
-    if (this.res) {
-      this.res.flush();
     }
   }
 

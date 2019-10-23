@@ -55,7 +55,7 @@ describe("Azure Response", () => {
     const defaultStatusValue = 200;
     const azureContext = createAzureContext(defaultParams);
 
-    azureContext.res.send({});
+    azureContext.res.send({ body: {} });
 
     expect(azureContext.res.status).toEqual(defaultStatusValue);
     expect(azureContext.res.headers.has("Content-Type"));
@@ -75,9 +75,11 @@ describe("Azure Response", () => {
     const azureContext = createAzureContext(defaultParams);
 
     azureContext.res.send({
-      a: 1,
-      b: 2,
-      c: 3
+      body: {
+        a: 1,
+        b: 2,
+        c: 3
+      }
     });
 
     expect(azureContext.res.headers.has("Content-Type"));
@@ -87,7 +89,7 @@ describe("Azure Response", () => {
   it("should set content-type to text/html for string object", () => {
     const azureContext = createAzureContext(defaultParams);
 
-    azureContext.res.send("<div>hello</div>");
+    azureContext.res.send({ body: "<div>hello</div>" });
 
     expect(azureContext.res.headers.has("Content-Type"));
     expect(azureContext.res.headers.get("Content-Type")).toEqual("text/html");
@@ -95,17 +97,38 @@ describe("Azure Response", () => {
 
   it("should set content-type to application/json for array object", () => {
     const azureContext = createAzureContext(defaultParams);
-    azureContext.res.send(["a", "b", "c"]);
+    azureContext.res.send({ body: ["a", "b", "c"] });
 
     expect(azureContext.res.headers.has("Content-Type"));
     expect(azureContext.res.headers.get("Content-Type")).toEqual("application/json");
+  });
+
+  it("should set headers on response", () => {
+    const azureContext = createAzureContext(defaultParams);
+    const expectedHeaders = {
+      "x-header-1": "header1",
+      "x-header-2": "header2"
+    };
+
+    azureContext.res.send({
+      headers: expectedHeaders
+    });
+
+    expect(azureContext.res.headers.get("x-header-1")).toEqual(expectedHeaders["x-header-1"]);
+    expect(azureContext.res.headers.get("x-header-2")).toEqual(expectedHeaders["x-header-2"])
   });
 
   it("should set content-type to content-type received for buffer", () => {
     const azureContext = createAzureContext(defaultParams);
     const expectedContentType = "image/jpg";
 
-    azureContext.res.send(new Buffer("hello"), 200, expectedContentType);
+    azureContext.res.send({
+      body: new Buffer("hello"),
+      status: 200,
+      headers: {
+        "Content-Type": expectedContentType
+      }
+    });
 
     expect(azureContext.res.headers.has("Content-Type"));
     expect(azureContext.res.headers.get("Content-Type")).toEqual(expectedContentType);
@@ -115,7 +138,10 @@ describe("Azure Response", () => {
     const expectedStatusStatus = 400;
     const azureContext = createAzureContext(defaultParams);
 
-    azureContext.res.send({}, expectedStatusStatus);
+    azureContext.res.send({
+      body: {},
+      status: expectedStatusStatus
+    });
 
     expect(azureContext.res.status).toEqual(expectedStatusStatus);
   });
@@ -129,7 +155,7 @@ describe("Azure Response", () => {
 
     const azureContext = createAzureContext(defaultParams);
 
-    azureContext.res.send(body);
+    azureContext.res.send({ body });
 
     expect(azureContext.res.body).toEqual(body);
     expect(azureContext.res.status).toEqual(200);
@@ -174,7 +200,7 @@ describe("Azure Response", () => {
     const azureContext = createAzureContext(defaultParams);
     const doneSpy = jest.spyOn(azureContext.runtime.context, "done");
 
-    azureContext.res.send("OK", 200);
+    azureContext.res.send({ body: "OK" });
     azureContext.flush();
 
     expect(azureContext.runtime.context.res).toEqual({});
@@ -197,7 +223,7 @@ describe("Azure Response", () => {
     const azureContext = createAzureContext(contextParams);
     const doneSpy = jest.spyOn(azureContext.runtime.context, "done");
 
-    azureContext.res.send("OK", 200);
+    azureContext.res.send({ body: "OK" });
     azureContext.flush();
 
     expect(doneSpy).toBeCalled();
