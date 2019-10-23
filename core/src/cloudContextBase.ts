@@ -11,7 +11,18 @@ export abstract class CloudContextBase implements CloudContext {
   public event: any;
   public res?: CloudResponse;
 
+  /**
+   * Sends the specified response to the client and completes the request
+   * @param response The response to return to the client
+   */
   public send(response?: CloudResponseLike): void;
+
+  /**
+   * Sends the specified response to the client and completes the request
+   * @param body The response body (defaults to null)
+   * @param status The response status code (defaults to 200)
+   * @param contentType  The response headers
+   */
   public send(body?: any, status?: number, contentType?: string): void
 
   public send(bodyOrResponse: any, status?: number, contentType?: string): void {
@@ -33,5 +44,13 @@ export abstract class CloudContextBase implements CloudContext {
   }
 
   public abstract done(): void;
-  public abstract flush(): void;
+
+  /**
+   * Flushes the Cloud Context and completes the response
+   */
+  public flush() {
+    if (this.res) {
+      this.res.flush();
+    }
+  }
 }
