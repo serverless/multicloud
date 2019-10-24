@@ -44,7 +44,7 @@ export class AzureFunctionCloudService implements CloudService {
    * @param pathParams Object with values to add to the URL
   */
   public requestURL(context: any, pathParams?: any) {
-    if(pathParams || pathParams.id) return context.http+"id/"+ pathParams.id;
+    if(pathParams && pathParams.id) return context.http+"id/"+ pathParams.id;
     else return context.http;
   }
   /**

@@ -89,7 +89,7 @@ describe("Azure Cloud Service should", () => {
     await expect(cloudService.invoke<any>(null, true)).rejects.toMatch("Name is needed");
   });
 
-  it("makes request with payload when defined", async () => {
+  it("makes request with payload when defined with store_id", async () => {
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
     const payload = {
       a: 1,
@@ -98,6 +98,24 @@ describe("Azure Cloud Service should", () => {
 
     const axiosRequestConfig: AxiosRequestConfig = {
       url: "http://test-url/id/123",
+      method: "GET",
+      data: payload,
+      headers: {}
+    };
+
+    const response = cloudService.invoke("azure-getCart", false, payload);
+    expect(axios.request).toBeCalledWith(axiosRequestConfig);
+    expect(response).not.toBeNull();
+  });
+
+  it("makes request with payload when defined without store_id", async () => {
+    axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
+    const payload = {
+      a: 1
+    };
+
+    const axiosRequestConfig: AxiosRequestConfig = {
+      url: "http://test-url/",
       method: "GET",
       data: payload,
       headers: {}
