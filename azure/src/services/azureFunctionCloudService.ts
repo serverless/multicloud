@@ -40,6 +40,15 @@ export class AzureFunctionCloudService implements CloudService {
 
   /**
    *
+   * @param context Request context
+   * @param pathParams Object with values to add to the URL
+  */
+  public requestURL(context: any, pathParams?: any) {
+    if(pathParams || pathParams.id) return context.http+"id/"+ pathParams.id;
+    else return context.http;
+  }
+  /**
+   *
    * @param name Name of function to invoke
    * @param fireAndForget Wait for response if false (default behavior)
    * @param payload Body of HTTP request
@@ -60,9 +69,8 @@ export class AzureFunctionCloudService implements CloudService {
     if (!context.method || !context.http) {
       return Promise.reject("Missing Data");
     }
-
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: context.http,
+      url: this.requestURL(context, payload),
       method: context.method,
       data: payload,
       headers: headers.toJSON()
