@@ -16,7 +16,7 @@ export const SimpleStorageMiddleware = (): Middleware => async (context: CloudCo
       let stream: Stream;
 
       const bucketName = message.s3.bucket.name;
-      const objectKey = message.s3.object.key.replace(/\+/g, " ");
+      const objectKey = decodeURIComponent(message.s3.object.key.replace(/\+/g, "%20"));
 
       try {
         stream = await context.storage.read({
