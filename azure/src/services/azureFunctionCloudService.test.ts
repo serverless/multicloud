@@ -5,11 +5,11 @@ import {
   CloudService,
   StringParams
 } from "@multicloud/sls-core";
-import { AzureFunctionCloudService, AzureCloudServiceOptions } from ".";
+import { AzureFunctionCloudService, AzureCloudServiceOptions, buildURL } from ".";
 
 const getCartAzureCloudService: AzureCloudServiceOptions = {
   name: "azure-getCart",
-  http: "test-url",
+  http: "test-url/",
   method: "GET"
 };
 
@@ -32,24 +32,24 @@ describe("Azure Cloud Service should", () => {
 
   it("call axios.request with the configuration", async () => {
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: "test-url",
+      url: "test-url/",
       method: "GET",
-      data: null,
+      data: {},
       headers: {}
     };
     axios.request = jest.fn().mockResolvedValue({
       data: {}
     });
 
-    await cloudService.invoke<any>("azure-getCart", false);
+    await cloudService.invoke<any>("azure-getCart", false, {  });
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
   });
 
   it("return data on fireAndWait", async () => {
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: "test-url",
+      url: "test-url/",
       method: "GET",
-      data: null,
+      data: {},
       headers: {}
     };
     axios.request = jest.fn().mockResolvedValue({
@@ -58,7 +58,8 @@ describe("Azure Cloud Service should", () => {
 
     const response = await cloudService.invoke<any>(
       "azure-getCart",
-      false
+      false,
+      {}
     );
 
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
@@ -67,16 +68,17 @@ describe("Azure Cloud Service should", () => {
 
   it("return an empty response on fireAndForget", async () => {
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: "test-url",
+      url: "test-url/",
       method: "GET",
-      data: null,
+      data: {},
       headers: {}
     };
     axios.request = jest.fn().mockResolvedValue({});
 
     const response = await cloudService.invoke<any>(
       "azure-getCart",
-      true
+      true,
+      {}
     );
 
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
@@ -94,7 +96,7 @@ describe("Azure Cloud Service should", () => {
     };
 
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: "test-url",
+      url: "test-url/",
       method: "GET",
       data: payload,
       headers: {}
@@ -110,12 +112,12 @@ describe("Azure Cloud Service should", () => {
     const headers = new StringParams({ key: 123 });
 
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: "test-url",
+      url: "test-url/",
       method: "GET",
-      data: null,
+      data: {},
       headers: headers.toJSON()
     };
-    const response = cloudService.invoke("azure-getCart", false, null, headers);
+    const response = cloudService.invoke("azure-getCart", false, {  }, headers);
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).not.toBeNull();
   });
@@ -137,5 +139,37 @@ describe("Azure Cloud Service should", () => {
 
     const sut = new AzureFunctionCloudService(context);
     await expect(sut.invoke<any>("azure-getCart", true)).rejects.toMatch("Missing Data")
+  });
+});
+
+describe("buildURL", () => {
+
+  it("should replace path params succesfully", async () => {
+    const http = "foo/bar/{baz}";
+    const payload = {
+      baz: 1
+    };
+
+    const sut = buildURL(http, payload);
+
+    await expect(sut).toEqual("foo/bar/1");
+  });
+
+  it("should return same http without changes", async () => {
+    const http = "foo/bar/";
+    const payload = {
+      bar: 1
+    };
+
+    const sut = buildURL(http, payload);
+
+    await expect(sut).toEqual("foo/bar/");
+  });
+
+  it("should thorw an error on null pathParams", async () => {
+    const http = "foo/bar/{baz}";
+    const error = new Error("No parameters found");
+
+    expect(()=>buildURL(http, null)).toThrow(error);
   });
 });
