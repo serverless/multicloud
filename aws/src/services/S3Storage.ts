@@ -53,7 +53,7 @@ export class S3Storage implements CloudStorage {
       Bucket: opts.container,
       Key: opts.path,
       Body: streamBody,
-      ContentLength: streamBody.readableLength
+      ContentLength: streamBody.readableLength || (streamBody as any)._readableState.length
     };
     const result = await this.s3.putObject(params).promise();
 

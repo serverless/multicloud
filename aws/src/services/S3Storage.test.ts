@@ -125,7 +125,7 @@ describe("aws storage when call write should", () => {
       Bucket: input.container,
       Key: input.path,
       Body: readableBody,
-      ContentLength: readableBody.readableLength
+      ContentLength: readableBody.readableLength || (readableBody as any)._readableState.length
     };
 
     await sut.write(input);
@@ -152,7 +152,7 @@ describe("aws storage when call write should", () => {
       Body: readableBody,
       CacheControl: "no-cache",
       ContentType: "application/json",
-      ContentLength: readableBody.readableLength
+      ContentLength: readableBody.readableLength || (readableBody as any)._readableState.length
     }
 
     await sut.write(inputBuffer);
@@ -179,7 +179,7 @@ describe("aws storage when call write should", () => {
       Bucket: inputStream.container,
       Key: inputStream.path,
       Body: readableBody,
-      ContentLength: readableBody.readableLength
+      ContentLength: readableBody.readableLength || (readableBody as any)._readableState.length
     };
 
     await sut.write(inputStream);
