@@ -29,6 +29,7 @@ export abstract class CloudContextBase implements CloudContext {
     if (this.res) {
       const response: CloudResponseLike = {
         body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse) : null,
+        // The status is undefined, meaning that it will take the body status
         status: status || (status ? status : (bodyOrResponse ? bodyOrResponse.status : 200)) || 200,
         headers: bodyOrResponse ? bodyOrResponse.headers || {} : {}
       };
