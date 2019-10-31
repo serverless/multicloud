@@ -27,11 +27,20 @@ export abstract class CloudContextBase implements CloudContext {
 
   public send(bodyOrResponse: any, status?: number, contentType?: string): void {
     if (this.res) {
-      const response: CloudResponseLike = {
-        body: bodyOrResponse ? (bodyOrResponse.body || bodyOrResponse) : null,
-        status: status || (status ? status : (bodyOrResponse ? bodyOrResponse.status : 200)) || 200,
-        headers: bodyOrResponse ? bodyOrResponse.headers || {} : {}
-      };
+      let response: CloudResponseLike;
+      if (arguments.length === 1) {
+        response = {
+          body: bodyOrResponse.body || bodyOrResponse || null,
+          status: bodyOrResponse.status && typeof (bodyOrResponse.status) === "number" ? bodyOrResponse.status : 200,
+          headers: bodyOrResponse.headers || {}
+        }
+      } else {
+        response = {
+          body: bodyOrResponse || null,
+          status: status || 200,
+          headers: {}
+        }
+      }
 
       if (contentType) {
         response.headers["Content-Type"] = contentType;
