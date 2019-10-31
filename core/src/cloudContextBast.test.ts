@@ -107,4 +107,37 @@ describe("Cloud Context Base", () => {
       headers: headers
     });
   });
+
+  it("calls res.send() without status and with response like object with only body having a status property", () => {
+    const context = createTestContext();
+    const body = {
+      foo: "bar",
+      status: "OK"
+    };
+
+    // Call send without status
+    context.send(body);
+
+    expect(context.res.send).toBeCalledWith({
+      body,
+      status: 200,
+      headers: {}
+    });
+  });
+
+  it("calls res.send() with status 200 and with response like object with only body having a status property", () => {
+    const context = createTestContext();
+    const body = {
+      foo: "bar",
+      status: "OK"
+    };
+
+    context.send(body, 200);
+
+    expect(context.res.send).toBeCalledWith({
+      body,
+      status: 200,
+      headers: {}
+    });
+  });
 });
