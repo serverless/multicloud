@@ -21,6 +21,20 @@ export interface AzureCloudServiceOptions extends CloudServiceOptions {
   http: string;
 }
 
+export const buildURL = (http: string, pathParams: StringParams): string => {
+  let url = http;
+
+  if (!pathParams) {
+    return url;
+  }
+
+  pathParams.forEach((value,key) => {
+    url = url.replace(`{${key}}`, value);
+  });
+
+  return url;
+}
+
 /**
  * Implementation of Cloud Service for Azure Functions. Invokes HTTP Azure Functions
  */
@@ -43,12 +57,15 @@ export class AzureFunctionCloudService implements CloudService {
    * @param name Name of function to invoke
    * @param fireAndForget Wait for response if false (default behavior)
    * @param payload Body of HTTP request
+   * @param headers Headers of the context
+   * @param params StringParams with values for URL
    */
   public async invoke<T>(
     name: string,
     fireAndForget,
     payload: any = null,
-    headers: StringParams = new StringParams()
+    headers: StringParams = new StringParams(),
+    params: StringParams = new StringParams()
   ) {
     if (!name || name.length === 0) {
       return Promise.reject("Name is needed");
@@ -60,9 +77,8 @@ export class AzureFunctionCloudService implements CloudService {
     if (!context.method || !context.http) {
       return Promise.reject("Missing Data");
     }
-
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: context.http,
+      url: buildURL(context.http, params),
       method: context.method,
       data: payload,
       headers: headers.toJSON()
