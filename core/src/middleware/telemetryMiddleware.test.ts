@@ -4,6 +4,7 @@ import { CloudContext } from "../cloudContext";
 import { TestContext } from "../testUtilities/testContext";
 import { App } from "../app";
 import { TelemetryService, TelemetryOptions } from "../services/telemetry";
+import { ConsoleLogger } from "../services/consoleLogger";
 import { TelemetryServiceMiddleware } from "./telemetryMiddleware";
 
 describe("TelemetryServiceMiddleware should", () => {
@@ -36,7 +37,7 @@ describe("TelemetryServiceMiddleware should", () => {
 
   const options: TelemetryOptions = {
     telemetryService: new TestTelemetryService(),
-    shouldFlush: true,
+    shouldFlush: true
   };
 
   let context: CloudContext;
@@ -100,6 +101,19 @@ describe("TelemetryServiceMiddleware should", () => {
 
     expect(collectSpy).toHaveBeenCalledWith(fooKey, data);
     expect(flushSpy).toHaveBeenCalled();
+  });
+
+  it("call logger error method when flush is rejected", async () => {
+    context.logger = new ConsoleLogger();
+    const errorSpy = jest.spyOn(ConsoleLogger.prototype, "error"),
+      error = new Error(),
+      next = jest.fn();
+
+    TestTelemetryService.prototype.flush = jest.fn().mockRejectedValue(error);
+
+    await TelemetryServiceMiddleware(options)(context, next);
+
+    expect(errorSpy).toHaveBeenCalled();
   });
 
   it("have values on the data array of the implementation", async () => {
