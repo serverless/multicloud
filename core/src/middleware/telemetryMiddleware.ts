@@ -13,6 +13,8 @@ export const TelemetryServiceMiddleware = (options: TelemetryOptions): Middlewar
     const usedMemBeforeChain = GetUsedMemory();
 
     context.telemetry = options.telemetryService;
+    const { telemetry, logger } = context;
+
     await next();
 
     const finalCpuAverage = CpuAverage();
@@ -26,10 +28,10 @@ export const TelemetryServiceMiddleware = (options: TelemetryOptions): Middlewar
       memoryConsume
     };
 
-    context.telemetry.collect("stats", stats);
+    telemetry.collect("stats", stats);
 
     if (options.shouldFlush) {
-      context.telemetry.flush();
+      telemetry.flush().catch(err => logger.error(err));
     }
   };
 
