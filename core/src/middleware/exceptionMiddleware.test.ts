@@ -225,4 +225,35 @@ describe("Exception Middleware", () => {
       status: expectedStatusCode
     });
   });
+
+  it("logs error and outputs 500 response when exception occurs using an object", async () => {
+    const error = {
+      message: "Fail"
+    };
+
+    const failNext = () => {
+      return Promise.reject(error);
+    };
+    const mockMiddleware = MockFactory.createMockMiddleware(failNext);
+
+    const app = new App();
+    const middlewares = [ExceptionMiddleware(options), HTTPBindingMiddleware(), mockMiddleware];
+    const failHandler = app.use(middlewares, handler);
+
+    const builder = new CloudContextBuilder();
+    const context = await builder
+      .asHttpRequest()
+      .withRequestMethod("GET")
+      .invokeHandler(failHandler);
+
+    expect(options.log).toHaveBeenCalledWith(error);
+    expect(context.res).toMatchObject({
+      body: {
+        requestId: expect.any(String),
+        message: JSON.stringify(error),
+        timestamp: expect.any(Date),
+      },
+      status: 500
+    });
+  });
 });

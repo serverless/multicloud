@@ -21,7 +21,7 @@ export const ExceptionMiddleware = (options: ExceptionOptions): Middleware =>
 
       const result = {
         requestId: context.id,
-        message: err.toString(),
+        message: typeof err === "string" ? err : (err instanceof Error ? err.toString() : JSON.stringify(err)),
         timestamp: new Date()
       };
 
