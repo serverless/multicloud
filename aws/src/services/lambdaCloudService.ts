@@ -1,6 +1,5 @@
 import AWS from "aws-sdk";
-import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext } from "@multicloud/sls-core";
-import { ComponentType } from "@multicloud/sls-core";
+import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext, ComponentType, InvokeRequest } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 
 /**
@@ -80,11 +79,11 @@ export class LambdaCloudService implements CloudService {
 
   /**
    *
-   * @param name Name of Lambda function to invoke
-   * @param fireAndForget Wait for response if false (default behavior)
-   * @param payload Body of HTTP request
+   * @param invokeOptions invoke interface with parameters needed
    */
-  public async invoke<T>(name: string, fireAndForget, payload: any): Promise<T> {
+  public async invoke<T>(invokeOptions: InvokeRequest): Promise<T> {
+    const { name, fireAndForget, payload } = invokeOptions;
+
     if (!name || name.length === 0) {
       return Promise.reject("Name is needed");
 	  }
