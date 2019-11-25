@@ -3,6 +3,7 @@ import {
   ContainerResolver,
   CloudContainer,
   CloudService,
+  InvokeRequest,
   StringParams
 } from "@multicloud/sls-core";
 import { AzureFunctionCloudService, AzureCloudServiceOptions, buildURL } from ".";
@@ -46,7 +47,13 @@ describe("Azure Cloud Service should", () => {
       data: {}
     });
 
-    await cloudService.invoke<any>("azure-getCart", false);
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: false,
+      payload: null,
+      headers: new StringParams()
+    };
+    await cloudService.invoke<any>(params);
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
   });
 
@@ -55,10 +62,13 @@ describe("Azure Cloud Service should", () => {
       data: "Response"
     });
 
-    const response = await cloudService.invoke<any>(
-      "azure-getCart",
-      false
-    );
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: false,
+      payload: null,
+      headers: new StringParams()
+    };
+    const response = await cloudService.invoke(params);
 
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).toEqual("Response");
@@ -67,17 +77,26 @@ describe("Azure Cloud Service should", () => {
   it("return an empty response on fireAndForget", async () => {
     axios.request = jest.fn().mockResolvedValue({});
 
-    const response = await cloudService.invoke<any>(
-      "azure-getCart",
-      true,
-    );
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: true,
+      payload: null,
+      headers: new StringParams()
+    };
+    const response = await cloudService.invoke(params);
 
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).toBeUndefined();
   });
 
   it("return an error if no name is passed", async () => {
-    await expect(cloudService.invoke<any>(null, true)).rejects.toMatch("Name is needed");
+    const params: InvokeRequest = {
+      name: null,
+      fireAndForget: false,
+      payload: null,
+      headers: new StringParams()
+    };
+    await expect(cloudService.invoke(params)).rejects.toMatch("Name is needed");
   });
 
   it("makes request with payload when defined", async () => {
@@ -91,7 +110,13 @@ describe("Azure Cloud Service should", () => {
       data: payload
     };
 
-    const response = cloudService.invoke("azure-getCart", false, payload);
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: false,
+      payload: payload,
+      headers: new StringParams()
+    };
+    const response = await cloudService.invoke(params);
     expect(axios.request).toBeCalledWith(axiosRequestConfigPayload);
     expect(response).not.toBeNull();
   });
@@ -108,7 +133,7 @@ describe("Azure Cloud Service should", () => {
       .toConstantValue(getCartAzureCloudServiceWithUrl);
 
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));;
-    const params = new StringParams({
+    const pathParams = new StringParams({
       id: 1,
       item: "buu",
       store: "fuu"
@@ -119,7 +144,14 @@ describe("Azure Cloud Service should", () => {
       url: "test-url/fuu/1",
     };
 
-    await cloudService.invoke("azure-getCart-url", false, null, new StringParams(), params);
+    const params: InvokeRequest = {
+      name: "azure-getCart-url",
+      fireAndForget: false,
+      payload: null,
+      headers: new StringParams(),
+      pathParams: pathParams
+    };
+    await cloudService.invoke(params);
     expect(axios.request).toBeCalledWith(axiosRequestConfigURL);
   });
 
@@ -131,7 +163,14 @@ describe("Azure Cloud Service should", () => {
       ...axiosRequestConfig,
       headers: headers.toJSON()
     };
-    const response = cloudService.invoke("azure-getCart", false, null, headers);
+
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: false,
+      payload: null,
+      headers: headers
+    };
+    const response = await cloudService.invoke(params);
     expect(axios.request).toBeCalledWith(axiosRequestConfigKey);
     expect(response).not.toBeNull();
   });
@@ -152,7 +191,13 @@ describe("Azure Cloud Service should", () => {
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
 
     const sut = new AzureFunctionCloudService(context);
-    await expect(sut.invoke<any>("azure-getCart", true)).rejects.toMatch("Missing Data")
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: true,
+      payload: null,
+      headers: new StringParams()
+    };
+    await expect(sut.invoke(params)).rejects.toMatch("Missing Data")
   });
 });
 
