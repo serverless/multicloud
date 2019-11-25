@@ -100,7 +100,7 @@ describe("Azure context", () => {
       status: 400
     };
 
-    context.send(response);
+    context.send(response.body, response.status);
 
     expect(context.res.send).toBeCalledWith({
       body: response.body,

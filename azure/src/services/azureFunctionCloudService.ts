@@ -3,6 +3,7 @@ import {
   ContainerResolver,
   CloudServiceOptions,
   CloudContext,
+  InvokeRequest,
   StringParams
 } from "@multicloud/sls-core";
 import axios, { AxiosRequestConfig } from "axios";
@@ -53,20 +54,10 @@ export class AzureFunctionCloudService implements CloudService {
   public containerResolver: ContainerResolver;
 
   /**
-   *
-   * @param name Name of function to invoke
-   * @param fireAndForget Wait for response if false (default behavior)
-   * @param payload Body of HTTP request
-   * @param headers Headers of the context
-   * @param params StringParams with values for URL
+   * @param invokeOptions invoke interface with parameters needed
    */
-  public async invoke<T>(
-    name: string,
-    fireAndForget,
-    payload: any = null,
-    headers: StringParams = new StringParams(),
-    params: StringParams = new StringParams()
-  ) {
+  public async invoke<T>(invokeOptions: InvokeRequest) {
+    const { name, fireAndForget, payload, headers, pathParams } = invokeOptions;
     if (!name || name.length === 0) {
       return Promise.reject("Name is needed");
     }
@@ -78,7 +69,7 @@ export class AzureFunctionCloudService implements CloudService {
       return Promise.reject("Missing Data");
     }
     const axiosRequestConfig: AxiosRequestConfig = {
-      url: buildURL(context.http, params),
+      url: buildURL(context.http, pathParams),
       method: context.method,
       data: payload,
       headers: headers.toJSON()
