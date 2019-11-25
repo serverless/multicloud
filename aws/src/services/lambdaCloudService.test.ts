@@ -4,7 +4,8 @@ import {
   CloudContainer,
   CloudContext,
   CloudContextBuilder,
-  convertToStream
+  convertToStream,
+  InvokeRequest
 } from "@multicloud/sls-core";
 import {
   AWSCloudServiceOptions,
@@ -49,7 +50,12 @@ describe("LambdaCloudService", () => {
 
   it("should create a Lambda instance", async () => {
     const sut = new LambdaCloudService(context);
-    await sut.invoke<any>("aws-getCart", null, {});
+    const params: InvokeRequest = {
+      name: "aws-getCart",
+      fireAndForget: null,
+      payload: {},
+    };
+    await sut.invoke<any>(params);
     expect(AWS.Lambda).toHaveBeenCalled();
   });
 
@@ -62,7 +68,12 @@ describe("LambdaCloudService", () => {
     };
 
     const sut = new LambdaCloudService(context);
-    await sut.invoke<any>("aws-getCart", null, payload);
+    const params: InvokeRequest = {
+      name: "aws-getCart",
+      fireAndForget: null,
+      payload: payload,
+    };
+    await sut.invoke<any>(params);
     expect(AWS.Lambda.prototype.invoke).toHaveBeenCalledWith(options);
   });
 
@@ -75,7 +86,12 @@ describe("LambdaCloudService", () => {
     };
 
     const sut = new LambdaCloudService(context);
-    const response = await sut.invoke<any>("aws-getCart", true, payload);
+    const params: InvokeRequest = {
+      name: "aws-getCart",
+      fireAndForget: true,
+      payload: payload,
+    };
+    const response = await sut.invoke<any>(params);
     expect(AWS.Lambda.prototype.invoke).toHaveBeenCalledWith(options);
     expect(response).toBeUndefined();
   });
@@ -93,7 +109,12 @@ describe("LambdaCloudService", () => {
     });
 
     const sut = new LambdaCloudService(context);
-    const response = await sut.invoke<any>("aws-getCart", false, payload);
+    const params: InvokeRequest = {
+      name: "aws-getCart",
+      fireAndForget: false,
+      payload: payload,
+    };
+    const response = await sut.invoke<any>(params);
     expect(AWS.Lambda.prototype.invoke).toHaveBeenCalledWith(options);
     expect(response).toEqual(invokeResponseBody);
   });
@@ -111,13 +132,24 @@ describe("LambdaCloudService", () => {
 
     const payload = {};
     const sut = new LambdaCloudService(context);
+    const params: InvokeRequest = {
+      name: "aws-getCart",
+      fireAndForget: false,
+      payload: payload,
+    };
 
-    await expect(sut.invoke<any>("aws-getCart", false, payload)).rejects.toThrow("fail");
+    await expect(sut.invoke<any>(params)).rejects.toThrow("fail");
   });
 
   it("should return an error if no name is passed", async () => {
     const sut = new LambdaCloudService(context);
-    await expect(sut.invoke<any>(null, false, {})).rejects.toMatch("Name is needed");
+    const params: InvokeRequest = {
+      name: null,
+      fireAndForget: false,
+      payload: {},
+    };
+
+    await expect(sut.invoke<any>(params)).rejects.toMatch("Name is needed");
   });
 
   it("should return an error if no region or arn is passed", async () => {
@@ -130,7 +162,13 @@ describe("LambdaCloudService", () => {
     container.bind(awsUpdateCartApi.name).toConstantValue(awsUpdateCartApi);
 
     const sut = new LambdaCloudService(context);
-    await expect(sut.invoke<any>("aws-getCart", false, {})).rejects.toMatch("Region and ARN are needed for Lambda calls");
+    const params: InvokeRequest = {
+      name: "aws-getCart",
+      fireAndForget: false,
+      payload: {},
+    };
+
+    await expect(sut.invoke<any>(params)).rejects.toMatch("Region and ARN are needed for Lambda calls");
   });
 
 });
