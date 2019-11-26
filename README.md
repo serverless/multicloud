@@ -65,7 +65,7 @@ size, disability, ethnicity, gender identity and expression, level of experience
 nationality, personal appearance, race, religion, or sexual identity and
 orientation.
 
-### [Contriubtion Guidelines](./CONTRIBUTING.md)
+### [Contribution Guidelines](./CONTRIBUTING.md)
 Welcome, and thanks in advance for your help! Please follow these simple guidelines :+1:
 
 ## Licensing
