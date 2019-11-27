@@ -8,11 +8,7 @@ import {
 } from "@multicloud/sls-core";
 import { AzureFunctionCloudService, AzureCloudServiceOptions, buildURL } from ".";
 
-const getCartAzureCloudService: AzureCloudServiceOptions = {
-  name: "azure-getCart",
-  http: "test-url/",
-  method: "GET"
-};
+let getCartAzureCloudService: AzureCloudServiceOptions;
 
 describe("Azure Cloud Service should", () => {
   let container: CloudContainer;
@@ -21,14 +17,20 @@ describe("Azure Cloud Service should", () => {
   let axiosRequestConfig: AxiosRequestConfig;
 
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
 
     axiosRequestConfig = {
       url: "test-url/",
-      method: "GET",
+      method: "POST",
       data: null,
       headers: {}
+    };
+
+    getCartAzureCloudService = {
+      name: "azure-getCart",
+      http: "test-url/",
+      method: "POST"
     };
 
     container = new CloudContainer();
@@ -54,6 +56,25 @@ describe("Azure Cloud Service should", () => {
       headers: new StringParams()
     };
     await cloudService.invoke<any>(params);
+    expect(axios.request).toBeCalledWith(axiosRequestConfig);
+  });
+
+  it("call axios.request with the configuration without the data parameter", async () => {
+    axios.request = jest.fn().mockResolvedValue({
+      data: {}
+    });
+    const params: InvokeRequest = {
+      name: "azure-getCart",
+      fireAndForget: false,
+      payload: null,
+      headers: new StringParams()
+    };
+    getCartAzureCloudService.method = "GET";
+    axiosRequestConfig.method = "GET";
+    delete axiosRequestConfig.data;
+
+    await cloudService.invoke<any>(params);
+    
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
   });
 
@@ -126,7 +147,7 @@ describe("Azure Cloud Service should", () => {
     const getCartAzureCloudServiceWithUrl: AzureCloudServiceOptions = {
       name: "azure-getCart-url",
       http: "test-url/{store}/{id}",
-      method: "GET"
+      method: "POST"
     };
     container
       .bind(getCartAzureCloudServiceWithUrl.name)
