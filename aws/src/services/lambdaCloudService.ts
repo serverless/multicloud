@@ -1,5 +1,12 @@
 import AWS from "aws-sdk";
-import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext, ComponentType, InvokeRequest } from "@multicloud/sls-core";
+import {
+  CloudService,
+  ContainerResolver,
+  CloudServiceOptions,
+  CloudContext,
+  ComponentType,
+  InvokeRequest
+} from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 
 /**
@@ -30,10 +37,8 @@ export interface AWSCloudServiceOptions extends CloudServiceOptions {
  * @param input value to be parsed to string
  */
 export const ensureString = (input: any) => {
-  return typeof (input) !== "string"
-    ? JSON.stringify(input)
-    : input;
-}
+  return typeof input !== "string" ? JSON.stringify(input) : input;
+};
 
 /**
  * Normalizes the payload to comply the Input Format of a Lambda Function for Proxy Integration
@@ -56,14 +61,13 @@ export const normalizePayload = (input: any) => {
       ...input,
       body: input.body && ensureString(input.body)
     };
-  }
-  else {
+  } else {
     // Case when the `input` is the actual body
-    payload.body = input && ensureString(input)
+    payload.body = input && ensureString(input);
   }
 
   return ensureString(payload);
-}
+};
 
 /**
  * Implementation of Cloud Service for AWS Lambda. Invokes Lambda Functions
@@ -71,7 +75,9 @@ export const normalizePayload = (input: any) => {
  */
 @injectable()
 export class LambdaCloudService implements CloudService {
-  public constructor(@inject(ComponentType.CloudContext) context: CloudContext) {
+  public constructor(
+    @inject(ComponentType.CloudContext) context: CloudContext
+  ) {
     this.containerResolver = context.container;
   }
 
@@ -79,16 +85,45 @@ export class LambdaCloudService implements CloudService {
 
   /**
    *
+   * @param name Name of Lambda function to invoke
+   * @param fireAndForget Wait for response if false (default behavior)
+   * @param payload Body of HTTP request
+   */
+  public async invoke<T>(
+    name: string,
+    fireAndForget: boolean,
+    payload?: any
+  ): Promise<T>;
+
+  /**
+   *
    * @param invokeOptions invoke interface with parameters needed
    */
-  public async invoke<T>(invokeOptions: InvokeRequest): Promise<T> {
+  public async invoke<T>(invokeOptions: InvokeRequest): Promise<T>;
+
+  public async invoke<T>(
+    dynamicParam: string | InvokeRequest,
+    fireAndForgetParam?,
+    payloadParam?: any
+  ): Promise<T> {
+    let invokeOptions: InvokeRequest;
+    if (typeof dynamicParam === "string")
+      invokeOptions = {
+        name: dynamicParam,
+        fireAndForget: fireAndForgetParam,
+        payload: payloadParam
+      };
+    else invokeOptions = dynamicParam as InvokeRequest;
+
     const { name, fireAndForget, payload } = invokeOptions;
 
     if (!name || name.length === 0) {
       return Promise.reject("Name is needed");
-	  }
+    }
 
-    const context = this.containerResolver.resolve<AWSCloudServiceOptions>(name);
+    const context = this.containerResolver.resolve<AWSCloudServiceOptions>(
+      name
+    );
 
     if (!context.region || !context.arn) {
       return Promise.reject("Region and ARN are needed for Lambda calls");
@@ -104,7 +139,7 @@ export class LambdaCloudService implements CloudService {
           ? AWSInvokeType.fireAndForget
           : AWSInvokeType.fireAndWait
       })
-	    .createReadStream();
+      .createReadStream();
 
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
@@ -121,11 +156,29 @@ export class LambdaCloudService implements CloudService {
       response.on("end", () => {
         // In case of "RequestResponse" invocation type
         // the invoke response body is parsed to JSON
-        resolve(fireAndForget
-          ? undefined
-          : JSON.parse(JSON.parse(chunks.toString()).body)
+        resolve(
+          fireAndForget
+            ? undefined
+            : JSON.parse(JSON.parse(chunks.toString()).body)
         );
       });
     });
+  }
+
+  private GetInvokeOptions(
+    dynamicParam: string | InvokeRequest,
+    fireAndForgetParam?,
+    payloadParam: any = null
+  ): InvokeRequest {
+    let invokeOptions: InvokeRequest;
+    if (typeof dynamicParam === "string")
+      invokeOptions = {
+        name: dynamicParam,
+        fireAndForget: fireAndForgetParam,
+        payload: payloadParam
+      };
+    else invokeOptions = dynamicParam as InvokeRequest;
+
+    return invokeOptions;
   }
 }
