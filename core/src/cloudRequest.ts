@@ -14,4 +14,6 @@ export interface CloudRequest {
   query?: StringParams;
   /** Path parameters */
   pathParams?: StringParams;
+  /** Path part of the request URL */
+  path?: string;
 }
