@@ -110,6 +110,52 @@ describe("test of request", () => {
     expect(azureContext.req.query).toEqual(expectedQueryParams);
   });
 
+  it("should passthrough expected path value without modifications", () => {
+    let expectedPath = "/path1/path2";
+    let url = `http://test.com${expectedPath}`;
+    const runtimeArgs = [
+      {
+        ...runtimeContext,
+        req: {
+          event: {
+            url: url
+          }
+        },
+      }
+    ];
+
+    let azureContext = createAzureContext(runtimeArgs);
+    expect(azureContext.req.path).toEqual(expectedPath);
+
+    runtimeArgs[0].req.event.url = url.replace(expectedPath, "");
+    azureContext = createAzureContext(runtimeArgs);
+    expect(azureContext.req.path).toEqual("/");
+  });
+
+  it("should passthrough an empty path value cause of an invalid/unexisting url", () => {
+    const expectedPath = "";
+    const runtimeArgs = [
+      {
+        ...runtimeContext,
+        req: {
+          event: {
+            url: "invalid url"
+          }
+        },
+      }
+    ];
+    let azureContext = createAzureContext(runtimeArgs);
+    expect(azureContext.req.path).toEqual(expectedPath);
+
+    delete runtimeArgs[0].req.event.url;
+    azureContext = createAzureContext(runtimeArgs);
+    expect(azureContext.req.path).toEqual(expectedPath);
+
+    delete runtimeArgs[0].req.event;
+    azureContext = createAzureContext(runtimeArgs);
+    expect(azureContext.req.path).toEqual(expectedPath);
+  });
+
   it("should check if context content are empty objects", () => {
     const azureContext = createAzureContext([runtimeContext]);
     const emptyParams = new StringParams();
