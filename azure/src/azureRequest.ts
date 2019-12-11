@@ -18,6 +18,8 @@ export class AzureRequest implements CloudRequest {
   public query?: StringParams;
   /** Path params of HTTP request */
   public pathParams?: StringParams;
+  /** Path part of the request URL */
+  public path?: string;
 
   /**
    * Initialize new Azure Request, injecting Cloud Context
@@ -31,5 +33,16 @@ export class AzureRequest implements CloudRequest {
     this.method = req.method || "";
     this.query = new StringParams(req.query);
     this.pathParams = new StringParams(req.params);
+    this.path = this.getPathNameFromRequest(req);
+  }
+
+  private getPathNameFromRequest(req: any): string {
+    try {
+      const urlBuild = new URL(req.event.url);
+      return urlBuild.pathname;
+    } catch (error) {
+      console.error("Extracting the path from the request's URL failed cause of: ", error);
+      return "";
+    }
   }
 }
