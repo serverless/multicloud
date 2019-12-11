@@ -18,6 +18,8 @@ export class AwsRequest implements CloudRequest {
   public query?: StringParams;
   /** Path params of HTTP Request */
   public pathParams?: StringParams;
+  /** Path part of the request URL */
+  public path?: string;
 
   /**
    * Initialize new AWS Request, injecting cloud context
@@ -33,5 +35,6 @@ export class AwsRequest implements CloudRequest {
     this.headers = new StringParams(context.runtime.event.headers);
     this.query = new StringParams(context.runtime.event.queryStringParameters);
     this.pathParams = new StringParams(context.runtime.event.pathParameters);
+    this.path = context.runtime.event.path;
   }
 }
