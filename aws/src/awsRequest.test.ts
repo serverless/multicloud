@@ -50,6 +50,27 @@ describe("test of request", () => {
     expect(request.body).toEqual(JSON.parse(noQueryEvent.body));
   });
 
+  it("should use default value for path if not provided", () => {
+    const noPathEvent = Object.assign({}, awsEvent);
+    delete noPathEvent.path;
+    noPathEvent.body = JSON.stringify(noPathEvent.body);
+
+    const request = new AwsRequest(new AwsContext([noPathEvent, context, null]));
+
+    expect(request.path).toEqual(noPathEvent.path);
+  });
+
+  it("should pass the correct path value to the request path", () => {
+    const event = Object.assign({}, awsEvent);
+    const expectedPath = "/expected/path";
+    event.path = expectedPath;
+    event.body = JSON.stringify(event.body);
+
+    const request = new AwsRequest(new AwsContext([event, context, null]));
+
+    expect(request.path).toEqual(expectedPath);
+  });
+
   it("should set context defaults if context content are empty objects", () => {
     const emptyParams = new StringParams();
     const emptyAWSEvent = {
