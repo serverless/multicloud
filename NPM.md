@@ -23,6 +23,22 @@ In order to access (read or write) to/from this NPM reposistory, you will need t
     * Tokens have a max expiry of one year (there is no support for non-expiring tokens)
 2. Prior to running any NPM commands, be sure to set `NPM_TOKEN` as an environment variable, using the base64 encoded PAT token that was previously created.
 
+## NPM Encoded Base64
+
+In order to add the Authentication Token as an environment variable we need to encode the decoded values.
+
+1. Search for a page for encode the value it was given on the [Azure DevOps portal](https://dev.azure.com/711digital/_usersSettings/tokens).
+
+We recommend using the following one: https://www.base64encode.org/
+
+![image](docs/assets/npm_token_1.png)
+
+2. Add this new value to our local environment
+
+![image](docs/assets/npm_token_2.png)
+
+3. To finish, after accepting all the changes we will have to restart the Visual Studio Code.
+
 ## FAQ
 **Q:** I'm getting this error: `Error: Failed to replace env in config: ${NPM_TOKEN}`
 
