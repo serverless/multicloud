@@ -117,9 +117,7 @@ describe("test of request", () => {
       {
         ...runtimeContext,
         req: {
-          event: {
-            url: url
-          }
+          url: url
         },
       }
     ];
@@ -127,7 +125,7 @@ describe("test of request", () => {
     let azureContext = createAzureContext(runtimeArgs);
     expect(azureContext.req.path).toEqual(expectedPath);
 
-    runtimeArgs[0].req.event.url = url.replace(expectedPath, "");
+    runtimeArgs[0].req.url = url.replace(expectedPath, "");
     azureContext = createAzureContext(runtimeArgs);
     expect(azureContext.req.path).toEqual("/");
   });
@@ -138,20 +136,14 @@ describe("test of request", () => {
       {
         ...runtimeContext,
         req: {
-          event: {
-            url: "invalid url"
-          }
+          url: "invalid url"
         },
       }
     ];
     let azureContext = createAzureContext(runtimeArgs);
     expect(azureContext.req.path).toEqual(expectedPath);
 
-    delete runtimeArgs[0].req.event.url;
-    azureContext = createAzureContext(runtimeArgs);
-    expect(azureContext.req.path).toEqual(expectedPath);
-
-    delete runtimeArgs[0].req.event;
+    delete runtimeArgs[0].req.url;
     azureContext = createAzureContext(runtimeArgs);
     expect(azureContext.req.path).toEqual(expectedPath);
   });

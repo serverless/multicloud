@@ -38,7 +38,7 @@ export class AzureRequest implements CloudRequest {
 
   private getPathNameFromRequest(req: any): string {
     try {
-      const urlBuild = new URL(req.event.url);
+      const urlBuild = new URL(req.url);
       return urlBuild.pathname;
     } catch (error) {
       console.error("Extracting the path from the request's URL failed cause of: ", error);
