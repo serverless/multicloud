@@ -1,5 +1,11 @@
-import { CloudModule, ComponentType } from "@multicloud/sls-core";
 import { ContainerModule, interfaces } from "inversify";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService, CloudStorage } from "@multicloud/sls-core";
+
+//gcp context , request, response and storage
+// import { GcpContext, GcpRequest, GcpResponse, GcpBlobStorage } from ".";
+
+//services
+
 
 /**
  * GCP Module that can be registered in IoC container
