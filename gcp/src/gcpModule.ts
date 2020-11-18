@@ -2,7 +2,7 @@ import { CloudModule } from "@multicloud/sls-core";
 
 
 /**
- * AWS Module that can be registered in IoC container
+ * GCP Module that can be registered in IoC container
  */
-export class AwsModule implements CloudModule {
+export class GcpModule implements CloudModule {
 }
