@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    "babel-plugin-transform-typescript-metadata"
+  ],
+  "presets": [
+    [
+      "react-app",
+      {
+        "flow": false,
+        "typescript": true
+      }
+    ]
+  ]
+}
