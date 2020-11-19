@@ -31,7 +31,7 @@ export class GcpResponse implements CloudResponse {
    * @param context Current CloudContext
    */
   public constructor(@inject(ComponentType.CloudContext) context: GcpContext) {
-    this.headers.set(CloudProviderResponseHeader, ProviderType.GCP);
+    this.headers.set(CloudProviderResponseHeader, "gcp");
     this.callback = context.runtime.callback;
   }
 
@@ -41,9 +41,9 @@ export class GcpResponse implements CloudResponse {
    * @param status Status code of HTTP response
    * @param callback Callback function to call with response
    */
-  public send(body: any, status: number = 200): void {
+  public send(body: any = null, status: number = 200): void {
     const responseBody = typeof (body) !== "string"
-      ? JSON.stringify(body)
+      ? body != null ? JSON.stringify(body) : null
       : body;
 
     this.body = responseBody;
