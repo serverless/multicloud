@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { ContainerResolver, CloudContainer, CloudService } from "@multicloud/sls-core";
-import { GcpFunctionCloudService, GcpCloudServiceOptions } from "./functionsCloudService";
+import { GcpFunctionCloudService, GcpCloudServiceOptions } from ".";
 
 const getCartGcpCloudService: GcpCloudServiceOptions = {
   name: "gcp-getCart",
