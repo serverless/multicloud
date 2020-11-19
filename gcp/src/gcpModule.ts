@@ -2,9 +2,7 @@ import { ContainerModule, interfaces } from "inversify";
 import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService, CloudStorage } from "@multicloud/sls-core";
 
 //gcp context , request, response and storage
-// import { GcpContext, GcpRequest, GcpResponse, GcpBlobStorage } from ".";
-
-//services
+import { GcpContext, GcpRequest, GcpResponse } from ".";
 
 
 /**
@@ -12,7 +10,7 @@ import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, 
  */
 export class GcpModule implements CloudModule {
   /**
-   * Determines whether or not the incoming request is an AWS request
+   * Determines whether or not the incoming request is an Gcp request
    * @param req The IoC resolution request
    */
   private isGcpRequest(req: interfaces.Request) {
@@ -37,13 +35,9 @@ export class GcpModule implements CloudModule {
         .to(GcpResponse)
         .when(this.isGcpRequest);
 
-      // bind<CloudService>(ComponentType.CloudService)
-      //   .to(GcpFunctionCloudService)
-      //   .when(this.isGcpRequest);
+      // TODO add cloud service
 
-      // bind<CloudStorage>(ComponentType.CloudStorage)
-      //   .to(GcpBlobStorage)
-      //   .when(this.isGcpRequest);
+      //TODO add cloud storage
     });
   }
 }

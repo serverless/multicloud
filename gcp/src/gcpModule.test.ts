@@ -1,4 +1,3 @@
-//GCP IMPORTS
 import { GcpModule, GcpContext, GcpRequest, GcpResponse,  } from ".";
 import {
   ComponentType,
@@ -10,20 +9,14 @@ import {
   CloudStorage,
   ProviderType,
   App } from "@multicloud/sls-core";
-import { AzureFunctionCloudService } from "./services";
-// import { StorageURL, SharedKeyCredential } from "@azure/storage-blob";
 
-// jest.mock("@azure/storage-blob");
 
-describe("Azure Cloud Module", () => {
+describe("Gcp Cloud Module", () => {
   const params: any[] = [
-    {
-      invocationId: expect.any(String),
-      req: {},
-      res: {},
-      log: {},
-      bindingDefinitions: [],
-    }];
+    {},
+    { eventId: expect.any(String) },
+    jest.fn()
+  ];
   const gcpModule = new GcpModule();
   let container = new CloudContainer();
 
@@ -40,8 +33,8 @@ describe("Azure Cloud Module", () => {
       const context1 = container.resolve<CloudContext>(ComponentType.CloudContext);
       const context2 = container.resolve<CloudContext>(ComponentType.CloudContext);
 
-      expect(context1).toBeInstanceOf(AzureContext);
-      expect(context1.providerType).toBe(ProviderType.Azure);
+      expect(context1).toBeInstanceOf(GcpContext);
+      expect(context1.providerType).toBe("gcp");
       expect(context1).toBe(context2);
     });
 
@@ -73,19 +66,6 @@ describe("Azure Cloud Module", () => {
       expect(response).toBeInstanceOf(GcpResponse);
     });
 
-    it("resolves service", () => {
-      const service = container.resolve<CloudService>(ComponentType.CloudService);
-      expect(service).toBeInstanceOf(GcpFunctionCloudService);
-    });
-
-    //   it("resolves storage", () => {
-    //     SharedKeyCredential.prototype.create = jest.fn().mockReturnValue({});
-    //     StorageURL.newPipeline = jest.fn();
-
-    //     const storage = container.resolve<CloudStorage>(ComponentType.CloudStorage);
-    //     expect(storage).toBeInstanceOf(GcpBlobStorage);
-    //   });
-    // });
 
     describe("when non-gcp request", () => {
       beforeAll(() => {
@@ -114,7 +94,6 @@ describe("Azure Cloud Module", () => {
         expect(container.resolve<CloudStorage>(ComponentType.CloudStorage)).toBeNull();
       });
     })
-    // });
 
   });
 
