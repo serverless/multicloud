@@ -3,6 +3,7 @@ import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, 
 
 //gcp context , request, response and storage
 import { GcpContext, GcpRequest, GcpResponse } from ".";
+import { GcpFunctionCloudService } from "./services";
 
 
 /**
@@ -35,7 +36,9 @@ export class GcpModule implements CloudModule {
         .to(GcpResponse)
         .when(this.isGcpRequest);
 
-      // TODO add cloud service
+      bind<CloudService>(ComponentType.CloudService)
+        .to(GcpFunctionCloudService)
+        .when(this.isGcpRequest);
 
       //TODO add cloud storage
     });

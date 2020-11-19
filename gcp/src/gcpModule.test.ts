@@ -1,4 +1,5 @@
 import { GcpModule, GcpContext, GcpRequest, GcpResponse,  } from ".";
+import { GcpFunctionCloudService } from "./services";
 import {
   ComponentType,
   CloudContext,
@@ -64,6 +65,11 @@ describe("Gcp Cloud Module", () => {
     it("resolves response", () => {
       const response = container.resolve<CloudResponse>(ComponentType.CloudResponse);
       expect(response).toBeInstanceOf(GcpResponse);
+    });
+
+    it("resolves service", () => {
+      const service = container.resolve<CloudService>(ComponentType.CloudService);
+      expect(service).toBeInstanceOf(GcpFunctionCloudService);
     });
 
 
