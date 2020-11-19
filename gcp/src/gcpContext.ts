@@ -2,11 +2,7 @@ import "reflect-metadata";
 import { GcpRequest, GcpResponse } from ".";
 import { CloudContext, ComponentType } from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
-<<<<<<< HEAD
 import { GcpFunctionRuntime } from "./models/gcpCloudFunction";
-=======
-import { CloudFunctionRuntime } from "./models/gcpCloudFunction";
->>>>>>> a98564b... Added gcpContext
 
 /**
  * Implementation of Cloud Context for GCP Function
@@ -44,11 +40,7 @@ export class GcpContext implements CloudContext {
   /** HTTP Response */
   public res: GcpResponse;
   /** Original runtime arguments for GCP Function */
-<<<<<<< HEAD
   public runtime: GcpFunctionRuntime;
-=======
-  public runtime: CloudFunctionRuntime;
->>>>>>> a98564b... Added gcpContext
   /** Signals to the framework that the request is complete */
   public done: () => void;
 
