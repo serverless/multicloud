@@ -37,7 +37,7 @@ describe("GCP context", () => {
     expect(context.done).toBeCalled();
   });
 
-  it("flush() calls response.flush() to call final AWS callback", () => {
+  it("flush() calls response.flush() to call final Gcp callback", () => {
     const context = createGcpContext(runtimeArgs);
     const flushSpy = jest.spyOn(context.res, "flush");
     context.send("test", 200);
