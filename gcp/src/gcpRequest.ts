@@ -26,7 +26,8 @@ export class GcpRequest implements CloudRequest {
   public constructor(@inject(ComponentType.CloudContext) context: GcpContext) {
     const req = context.runtime.event || context.runtime.context.req;
 
-    this.body = req.body || null;
+
+    this.body = req.body ? JSON.parse(req.body) : null;
     this.headers = new StringParams(req.headers);
     this.method = req.method || "";
     this.query = new StringParams(req.query);
