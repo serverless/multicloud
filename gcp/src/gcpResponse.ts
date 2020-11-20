@@ -2,7 +2,6 @@ import "reflect-metadata";
 import {
   CloudResponse,
   ComponentType,
-  ProviderType,
   CloudProviderResponseHeader,
   StringParams
 } from "core/lib";

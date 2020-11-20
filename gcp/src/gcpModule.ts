@@ -1,5 +1,5 @@
 import { ContainerModule, interfaces } from "inversify";
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService, CloudStorage } from "core/lib";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "core/lib";
 
 //gcp context , request, response and storage
 import { GcpContext, GcpRequest, GcpResponse } from ".";

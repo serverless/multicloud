@@ -1,5 +1,4 @@
-import { ProviderType, CloudProviderResponseHeader, StringParams } from "core/lib";
-import { callbackify } from "util";
+import { CloudProviderResponseHeader, StringParams } from "core/lib";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
 
 describe("Gcp Response", () => {
