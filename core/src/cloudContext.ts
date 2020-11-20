@@ -53,5 +53,6 @@ export interface CloudContext {
  */
 export enum ProviderType {
   Azure = "azure",
-  AWS = "aws"
+  AWS = "aws",
+  GCP = "gcp",
 }
