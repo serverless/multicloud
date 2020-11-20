@@ -37,6 +37,13 @@ describe("GCP context", () => {
     expect(context.done).toBeCalled();
   });
 
+  it("send() calls context.done() to signal handler is complete", () => {
+    let context = new GcpContext(runtimeArgs);
+    context.done = jest.fn();
+    context.send("test", 200);
+    expect(context.done).toBeCalled();
+  });
+
   it("flush() calls response.flush() to call final Gcp callback", () => {
     const context = createGcpContext(runtimeArgs);
     const flushSpy = jest.spyOn(context.res, "flush");
