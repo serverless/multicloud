@@ -1,0 +1,12 @@
+{
+  "name": "",
+  "version": "",
+  "description": "",
+  "scripts": {
+    "start": "functions-framework --target=helloWorld"
+  },
+  "author": "",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^1.7.1"
+  }
+}
