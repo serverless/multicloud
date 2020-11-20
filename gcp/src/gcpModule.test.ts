@@ -9,7 +9,7 @@ import {
   CloudService,
   CloudStorage,
   ProviderType,
-  App } from "@multicloud/sls-core";
+  App } from "core/lib";
 
 
 describe("Gcp Cloud Module", () => {

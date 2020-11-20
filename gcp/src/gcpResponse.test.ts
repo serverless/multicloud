@@ -1,4 +1,4 @@
-import { ProviderType, CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
+import { ProviderType, CloudProviderResponseHeader, StringParams } from "core/lib";
 import { callbackify } from "util";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
 

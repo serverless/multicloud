@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { GcpRequest, GcpResponse } from ".";
-import { CloudContext, ComponentType } from "@multicloud/sls-core";
+import { CloudContext, ComponentType } from "core/lib";
 import { injectable, inject } from "inversify";
 import { GcpFunctionRuntime } from "./models/gcpCloudFunction";
 

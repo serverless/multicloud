@@ -1,6 +1,6 @@
 import { GcpContext, GcpRequest } from ".";
 import gcpEvent from "./test/events/defaultGcpEvent.json";
-import { StringParams } from "@multicloud/sls-core";
+import { StringParams } from "core/lib";
 
 describe("test of request", () => {
   const context = {

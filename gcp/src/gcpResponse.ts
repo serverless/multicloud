@@ -5,7 +5,7 @@ import {
   ProviderType,
   CloudProviderResponseHeader,
   StringParams
-} from "@multicloud/sls-core";
+} from "core/lib";
 import { GcpContext } from ".";
 import { injectable, inject } from "inversify";
 

@@ -1,6 +1,5 @@
-import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext } from "@multicloud/sls-core";
-import axios, { AxiosRequestConfig } from "axios";
-import { ComponentType } from "@multicloud/sls-core";
+import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext, ComponentType } from "core/lib";
+import axios, { AxiosRequestConfig, Method } from "axios";
 import { injectable, inject } from "inversify";
 
 
@@ -11,7 +10,7 @@ export interface GcpCloudServiceOptions extends CloudServiceOptions {
   /** Name of function to invoke */
   name: string;
   /** HTTP method of invocation */
-  method: string;
+  method: Method;
   /** URL for invocation */
   http: string;
 }
