@@ -1,4 +1,4 @@
-import { CloudProviderResponseHeader, StringParams } from "core/lib";
+import { CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
 
 describe("Gcp Response", () => {

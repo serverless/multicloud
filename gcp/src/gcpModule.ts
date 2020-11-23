@@ -1,5 +1,5 @@
 import { ContainerModule, interfaces } from "inversify";
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "core/lib";
+import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "@multicloud/sls-core";
 
 //gcp context , request, response and storage
 import { GcpContext, GcpRequest, GcpResponse } from ".";

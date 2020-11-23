@@ -8,7 +8,7 @@ import {
   CloudContainer,
   CloudService,
   CloudStorage,
-  App } from "core/lib";
+  App } from "@multicloud/sls-core";
 
 
 describe("Gcp Cloud Module", () => {

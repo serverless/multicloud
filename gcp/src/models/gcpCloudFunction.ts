@@ -1,4 +1,4 @@
-import { CloudProviderRuntime } from "core/lib";
+import { CloudProviderRuntime } from "@multicloud/sls-core";
 
 export interface GcpFunctionRuntime extends CloudProviderRuntime {
   event: any;

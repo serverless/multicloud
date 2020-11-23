@@ -33,7 +33,6 @@
   "author": "SOUTHWORKS",
   "license": "MIT",
   "dependencies": {
-    "core": "file:../core",
     "inversify": "5.0.1",
     "reflect-metadata": "0.1.13",
     "axios": "0.21.0"

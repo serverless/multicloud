@@ -1,4 +1,4 @@
-import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext, ComponentType } from "core/lib";
+import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext, ComponentType } from "@multicloud/sls-core";
 import axios, { AxiosRequestConfig, Method } from "axios";
 import { injectable, inject } from "inversify";
 
