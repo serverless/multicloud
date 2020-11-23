@@ -1,6 +1,5 @@
-import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext } from "@multicloud/sls-core";
-import axios, { AxiosRequestConfig } from "axios";
-import { ComponentType } from "@multicloud/sls-core";
+import { CloudService, ContainerResolver, CloudServiceOptions, CloudContext, ComponentType } from "@multicloud/sls-core";
+import axios, { AxiosRequestConfig, Method } from "axios";
 import { injectable, inject } from "inversify";
 
 
@@ -11,7 +10,7 @@ export interface GcpCloudServiceOptions extends CloudServiceOptions {
   /** Name of function to invoke */
   name: string;
   /** HTTP method of invocation */
-  method: string;
+  method: Method;
   /** URL for invocation */
   http: string;
 }
@@ -34,7 +33,7 @@ export class GcpFunctionCloudService implements CloudService {
    * @param fireAndForget Wait for response if false (default behavior)
    * @param payload Body of HTTP request
    */
-  public async invoke<T>(name: string, fireAndForget = false, payload: any = null) {
+  public async invoke<T>(name: string, fireAndForget: boolean = false, payload: any = null) {
     if (!name || name.length === 0) {
       throw Error("Name is needed");
     }

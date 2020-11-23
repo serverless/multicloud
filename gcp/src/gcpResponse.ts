@@ -2,7 +2,6 @@ import "reflect-metadata";
 import {
   CloudResponse,
   ComponentType,
-  ProviderType,
   CloudProviderResponseHeader,
   StringParams
 } from "@multicloud/sls-core";
@@ -68,7 +67,7 @@ export class GcpResponse implements CloudResponse {
     this.callback(null, {
       headers: this.headers.toJSON(),
       body: this.body,
-      statusCode: this.status || 200,
+      statusCode: this.status,
     });
   }
 }

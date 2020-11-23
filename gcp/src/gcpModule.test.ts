@@ -8,7 +8,6 @@ import {
   CloudContainer,
   CloudService,
   CloudStorage,
-  ProviderType,
   App } from "@multicloud/sls-core";
 
 

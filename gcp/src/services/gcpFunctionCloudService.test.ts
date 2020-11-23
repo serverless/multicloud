@@ -30,7 +30,7 @@ describe("Google Cloud Service should", () => {
       data: null,
     };
     axios.request = jest.fn().mockReturnValue(Promise.resolve());
-    await cloudService.invoke<Promise<any>>("gcp-getCart", false);
+    await cloudService.invoke<Promise<any>>("gcp-getCart");
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
   });
 
@@ -41,7 +41,7 @@ describe("Google Cloud Service should", () => {
       data: null,
     };
     axios.request = jest.fn().mockReturnValue(Promise.resolve("Response"));
-    const response = await cloudService.invoke<Promise<any>>("gcp-getCart", false);
+    const response = await cloudService.invoke<Promise<any>>("gcp-getCart");
     expect(axios.request).toBeCalledWith(axiosRequestConfig);
     expect(response).toEqual("Response");
   });
