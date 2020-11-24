@@ -7,7 +7,6 @@ import {
 } from "@multicloud/sls-core";
 import { GcpContext } from ".";
 import { injectable, inject } from "inversify";
-import { type } from "os";
 
 /**
  * Implementation of Cloud Response for GCP Cloud Function
@@ -75,7 +74,10 @@ export class GcpResponse implements CloudResponse {
       this.headers.set("Content-Type", "text/html");
     }
 
-    if(!this.headers.get("Content-Type")) this.body = null;
+    if(!this.headers.get("Content-Type")) {
+      this.status = 400;
+      this.body = { error: "Format not supported. The supported response types are JSON and text."};
+    }
   }
 
   public flush(): void {

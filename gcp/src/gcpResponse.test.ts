@@ -112,19 +112,19 @@ describe("Gcp Response", () => {
     });
   });
 
-  it("send with empty body should default to null value", () => {
+  it("send with xml object should default to null value", () => {
     const gcpContext = createGcpContext(defaultParams);
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString("<MyTestElement/>","text/xml");
     gcpContext.res.send(xmlDoc);
     expect(gcpContext.res).toMatchObject({
-      body: null,
+      body: { error: "Format not supported. The supported response types are JSON and text."},
       headers: expect.any(StringParams),
-      status: 200,
+      status: 400,
     });
   });
 
-  it("send with xml object should default to null value", () => {
+  it("send with empty body should default to null value", () => {
     const gcpContext = createGcpContext(defaultParams);
 
     gcpContext.res.send();
