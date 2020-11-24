@@ -1,5 +1,6 @@
 import { CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
+import { DOMParser } from "xmldom";
 
 describe("Gcp Response", () => {
   const defaultParams: any[] = [
@@ -112,6 +113,18 @@ describe("Gcp Response", () => {
   });
 
   it("send with empty body should default to null value", () => {
+    const gcpContext = createGcpContext(defaultParams);
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString("<MyTestElement/>","text/xml");
+    gcpContext.res.send(xmlDoc);
+    expect(gcpContext.res).toMatchObject({
+      body: null,
+      headers: expect.any(StringParams),
+      status: 200,
+    });
+  });
+
+  it("send with xml object should default to null value", () => {
     const gcpContext = createGcpContext(defaultParams);
 
     gcpContext.res.send();

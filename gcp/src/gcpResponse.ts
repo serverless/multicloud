@@ -7,6 +7,7 @@ import {
 } from "@multicloud/sls-core";
 import { GcpContext } from ".";
 import { injectable, inject } from "inversify";
+import { type } from "os";
 
 /**
  * Implementation of Cloud Response for GCP Cloud Function
@@ -35,15 +36,27 @@ export class GcpResponse implements CloudResponse {
   }
 
   /**
+   * Stringify the body
+   * @param body Body of HTTP request
+   */
+  private stringifyJson(body: any) {
+    if(typeof(body) === "string") return body;
+    if(!body) return null;
+    let stringifyBody = null;
+    try{
+      stringifyBody = JSON.stringify(body);
+    } catch (e) { }
+    return stringifyBody;
+  }
+
+  /**
    * Send HTTP response via provided callback
    * @param body Body of HTTP response
    * @param status Status code of HTTP response
    * @param callback Callback function to call with response
    */
   public send(body: any = null, status: number = 200): void {
-    const responseBody = typeof (body) !== "string"
-      ? body != null ? JSON.stringify(body) : null
-      : body;
+    const responseBody = this.stringifyJson(body);
 
     this.body = responseBody;
     this.status = status;
@@ -61,6 +74,8 @@ export class GcpResponse implements CloudResponse {
     if (["String"].includes(bodyType)) {
       this.headers.set("Content-Type", "text/html");
     }
+
+    if(!this.headers.get("Content-Type")) this.body = null;
   }
 
   public flush(): void {
