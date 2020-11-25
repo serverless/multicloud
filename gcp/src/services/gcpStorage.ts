@@ -9,17 +9,16 @@ import {
 } from "@multicloud/sls-core";
 import { Stream } from "stream";
 import { injectable } from "inversify";
-import "reflect-metadata";
 
 /**
- * Implementation of CloudStorage for AWS S3 Storage
+ * Implementation of CloudStorage for Gcp Bucket storage
  */
 @injectable()
 export class GcpStorage implements CloudStorage {
   private storage: Storage;
 
   /**
-   * Initialize new AWS S3 service
+   * Initialize new gcp storage service
    */
   public constructor() {
     this.storage = new Storage();
@@ -57,7 +56,7 @@ export class GcpStorage implements CloudStorage {
     const file = await bucket.file(params.prefix);
     const readStream = convertToStream(opts.body);
 
-    await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       readStream
         .pipe(
           file.createWriteStream({
@@ -66,12 +65,19 @@ export class GcpStorage implements CloudStorage {
             metadata: { "Cache-Control": "public, max-age=31536000" },
           })
         )
-        .on("error", (error: Error) => {
+        .on("error", (error) => {
           reject(error);
         })
         .on("finish", () => {
-          //TODO add etag and version from metadata.
-          resolve();
+          //TODO add etag and version from metadata, validate that works.
+          const metadata =
+          file.getMetadata().then(function(data) {
+            return data[0];
+          });
+          resolve({
+            eTag:metadata.eTag,
+            version:metadata.generation
+          });
         });
     });
   }

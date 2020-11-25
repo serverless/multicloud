@@ -1,9 +1,6 @@
 import { GcpStorage } from ".";
 import { Storage } from "@google-cloud/storage";
-import { Readable, Writable } from "stream";
-import { convertToStream } from "@multicloud/sls-core";
-import stream from "stream";
-import { PassThrough } from "stream";
+import { Readable, PassThrough } from "stream";
 
 jest.mock("@google-cloud/storage");
 
@@ -65,17 +62,16 @@ describe("gcp storage when call write should", () => {
       ContentType: "application/json",
     },
   };
+  const readableBody = new Readable();
+  readableBody.push(input.body);
+  readableBody.push(null);
 
   it("use gcp createWriteStream ", async () => {
-
-    const readableBody = new Readable();
-    readableBody.push(input.body);
-    readableBody.push(null);
-    const mockWriteable = new PassThrough()
-
+    const mockWriteable = new PassThrough();
 
     const mockFile = jest.fn().mockReturnValue({
       createWriteStream: jest.fn().mockReturnValue(mockWriteable),
+      getMetadata: jest.fn().mockResolvedValue({}),
     });
 
     Storage.prototype.bucket = jest.fn().mockReturnValue({
@@ -83,7 +79,6 @@ describe("gcp storage when call write should", () => {
     });
 
     const sut = new GcpStorage();
-
 
     const expectedParams = {
       ...input.options,
@@ -99,122 +94,43 @@ describe("gcp storage when call write should", () => {
     );
   });
 
-  // it("use S3 putObject with Buffer body", async () => {
-  //   const mockedStream = new stream.Writable();
-  //   mockedStream._write = function (size) {
-  //     /* do nothing */
-  //   };
+  it("throw error when fail", async () => {
+    const mockWriteable = new PassThrough();
+    mockWriteable.end();
+    const mockFile = jest.fn().mockReturnValue({
+      createWriteStream: jest.fn().mockReturnValue(mockWriteable),
+      getMetadata: jest.fn().mockResolvedValue({}),
+    });
+    Storage.prototype.bucket = jest.fn().mockReturnValue({
+      file: mockFile,
+    });
 
-  //   // myModule.functionIWantToTest(mockedStream); // has .on() listeners in it
+    const sut = new GcpStorage();
+    await expect(sut.write(input)).rejects.toThrow("write after end");
+  });
 
-  //   mockedStream.emit("data", "Hello data!");
-  //   mockedStream.emit("end");
-  //   const mockFile = jest.fn().mockReturnValue({
-  //     createWriteStream: jest.fn().mockReturnValue(mockedStream),
-  //   });
+  it("return data on success", async () => {
+    const response = {
+      generation: "1.0",
+      eTag: "foo",
+    };
 
-  //   Storage.prototype.bucket = jest.fn().mockReturnValue({
-  //     file: mockFile,
-  //   });
-  //   const sut = new GcpStorage();
+    const mockWriteable = new PassThrough();
+    const mockFile = jest.fn().mockReturnValue({
+      createWriteStream: jest.fn().mockReturnValue(mockWriteable),
+      getMetadata: jest.fn().mockResolvedValue(response),
+    });
 
-  //   const buffer = Buffer.from(input.body);
+    Storage.prototype.bucket = jest.fn().mockReturnValue({
+      file: mockFile,
+    });
 
-  //   const inputBuffer = {
-  //     ...input,
-  //     body: buffer,
-  //   };
+    const sut = new GcpStorage();
+    const expected = {
+      version: response.VersionId,
+      eTag: response.ETag,
+    };
 
-  //   const readableBody = convertToStream(buffer);
-  //   const gcpParams = {
-  //     Bucket: inputBuffer.container,
-  //     Key: inputBuffer.path,
-  //     Body: readableBody,
-  //     CacheControl: "no-cache",
-  //     ContentType: "application/json",
-  //     ContentLength: readableBody.readableLength,
-  //   };
-
-  //   await sut.write(inputBuffer);
-  //   expect(Storage.Bucket.prototype.file).toHaveBeenCalledWith(
-  //     gcpParams
-  //   );
-  // });
-
-  // // it("use S3 putObject with Stream body", async () => {
-  // //   const sut = new GcpStorage();
-  // //   Storage.S3.prototype.putObject = jest.fn().mockReturnValue({
-  // //     promise: jest.fn().mockResolvedValue({}),
-  // //   });
-
-  // //   const readableBody = new Readable();
-  // //   readableBody.push(input.body);
-  // //   readableBody.push(null);
-
-  // //   const inputStream = {
-  // //     ...input,
-  // //     body: readableBody,
-  // //   };
-
-  // //   const expectedParams = {
-  // //     ...inputStream.options,
-  // //     Bucket: inputStream.container,
-  // //     Key: inputStream.path,
-  // //     Body: readableBody,
-  // //     ContentLength: readableBody.readableLength,
-  // //   };
-
-  // //   await sut.write(inputStream);
-  // //   expect(Storage.S3.prototype.putObject).toHaveBeenCalledWith(expectedParams);
-  // // });
-
-  // it("throw error when fail", async () => {
-  //   const mockedStream = new PassThrough(); // <----
-  //   //   mockedStream.on('data', (d) => {
-  //   //     console.dir(d);
-  //   // });
-
-  //   // mockedStream.on("finish", function (d) {
-  //   //   console.dir(d);
-  //   // });
-  //   // });
-  //   // mockedStream.on("error", function (d) {
-  //   //   console.log("EAAAAAAAAAAA");
-  //   //   // throw(d);
-  //   // });
-  //   mockedStream.emit("finish", { generation: 123, etag: 123123 });
-
-  //   // mockedStream.emit("error", new Error("fail"));
-  //   mockedStream.end(); //   <-- end. not close.
-  //   mockedStream.destroy();
-
-  //   const mockFile = jest.fn().mockReturnValue({
-  //     createWriteStream: jest.fn().mockReturnValue(mockedStream),
-  //   });
-
-  //   Storage.prototype.bucket = jest.fn().mockReturnValue({
-  //     file: mockFile,
-  //   });
-  //   const sut = new GcpStorage();
-  //   await expect(sut.write(input)).rejects.toThrow("fail");
-  // });
-
-  // it("return data on success", async () => {
-  //   const response = {
-  //     VersionId: "1.0",
-  //     ETag: "foo",
-  //   };
-
-  //   Storage.prototype.putObject = jest.fn().mockReturnValue({
-  //     promise: jest.fn().mockResolvedValue(response),
-  //   });
-
-  //   const sut = new GcpStorage();
-  //   const expected = {
-  //     version: response.VersionId,
-  //     eTag: response.ETag,
-  //   };
-
-  //   expect(await sut.write(input)).toEqual(expected);
-  // });
+    expect(await sut.write(input)).toEqual(expected);
+  });
 });
