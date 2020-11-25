@@ -48,26 +48,31 @@ export class GcpStorage implements CloudStorage {
     Guard.empty(opts.container, "container");
     Guard.empty(opts.path, "path");
     Guard.null(opts.body, "body");
+    const params = {
+      bucketName: opts.container,
+      prefix: opts.path,
+    };
 
-    const bucket = this.storage.bucket(opts.container);
-    console.log("BUCKET", bucket);
-    console.log(opts);
-    const file = bucket.file(opts.path);
-    let response;
-    console.log("FILE", file);
-    const stream = await convertToStream(opts.body);
-    console.log("STREAMMM",stream)
-    stream
-      .pipe(file.createWriteStream({resumable: false}))
-      .on("error", function (err) {})
-      .on("finish", function (res) {
-        response = {
-          version: res.generation,
-          eTag: res.etag,
-        };
-        // The file upload is complete.
-      });
+    const bucket = await this.storage.bucket(params.bucketName);
+    const file = await bucket.file(params.prefix);
+    const readStream = convertToStream(opts.body);
 
-    return response;
+    await new Promise((resolve, reject) => {
+      readStream
+        .pipe(
+          file.createWriteStream({
+            resumable: false,
+            validation: false,
+            metadata: { "Cache-Control": "public, max-age=31536000" },
+          })
+        )
+        .on("error", (error: Error) => {
+          reject(error);
+        })
+        .on("finish", () => {
+          //TODO add etag and version from metadata.
+          resolve();
+        });
+    });
   }
 }
