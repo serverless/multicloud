@@ -24,13 +24,16 @@ export class GcpRequest implements CloudRequest {
    * @param body Body of HTTP request
    */
   private parseJson(body: any) {
-    let parsedBody;
+    if(!body) return null;
     try{
-      parsedBody = JSON.parse(body);
+      const parsedBody = JSON.parse(body);
+      return parsedBody;
     } catch (e) {
-      parsedBody = null;
+      throw {
+        status: 400,
+        error: "Format not supported. The supported response types are JSON and text."
+      }
     }
-    return parsedBody;
   }
 
   /**

@@ -44,7 +44,12 @@ export class GcpResponse implements CloudResponse {
     let stringifyBody = null;
     try{
       stringifyBody = JSON.stringify(body);
-    } catch (e) { }
+    } catch (e) {
+      throw {
+        status: 400,
+        error: "Format not supported. The supported response types are JSON and text."
+      }
+    }
     return stringifyBody;
   }
 
@@ -72,11 +77,6 @@ export class GcpResponse implements CloudResponse {
 
     if (["String"].includes(bodyType)) {
       this.headers.set("Content-Type", "text/html");
-    }
-
-    if(!this.headers.get("Content-Type")) {
-      this.status = 400;
-      this.body = { error: "Format not supported. The supported response types are JSON and text."};
     }
   }
 
