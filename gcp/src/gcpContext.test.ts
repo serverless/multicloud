@@ -1,10 +1,10 @@
 import { GcpContext, GcpResponse } from ".";
 
 const runtimeArgs = [
-  {},
   {
-    eventId: "12344",
+    _readableState: {highWaterMark: "12344"},
   },
+  {},
   jest.fn(),
 ];
 
@@ -12,13 +12,14 @@ const createGcpContext = (args): GcpContext => {
   let gcpContext = new GcpContext(args);
   gcpContext.res = new GcpResponse(gcpContext);
   gcpContext.done = jest.fn();
+  gcpContext.res.flush = () => { return {status : jest.fn()}}
   return gcpContext;
 };
 
 describe("GCP context", () => {
   it("eventId should be set", () => {
     const context = createGcpContext(runtimeArgs);
-    expect(context.id).toEqual(runtimeArgs[1].eventId);
+    expect(context.id).toEqual(runtimeArgs[0]._readableState.highWaterMark);
   });
 
   it("when send() calls response.send() on httpTrigger with custom status", () => {
@@ -49,7 +50,6 @@ describe("GCP context", () => {
     const flushSpy = jest.spyOn(context.res, "flush");
     context.send("test", 200);
     context.flush();
-
     expect(flushSpy).toBeCalled();
   });
 });

@@ -1,5 +1,8 @@
 {
-  "body": "eyJ0ZXN0IjoiYm9keSJ9",
+  "_readableState" : {
+    "highWaterMark": "1234"
+  },
+  "body": "{}",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
   "method": "POST",

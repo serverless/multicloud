@@ -13,8 +13,8 @@ import {
 
 describe("Gcp Cloud Module", () => {
   const params: any[] = [
+    { _readableState: { highWaterMark : expect.any(String)}},
     {},
-    { eventId: expect.any(String) },
     jest.fn()
   ];
   const gcpModule = new GcpModule();

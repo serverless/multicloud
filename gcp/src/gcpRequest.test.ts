@@ -4,15 +4,10 @@ import { StringParams } from "@multicloud/sls-core";
 import { DOMParser } from "xmldom";
 
 describe("test of request", () => {
-  const context = {
-    requestId: "12345",
-    req: {},
-    res: {}
-  }
 
   it("should pass-through event values without modifications", () => {
-    gcpEvent.body = JSON.stringify(gcpEvent.body);
-    const request = new GcpRequest(new GcpContext([gcpEvent, context, null]));
+    //let gcpEvent.body = JSON.stringify(gcpEvent.body);
+    const request = new GcpRequest(new GcpContext([gcpEvent,{},{}]));
     expect(request.method).toEqual(gcpEvent.method);
     expect(request.headers).toEqual(new StringParams(gcpEvent.headers));
     expect(request.query).toEqual(new StringParams(gcpEvent.query));
@@ -22,7 +17,7 @@ describe("test of request", () => {
   it("should use default value for body if not provided", () => {
     const noBodyEvent = Object.assign({}, gcpEvent);
     delete noBodyEvent.body;
-    const request = new GcpRequest(new GcpContext([noBodyEvent, context, null]));
+    const request = new GcpRequest(new GcpContext([noBodyEvent, {}, {}]));
     expect(request.method).toEqual(gcpEvent.method);
     expect(request.headers).toEqual(new StringParams(gcpEvent.headers));
     expect(request.query).toEqual(new StringParams(gcpEvent.query));
@@ -30,10 +25,11 @@ describe("test of request", () => {
   });
 
   it("should send a format error for xml body", () => {
+    let gcpEventXml =  Object.assign({}, gcpEvent);
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString("<MyTestElement/>","text/xml");
-    const gcpEvent = { body: xmlDoc };
-    const gcpContext = new GcpContext([gcpEvent, context, null])
+    gcpEventXml.body = { body: xmlDoc };
+    const gcpContext = new GcpContext([gcpEventXml, {}, {}])
     try {
       new GcpRequest(gcpContext);
     } catch (e) {
@@ -47,8 +43,7 @@ describe("test of request", () => {
   it("should use default value for headers if not provided", () => {
     const noHeadersEvent = Object.assign({}, gcpEvent);
     delete noHeadersEvent.headers;
-    noHeadersEvent.body = JSON.stringify(noHeadersEvent.body);
-    const request = new GcpRequest(new GcpContext([noHeadersEvent, context, null]));
+    const request = new GcpRequest(new GcpContext([noHeadersEvent, {}, {}]));
     expect(request.method).toEqual(gcpEvent.method);
     expect(request.headers).toEqual(new StringParams());
     expect(request.query).toEqual(new StringParams(gcpEvent.query));
@@ -59,7 +54,7 @@ describe("test of request", () => {
     const noQueryEvent = Object.assign({}, gcpEvent);
     delete noQueryEvent.query;
     noQueryEvent.body = JSON.stringify(noQueryEvent.body);
-    const request = new GcpRequest(new GcpContext([noQueryEvent, context, null]));
+    const request = new GcpRequest(new GcpContext([noQueryEvent, {}, {}]));
     expect(request.method).toEqual(gcpEvent.method);
     expect(request.headers).toEqual(new StringParams(gcpEvent.headers));
     expect(request.query).toEqual(new StringParams());
@@ -69,12 +64,12 @@ describe("test of request", () => {
   it("should set context defaults if context content are empty objects", () => {
     const emptyParams = new StringParams();
     const emptygcpEvent = {
-      method: "GET"
+      _readableState : { highWaterMark: 1 }
     };
 
-    const request = new GcpRequest(new GcpContext([emptygcpEvent, context, null]));
+    const request = new GcpRequest(new GcpContext([emptygcpEvent, {}, {}]));
 
-    expect(request.method).toEqual("GET");
+    expect(request.method).toEqual("");
     expect(request.headers).toEqual(emptyParams);
     expect(request.query).toEqual(emptyParams);
     expect(request.body).toEqual(null);
