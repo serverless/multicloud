@@ -1,13 +1,18 @@
 
-const { App, CloudContainer } = require("../../core/lib");
-const { GcpModule, GcpFunctionCloudService} = require("../../gcp/lib");
-
-const container = new CloudContainer();
-container.registerModule(new GcpModule());
+const { App } = require("core");
+const { GcpModule, GcpFunctionCloudService } = require("gcp");
+const { HTTPBindingMiddleware }  = require("core");
 
 const app = new App(new GcpModule());
-const caller = new GcpFunctionCloudService(container);
 
-module.exports.helloWorld = (req, res) => {
-  res.send('Hello, World');
-};
+module.exports.handler = app.use([HTTPBindingMiddleware()], async (context) => {
+ context.container.bind("google").toConstantValue({
+    name: "google",
+    method: "get",
+    http: "http://www.google.com"
+  });
+  
+  const caller = new GcpFunctionCloudService(context)
+  const result = await caller.invoke("google");
+  context.send({"status": result.status,"message":result.statusText});
+});

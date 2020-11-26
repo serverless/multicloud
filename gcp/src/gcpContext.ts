@@ -22,9 +22,8 @@ export class GcpContext implements CloudContext {
       context: args[1],
       callback: args[2],
     };
-
-    this.id = this.runtime.context.eventId;
-
+    
+    this.id = this.runtime.event._readableState.highWaterMark;
     // GCP has a single incoming event source
     this.event = this.runtime.event; // https://www.serverless.com/framework/docs/providers/google/guide/events/
   }
