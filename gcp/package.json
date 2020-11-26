@@ -48,7 +48,8 @@
     "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "shx": "^0.3.2",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "xmldom": "^0.4.0"
   },
   "engines": {
     "node": ">=8.16.0",

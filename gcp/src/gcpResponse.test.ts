@@ -1,5 +1,6 @@
 import { CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
+import { DOMParser } from "xmldom";
 
 describe("Gcp Response", () => {
   const defaultParams: any[] = [
@@ -109,6 +110,20 @@ describe("Gcp Response", () => {
       }),
       status: 200
     });
+  });
+
+  it("send with xml object should send an Format error", () => {
+    const gcpContext = createGcpContext(defaultParams);
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString("<MyTestElement/>","text/xml");
+    try {
+      gcpContext.res.send(xmlDoc);
+    } catch (e) {
+      expect(e).toMatchObject({
+        error: "Format not supported. The supported response types are JSON and text.",
+        status: 400,
+      });
+    }
   });
 
   it("send with empty body should default to null value", () => {

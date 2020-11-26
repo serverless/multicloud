@@ -20,17 +20,35 @@ export class GcpRequest implements CloudRequest {
   public pathParams?: StringParams;
 
   /**
+   * Parse the body
+   * @param body Body of HTTP request
+   */
+  private parseJson(body: any) {
+    if(!body) return null;
+    try{
+      const parsedBody = JSON.parse(body);
+      return parsedBody;
+    } catch (e) {
+      throw {
+        status: 400,
+        error: "Format not supported. The supported response types are JSON and text."
+      }
+    }
+  }
+
+  /**
    * Initialize new Gcp Request, injecting Cloud Context
    * @param context Current CloudContext
    */
   public constructor(@inject(ComponentType.CloudContext) context: GcpContext) {
     const req = context.runtime.event;
+    const body = this.parseJson(req.body);
 
-
-    this.body = req.body ? JSON.parse(req.body) : null;
+    this.body = body;
     this.headers = new StringParams(req.headers);
     this.method = req.method || "";
     this.query = new StringParams(req.query);
     this.pathParams = new StringParams(req.params);
   }
 }
+

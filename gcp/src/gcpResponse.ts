@@ -35,15 +35,32 @@ export class GcpResponse implements CloudResponse {
   }
 
   /**
+   * Stringify the body
+   * @param body Body of HTTP request
+   */
+  private stringifyJson(body: any) {
+    if(typeof(body) === "string") return body;
+    if(!body) return null;
+    let stringifyBody = null;
+    try{
+      stringifyBody = JSON.stringify(body);
+    } catch (e) {
+      throw {
+        status: 400,
+        error: "Format not supported. The supported response types are JSON and text."
+      }
+    }
+    return stringifyBody;
+  }
+
+  /**
    * Send HTTP response via provided callback
    * @param body Body of HTTP response
    * @param status Status code of HTTP response
    * @param callback Callback function to call with response
    */
   public send(body: any = null, status: number = 200): void {
-    const responseBody = typeof (body) !== "string"
-      ? body != null ? JSON.stringify(body) : null
-      : body;
+    const responseBody = this.stringifyJson(body);
 
     this.body = responseBody;
     this.status = status;

@@ -1,6 +1,7 @@
 import { GcpContext, GcpRequest } from ".";
 import gcpEvent from "./test/events/defaultGcpEvent.json";
 import { StringParams } from "@multicloud/sls-core";
+import { DOMParser } from "xmldom";
 
 describe("test of request", () => {
   const context = {
@@ -26,6 +27,21 @@ describe("test of request", () => {
     expect(request.headers).toEqual(new StringParams(gcpEvent.headers));
     expect(request.query).toEqual(new StringParams(gcpEvent.query));
     expect(request.body).toEqual(null);
+  });
+
+  it("should send a format error for xml body", () => {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString("<MyTestElement/>","text/xml");
+    const gcpEvent = { body: xmlDoc };
+    const gcpContext = new GcpContext([gcpEvent, context, null])
+    try {
+      new GcpRequest(gcpContext);
+    } catch (e) {
+      expect(e).toMatchObject({
+        error: "Format not supported. The supported response types are JSON and text.",
+        status: 400,
+      });
+    }
   });
 
   it("should use default value for headers if not provided", () => {
