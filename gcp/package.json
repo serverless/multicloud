@@ -33,9 +33,10 @@
   "author": "SOUTHWORKS",
   "license": "MIT",
   "dependencies": {
-    "inversify": "5.0.1",
-    "reflect-metadata": "0.1.13",
-    "axios": "0.21.0"
+    "@google-cloud/storage": "^5.5.0",
+    "@multicloud/sls-core": "^0.1.1-13",
+    "axios": "0.21.0",
+    "inversify": "5.0.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",
