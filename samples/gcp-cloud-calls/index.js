@@ -1,7 +1,6 @@
 
-const { App } = require("core");
+const { App , HTTPBindingMiddleware } = require("core");
 const { GcpModule, GcpFunctionCloudService } = require("gcp");
-const { HTTPBindingMiddleware }  = require("core");
 
 const app = new App(new GcpModule());
 

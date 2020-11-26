@@ -6,7 +6,6 @@ import { DOMParser } from "xmldom";
 describe("test of request", () => {
 
   it("should pass-through event values without modifications", () => {
-    //let gcpEvent.body = JSON.stringify(gcpEvent.body);
     const request = new GcpRequest(new GcpContext([gcpEvent,{},{}]));
     expect(request.method).toEqual(gcpEvent.method);
     expect(request.headers).toEqual(new StringParams(gcpEvent.headers));
