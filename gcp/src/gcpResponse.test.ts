@@ -1,4 +1,4 @@
-import { CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
+import { CloudProviderResponseHeader } from "@multicloud/sls-core";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
 import { DOMParser } from "xmldom";
 
@@ -19,7 +19,7 @@ describe("Gcp Response", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  /*
+
   it("should passthrough headers value without modifications", () => {
     const gcpContext = createGcpContext(defaultParams);
 
@@ -94,8 +94,8 @@ describe("Gcp Response", () => {
 
     expect(gcpContext.res.headers.get(CloudProviderResponseHeader)).toEqual("gcp");
     expect(gcpContext.res.headers.get("content-type")).toEqual("application/json");
-  })
-*/
+  });
+
   it("should set properties on res object", () => {
     const gcpContext = createGcpContext(defaultParams);
 
