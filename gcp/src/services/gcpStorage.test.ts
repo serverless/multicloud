@@ -71,7 +71,7 @@ describe("gcp storage when call write should", () => {
 
     const mockFile = jest.fn().mockReturnValue({
       createWriteStream: jest.fn().mockReturnValue(mockWriteable),
-      getMetadata: jest.fn().mockResolvedValue({}),
+      getMetadata: jest.fn().mockResolvedValue([{}]),
     });
 
     Storage.prototype.bucket = jest.fn().mockReturnValue({
@@ -110,10 +110,10 @@ describe("gcp storage when call write should", () => {
   });
 
   it("return data on success", async () => {
-    const response = {
+    const response = [{
       generation: "1.0",
-      eTag: "foo",
-    };
+      etag: "foo",
+    }];
 
     const mockWriteable = new PassThrough();
     const mockFile = jest.fn().mockReturnValue({
@@ -127,8 +127,8 @@ describe("gcp storage when call write should", () => {
 
     const sut = new GcpStorage();
     const expected = {
-      version: response.VersionId,
-      eTag: response.ETag,
+      version: response[0].generation,
+      eTag: response[0].etag,
     };
 
     expect(await sut.write(input)).toEqual(expected);

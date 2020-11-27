@@ -1,4 +1,4 @@
-import { CloudProviderResponseHeader, StringParams } from "@multicloud/sls-core";
+import { CloudProviderResponseHeader } from "@multicloud/sls-core";
 import { GcpContext, GcpRequest, GcpResponse } from ".";
 import { DOMParser } from "xmldom";
 
@@ -19,7 +19,7 @@ describe("Gcp Response", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  /*
+
   it("should passthrough headers value without modifications", () => {
     const gcpContext = createGcpContext(defaultParams);
 
@@ -94,8 +94,8 @@ describe("Gcp Response", () => {
 
     expect(gcpContext.res.headers.get(CloudProviderResponseHeader)).toEqual("gcp");
     expect(gcpContext.res.headers.get("content-type")).toEqual("application/json");
-  })
-*/
+  });
+
   it("should set properties on res object", () => {
     const gcpContext = createGcpContext(defaultParams);
 
@@ -135,15 +135,18 @@ describe("Gcp Response", () => {
   });
 
   it("flush() calls Gcp runtime callback", () => {
+    const callback = {
+      status: jest.fn().mockReturnValue({
+        send: jest.fn()
+      }),
+      set: jest.fn()
+    }
     const context = new GcpContext([
       { _readableState: { highWaterMark: "1" } },
-      {},
+      callback,
       {},
     ]);
     context.res = new GcpResponse(context);
-    context.res.flush = () => {
-      return { status: jest.fn() };
-    };
     const spyFlush = jest.spyOn(context.res, "flush");
     context.done = jest.fn();
 

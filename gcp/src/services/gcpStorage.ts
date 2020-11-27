@@ -68,15 +68,12 @@ export class GcpStorage implements CloudStorage {
         .on("error", (error) => {
           reject(error);
         })
-        .on("finish", () => {
+        .on("finish", async () => {
           //TODO add etag and version from metadata, validate that works.
-          const metadata =
-          file.getMetadata().then(function(data) {
-            return data[0];
-          });
+          const metadata = await file.getMetadata();
           resolve({
-            eTag:metadata.eTag,
-            version:metadata.generation
+            eTag: metadata[0].etag,
+            version: metadata[0].generation
           });
         });
     });

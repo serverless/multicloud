@@ -80,7 +80,7 @@ export class GcpResponse implements CloudResponse {
   }
 
   public flush(): void {
+    this.callback.set(this.headers.toJSON());
     this.callback.status(this.status).send(this.body);
-
   }
 }
