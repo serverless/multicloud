@@ -135,15 +135,18 @@ describe("Gcp Response", () => {
   });
 
   it("flush() calls Gcp runtime callback", () => {
+    const callback = {
+      status: jest.fn().mockReturnValue({
+        send: jest.fn()
+      }),
+      set: jest.fn()
+    }
     const context = new GcpContext([
       { _readableState: { highWaterMark: "1" } },
-      {},
+      callback,
       {},
     ]);
     context.res = new GcpResponse(context);
-    context.res.flush = () => {
-      return { status: jest.fn() };
-    };
     const spyFlush = jest.spyOn(context.res, "flush");
     context.done = jest.fn();
 
