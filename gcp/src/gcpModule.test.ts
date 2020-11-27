@@ -1,4 +1,4 @@
-import { GcpModule, GcpContext, GcpRequest, GcpResponse,  } from ".";
+import { GcpModule, GcpContext, GcpRequest, GcpResponse } from ".";
 import { GcpFunctionCloudService } from "./services";
 import {
   ComponentType,
@@ -8,20 +8,19 @@ import {
   CloudContainer,
   CloudService,
   CloudStorage,
-  App } from "@multicloud/sls-core";
-
+  App,
+} from "@multicloud/sls-core";
 
 describe("Gcp Cloud Module", () => {
   const params: any[] = [
-    { _readableState: { highWaterMark : expect.any(String)}},
+    { _readableState: { highWaterMark: expect.any(String) } },
     {},
-    jest.fn()
+    jest.fn(),
   ];
   const gcpModule = new GcpModule();
   let container = new CloudContainer();
 
   describe("when gcp request", () => {
-
     beforeAll(() => {
       process.env.NODE_ENV = "test-gcp";
       container = new CloudContainer();
@@ -30,8 +29,12 @@ describe("Gcp Cloud Module", () => {
     });
 
     it("resolves context as singleton", () => {
-      const context1 = container.resolve<CloudContext>(ComponentType.CloudContext);
-      const context2 = container.resolve<CloudContext>(ComponentType.CloudContext);
+      const context1 = container.resolve<CloudContext>(
+        ComponentType.CloudContext
+      );
+      const context2 = container.resolve<CloudContext>(
+        ComponentType.CloudContext
+      );
 
       expect(context1).toBeInstanceOf(GcpContext);
       expect(context1.providerType).toBe("gcp");
@@ -57,20 +60,25 @@ describe("Gcp Cloud Module", () => {
     });
 
     it("resolves request", () => {
-      const request = container.resolve<CloudRequest>(ComponentType.CloudRequest);
+      const request = container.resolve<CloudRequest>(
+        ComponentType.CloudRequest
+      );
       expect(request).toBeInstanceOf(GcpRequest);
     });
 
     it("resolves response", () => {
-      const response = container.resolve<CloudResponse>(ComponentType.CloudResponse);
+      const response = container.resolve<CloudResponse>(
+        ComponentType.CloudResponse
+      );
       expect(response).toBeInstanceOf(GcpResponse);
     });
 
     it("resolves service", () => {
-      const service = container.resolve<CloudService>(ComponentType.CloudService);
+      const service = container.resolve<CloudService>(
+        ComponentType.CloudService
+      );
       expect(service).toBeInstanceOf(GcpFunctionCloudService);
     });
-
 
     describe("when non-gcp request", () => {
       beforeAll(() => {
@@ -80,26 +88,34 @@ describe("Gcp Cloud Module", () => {
       });
 
       it("does not resolve context", () => {
-        expect(container.resolve<CloudContext>(ComponentType.CloudContext)).toBeNull();
+        expect(
+          container.resolve<CloudContext>(ComponentType.CloudContext)
+        ).toBeNull();
       });
 
       it("does not resolve request", () => {
-        expect(container.resolve<CloudContext>(ComponentType.CloudRequest)).toBeNull();
+        expect(
+          container.resolve<CloudContext>(ComponentType.CloudRequest)
+        ).toBeNull();
       });
 
       it("does not resolve response", () => {
-        expect(container.resolve<CloudContext>(ComponentType.CloudResponse)).toBeNull();
+        expect(
+          container.resolve<CloudContext>(ComponentType.CloudResponse)
+        ).toBeNull();
       });
 
       it("does not resolve service", () => {
-        expect(container.resolve<CloudService>(ComponentType.CloudService)).toBeNull();
+        expect(
+          container.resolve<CloudService>(ComponentType.CloudService)
+        ).toBeNull();
       });
 
       it("does not resolve storage", () => {
-        expect(container.resolve<CloudStorage>(ComponentType.CloudStorage)).toBeNull();
+        expect(
+          container.resolve<CloudStorage>(ComponentType.CloudStorage)
+        ).toBeNull();
       });
-    })
-
+    });
   });
-
 });

@@ -2,7 +2,7 @@ import { GcpContext, GcpResponse } from ".";
 
 const runtimeArgs = [
   {
-    _readableState: {highWaterMark: "12344"},
+    _readableState: { highWaterMark: "123" },
   },
   {},
   jest.fn(),
@@ -12,7 +12,9 @@ const createGcpContext = (args): GcpContext => {
   let gcpContext = new GcpContext(args);
   gcpContext.res = new GcpResponse(gcpContext);
   gcpContext.done = jest.fn();
-  gcpContext.res.flush = () => { return {status : jest.fn()}}
+  gcpContext.res.flush = () => {
+    return { status: jest.fn() };
+  };
   return gcpContext;
 };
 
