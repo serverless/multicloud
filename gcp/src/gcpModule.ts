@@ -18,7 +18,8 @@ export class GcpModule implements CloudModule {
     const runtimeArgs = req.parentContext.container.get(
       ComponentType.RuntimeArgs
     );
-    return runtimeArgs && runtimeArgs[1].eventId; //TBD gcpRequestId name
+
+    return runtimeArgs && runtimeArgs[0]._readableState.highWaterMark; //TBD gcpRequestId name
   }
 
   public create() {
