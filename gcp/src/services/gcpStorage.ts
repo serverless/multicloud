@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Storage } from "@google-cloud/storage";
 import {
   CloudStorage,
