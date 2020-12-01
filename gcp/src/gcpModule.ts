@@ -25,7 +25,10 @@ export class GcpModule implements CloudModule {
       ComponentType.RuntimeArgs
     );
 
-    return runtimeArgs && runtimeArgs[0]._readableState && runtimeArgs[0]._readableState.highWaterMark; //TBD gcpRequestId name
+    const isBackgroundFunction = runtimeArgs && runtimeArgs[1].eventId;
+    const isHttpFunction = runtimeArgs && runtimeArgs[0]._readableState && runtimeArgs[0]._readableState.highWaterMark;
+
+    return  isBackgroundFunction || isHttpFunction;
   }
 
   public create() {
