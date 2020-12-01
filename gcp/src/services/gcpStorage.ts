@@ -22,7 +22,15 @@ export class GcpStorage implements CloudStorage {
    * Initialize new gcp storage service
    */
   public constructor() {
-    this.storage = new Storage();
+    this.storage = new Storage({
+      projectId: process.env.projectId,
+      credentials: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        private_key: process.env.privateKey,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        client_email: process.env.clientEmail,
+      },
+    });
   }
 
   /**
@@ -74,7 +82,7 @@ export class GcpStorage implements CloudStorage {
           const metadata = await file.getMetadata();
           resolve({
             eTag: metadata[0].etag,
-            version: metadata[0].generation
+            version: metadata[0].generation,
           });
         });
     });
