@@ -1,0 +1,14 @@
+service: multicloud-hello-world-workshop
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ${opt:region, self:custom.config.region}
+custom: 
+  config: ${file(config.aws.json)}
+functions:
+  hello:
+    handler: src/hello.handler
+    events:
+      - http:
+          method: GET
+          path: /hello

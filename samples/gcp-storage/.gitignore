@@ -1,0 +1,11 @@
+# package directories
+node_modules
+
+# Serverless directories
+.serverless
+
+coverage
+
+src/multicloud-gcp
+
+.gcloud
