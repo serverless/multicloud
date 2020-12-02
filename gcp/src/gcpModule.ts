@@ -7,7 +7,7 @@ import {
   CloudResponse,
   ComponentType,
   CloudService,
-} from "core";
+} from "@multicloud/sls-core";
 
 //gcp context , request, response and storage
 import { GcpContext, GcpRequest, GcpResponse } from ".";

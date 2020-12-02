@@ -1,6 +1,7 @@
 const { App, HTTPBindingMiddleware, StorageMiddleware } = require("core");
 const { GcpModule } = require("gcp");
 const { streamToString } = require("./streamToString");
+const { bucketName } = require("../config.google.json");
 
 const app = new App(new GcpModule());
 
@@ -9,7 +10,7 @@ module.exports.handler = app.use(
   async (context) => {
     const { name } = context.req.query;
     const opts = {
-      container: "storage_sample123",
+      container: bucketName,
       path: "test.txt",
       body: `Hello ${name || "World"}`,
     };

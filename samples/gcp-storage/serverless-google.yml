@@ -12,6 +12,7 @@ provider:
     privateKey: ${self:custom.config.private_key}
 custom:
   config: ${file(./.gcloud/keyfile.json)}
+  bucket: ${file(./config.json)}
 
 frameworkVersion: '2'
 
@@ -34,6 +35,6 @@ plugins:
 resources:
   resources:
     - type: storage.v1.bucket
-      name: storage_sample123
+      name: ${self:custom.bucket.bucketName}
       properties:
         location: us-central1
