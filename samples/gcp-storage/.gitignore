@@ -8,4 +8,5 @@ coverage
 
 src/multicloud-gcp
 
-.gcloud
+.gcloud/keyfile.json
+
