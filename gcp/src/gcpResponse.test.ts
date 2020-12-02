@@ -131,7 +131,6 @@ describe("Gcp Response", () => {
     gcpContext.res.send();
     expect(gcpContext.res.headers.get("x-sls-cloud-provider")).toEqual("gcp");
     expect(gcpContext.res.body).toEqual(null);
-    expect(gcpContext.res.callback).toEqual({});
     expect(gcpContext.res.status).toEqual(200);
   });
 

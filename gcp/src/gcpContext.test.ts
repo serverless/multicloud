@@ -6,6 +6,16 @@ const runtimeArgs = [
     headers: { "x-appengine-request-log-id": "123" }
   },
   {},
+  {},
+  jest.fn(),
+];
+
+const backgroundRuntimeArgs = [
+  {},
+  {
+    eventId: "3214",
+  },
+  {},
   jest.fn(),
 ];
 
@@ -20,9 +30,14 @@ const createGcpContext = (args): GcpContext => {
 };
 
 describe("GCP context", () => {
-  it("eventId should be set", () => {
+  it("highwaterMark should be set to id", () => {
     const context = createGcpContext(runtimeArgs);
     expect(context.id).toEqual(runtimeArgs[0]._readableState.highWaterMark);
+  });
+
+  it("eventId should be set to id", () => {
+    const context = createGcpContext(backgroundRuntimeArgs);
+    expect(context.id).toEqual(backgroundRuntimeArgs[1].eventId);
   });
 
   it("when send() calls response.send() on httpTrigger with custom status", () => {
