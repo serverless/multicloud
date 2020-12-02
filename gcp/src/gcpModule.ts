@@ -7,7 +7,7 @@ import {
   CloudResponse,
   ComponentType,
   CloudService,
-} from "@multicloud/sls-core";
+} from "core";
 
 //gcp context , request, response and storage
 import { GcpContext, GcpRequest, GcpResponse } from ".";
@@ -26,7 +26,7 @@ export class GcpModule implements CloudModule {
       ComponentType.RuntimeArgs
     );
 
-    return runtimeArgs && runtimeArgs[0]._readableState.highWaterMark; //TBD gcpRequestId name
+    return runtimeArgs && runtimeArgs[0]._readableState && runtimeArgs[0]._readableState.highWaterMark; //TBD gcpRequestId name
   }
 
   public create() {
