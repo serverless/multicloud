@@ -13,6 +13,16 @@ describe("test of request", () => {
     expect(request.body).toEqual(JSON.parse(gcpEvent.body));
   });
 
+  it("should pass-through event values without modifications with a JSON body", () => {
+    const objectBody = Object.assign({}, gcpEvent);
+    objectBody.body = { message: "test"};
+    const request = new GcpRequest(new GcpContext([objectBody,{},{}]));
+    expect(request.method).toEqual(objectBody.method);
+    expect(request.headers).toEqual(new StringParams(objectBody.headers));
+    expect(request.query).toEqual(new StringParams(objectBody.query));
+    expect(request.body).toEqual(objectBody.body);
+  });
+
   it("should use default value for body if not provided", () => {
     const noBodyEvent = Object.assign({}, gcpEvent);
     delete noBodyEvent.body;
