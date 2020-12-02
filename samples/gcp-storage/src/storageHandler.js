@@ -8,7 +8,7 @@ const app = new App(new GcpModule());
 module.exports.handler = app.use(
   [HTTPBindingMiddleware(), StorageMiddleware()],
   async (context) => {
-    const { name } = context.req.query;
+    const { name } = context.req.query.toJSON();
     const opts = {
       container: bucketName,
       path: "test.txt",
@@ -18,5 +18,5 @@ module.exports.handler = app.use(
     const readStream = await context.storage.read(opts);
     const result = await streamToString(readStream);
     context.send({ result }, 200);
-  },
+  }
 );

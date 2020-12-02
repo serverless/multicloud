@@ -12,7 +12,7 @@ provider:
     privateKey: ${self:custom.config.private_key}
 custom:
   config: ${file(./.gcloud/keyfile.json)}
-  bucket: ${file(./config.json)}
+  bucket: ${file(./config.google.json)}
 
 frameworkVersion: '2'
 
