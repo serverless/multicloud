@@ -26,8 +26,12 @@ export class GcpRequest implements CloudRequest {
   private parseJson(body: any) {
     if(!body) return null;
     try{
-      const parsedBody = JSON.parse(body);
-      return parsedBody;
+      if(typeof (body) === "string") {
+        const parsedBody = JSON.parse(body);
+        return parsedBody;
+      }
+      JSON.stringify(body);
+      return body;
     } catch (e) {
       throw {
         status: 400,

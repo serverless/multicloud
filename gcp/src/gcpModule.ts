@@ -1,10 +1,16 @@
 import { ContainerModule, interfaces } from "inversify";
-import { CloudModule, CloudContext, CloudRequest, CloudResponse, ComponentType, CloudService } from "@multicloud/sls-core";
-
+import {
+  CloudModule,
+  CloudContext,
+  CloudStorage,
+  CloudRequest,
+  CloudResponse,
+  ComponentType,
+  CloudService,
+} from "@multicloud/sls-core";
 //gcp context , request, response and storage
 import { GcpContext, GcpRequest, GcpResponse } from ".";
-import { GcpFunctionCloudService } from "./services";
-
+import { GcpFunctionCloudService, GcpStorage } from "./services";
 
 /**
  * GCP Module that can be registered in IoC container
@@ -19,7 +25,7 @@ export class GcpModule implements CloudModule {
       ComponentType.RuntimeArgs
     );
 
-    return runtimeArgs && runtimeArgs[0]._readableState.highWaterMark; //TBD gcpRequestId name
+    return runtimeArgs && runtimeArgs[0]._readableState && runtimeArgs[0]._readableState.highWaterMark; //TBD gcpRequestId name
   }
 
   public create() {
@@ -41,7 +47,9 @@ export class GcpModule implements CloudModule {
         .to(GcpFunctionCloudService)
         .when(this.isGcpRequest);
 
-      //TODO add cloud storage
+      bind<CloudStorage>(ComponentType.CloudStorage)
+        .to(GcpStorage)
+        .when(this.isGcpRequest);
     });
   }
 }

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { GcpRequest, GcpResponse } from ".";
-import { CloudContext, ComponentType } from "@multicloud/sls-core";
+import { CloudContext, ComponentType, CloudStorage} from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
 import { GcpFunctionRuntime } from "./models/gcpCloudFunction";
 
@@ -22,12 +22,13 @@ export class GcpContext implements CloudContext {
       context: args[1],
       callback: args[2],
     };
-    
+
     this.id = this.runtime.event._readableState.highWaterMark;
     // GCP has a single incoming event source
     this.event = this.runtime.event; // https://www.serverless.com/framework/docs/providers/google/guide/events/
   }
-
+  /** Google Cloud storage */
+  public storage: CloudStorage;
   /** "gcp" */
   public providerType: string;
   /** Unique identifier for request */
