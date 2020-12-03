@@ -3,6 +3,7 @@ import { GcpContext, GcpResponse } from ".";
 const runtimeArgs = [
   {
     _readableState: { highWaterMark: "123" },
+    headers: { "x-appengine-request-log-id": "123" }
   },
   {},
   jest.fn(),

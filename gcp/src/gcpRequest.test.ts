@@ -49,16 +49,6 @@ describe("test of request", () => {
     }
   });
 
-  it("should use default value for headers if not provided", () => {
-    const noHeadersEvent = Object.assign({}, gcpEvent);
-    delete noHeadersEvent.headers;
-    const request = new GcpRequest(new GcpContext([noHeadersEvent, {}, {}]));
-    expect(request.method).toEqual(gcpEvent.method);
-    expect(request.headers).toEqual(new StringParams());
-    expect(request.query).toEqual(new StringParams(gcpEvent.query));
-    expect(request.body).toEqual(JSON.parse(noHeadersEvent.body));
-  });
-
   it("should use default value for query if not provided", () => {
     const noQueryEvent = Object.assign({}, gcpEvent);
     delete noQueryEvent.query;
@@ -72,14 +62,16 @@ describe("test of request", () => {
 
   it("should set context defaults if context content are empty objects", () => {
     const emptyParams = new StringParams();
+    const headers = { "x-appengine-request-log-id": "123" };
     const emptygcpEvent = {
-      _readableState : { highWaterMark: 1 }
+      _readableState : { highWaterMark: 1 },
+      headers,
     };
 
     const request = new GcpRequest(new GcpContext([emptygcpEvent, {}, {}]));
 
     expect(request.method).toEqual("");
-    expect(request.headers).toEqual(emptyParams);
+    expect(request.headers).toEqual(new StringParams(headers));
     expect(request.query).toEqual(emptyParams);
     expect(request.body).toEqual(null);
   });
