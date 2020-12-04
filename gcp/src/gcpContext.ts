@@ -29,14 +29,12 @@ export class GcpContext implements CloudContext {
       this.runtime = new GcpHttpFunctionRuntime();
       this.runtime.event = args[0];
       this.runtime.context = args[1];
-      this.id = this.runtime.event._readableState.highWaterMark;
+      this.id = this.runtime.event.headers["x-appengine-request-log-id"];
       this.isHttpRequest = true;
     }
 
     // GCP has a single incoming event source
     this.event = this.runtime.event; // https://www.serverless.com/framework/docs/providers/google/guide/events/
-
-    this.id = this.event.headers["x-appengine-request-log-id"];
 
   }
   /** Google Cloud storage */

@@ -10,6 +10,7 @@ export class GcpHttpFunctionRuntime implements GcpFunctionRuntime {
     status: any;
     send: any;
   }
+  public callback: (err, response) => void;
 
   public flush(response: GcpResponse): void {
     this.context.set(response.headers.toJSON());

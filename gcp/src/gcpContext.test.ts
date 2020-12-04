@@ -30,9 +30,9 @@ const createGcpContext = (args): GcpContext => {
 };
 
 describe("GCP context", () => {
-  it("highwaterMark should be set to id", () => {
+  it("x-appengine-request-log-id should be set to id", () => {
     const context = createGcpContext(runtimeArgs);
-    expect(context.id).toEqual(runtimeArgs[0]._readableState.highWaterMark);
+    expect(context.id).toEqual(runtimeArgs[0].headers["x-appengine-request-log-id"]);
   });
 
   it("eventId should be set to id", () => {

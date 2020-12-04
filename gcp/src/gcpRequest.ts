@@ -2,7 +2,6 @@ import "reflect-metadata";
 import { inject, injectable } from "inversify";
 import { CloudRequest, ComponentType, StringParams } from "@multicloud/sls-core";
 import { GcpContext } from "./gcpContext";
-import { request } from "http";
 
 /**
  * Implementation of Cloud Request for Gcp Functions
@@ -46,18 +45,14 @@ export class GcpRequest implements CloudRequest {
    * @param context Current CloudContext
    */
   public constructor(@inject(ComponentType.CloudContext) context: GcpContext) {
-    //should never happen that you want to use a web request in a background function context
-    if(context.isHttpRequest)
-    {
-      const req = context.runtime.event;
-      const body = this.parseJson(req.body);
+    const req = context.runtime.event;
+    const body = this.parseJson(req.body);
 
-      this.body = body;
-      this.headers = new StringParams(req.headers);
-      this.method = req.method || "";
-      this.query = new StringParams(req.query);
-      this.pathParams = new StringParams(req.params);
-    }
+    this.body = body;
+    this.headers = new StringParams(req.headers);
+    this.method = req.method || "";
+    this.query = new StringParams(req.query);
+    this.pathParams = new StringParams(req.params);
   }
 }
 
