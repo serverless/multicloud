@@ -13,7 +13,8 @@ import {
 
 describe("Gcp Cloud Module", () => {
   const params: any[] = [
-    { _readableState: { highWaterMark: expect.any(String) } },
+    { _readableState: { highWaterMark: expect.any(String) },
+      headers: { "x-appengine-request-log-id": "123" } },
     {},
     jest.fn(),
   ];

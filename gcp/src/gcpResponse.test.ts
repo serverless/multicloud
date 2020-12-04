@@ -4,7 +4,8 @@ import { DOMParser } from "xmldom";
 
 describe("Gcp Response", () => {
   const defaultParams: any[] = [
-    { _readableState: { highWaterMark: expect.any(String) } },
+    { _readableState: { highWaterMark: expect.any(String) },
+      headers: { "x-appengine-request-log-id": "123" } },
     {},
     jest.fn(() => null),
   ];
@@ -142,7 +143,8 @@ describe("Gcp Response", () => {
       set: jest.fn()
     }
     const context = new GcpContext([
-      { _readableState: { highWaterMark: "1" } },
+      { _readableState: { highWaterMark: "1" },
+        headers: { "x-appengine-request-log-id": "123" }},
       callback,
       {},
     ]);
