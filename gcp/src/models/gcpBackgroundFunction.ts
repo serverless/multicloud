@@ -12,7 +12,7 @@ export class GcpBackgroundFunctionRuntime implements GcpFunctionRuntime {
     this.callback(null, {
       headers: response.headers.toJSON(),
       body: response.body,
-      statusCode: response.status || 200,
+      statusCode: response.status,
     });
   }
 }
