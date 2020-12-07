@@ -7,14 +7,14 @@ provider:
   project: ${self:custom.config.project_id}
   credentials: ./.gcloud/keyfile.json
   environment:
-    projectId: ${self:custom.config.project_id}
-    clientEmail: ${self:custom.config.client_email}
-    privateKey: ${self:custom.config.private_key}
+    gcpProjectId: ${self:custom.config.project_id}
+    gcpClientEmail: ${self:custom.config.client_email}
+    gcpPrivateKey: ${self:custom.config.private_key}
 custom:
   config: ${file(./.gcloud/keyfile.json)}
   bucket: ${file(./config.google.json)}
 
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 package:
   exclude:

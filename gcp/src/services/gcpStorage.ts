@@ -23,12 +23,12 @@ export class GcpStorage implements CloudStorage {
    */
   public constructor() {
     this.storage = new Storage({
-      projectId: process.env.projectId,
+      projectId: process.env.gcpProjectId,
       credentials: {
         // eslint-disable-next-line @typescript-eslint/camelcase
-        private_key: process.env.privateKey,
+        private_key: process.env.gcpPrivateKey,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        client_email: process.env.clientEmail,
+        client_email: process.env.gcpClientEmail,
       },
     });
   }
