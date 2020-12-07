@@ -105,7 +105,7 @@ So, the next step is just create a get request using postman, as the following i
 
 ![postman-response](./images/result-postman.png)
 
-When it create or modify a file in the bucket, it trigger the background function.
+When a file gets created or modified in the bucket, the background function gets triggered
 
 ![background-function-response](./images/result-background.png)
 
