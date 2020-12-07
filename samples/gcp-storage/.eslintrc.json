@@ -12,7 +12,6 @@
     "quotes": ["error", "double"],
     "no-var": "error",
     "curly": "error",
-    "eqeqeq": "error",
     "no-multi-spaces": "error",
     "no-use-before-define": "error",
     "prefer-const": "error",
