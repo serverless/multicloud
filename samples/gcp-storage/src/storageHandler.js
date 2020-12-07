@@ -18,7 +18,7 @@ module.exports.handler = app.use(
     const readStream = await context.storage.read(opts);
     const result = await streamToString(readStream);
     context.send({ result }, 200);
-  }
+  },
 );
 
 module.exports.helloGCS = app.use([], async (context) => {

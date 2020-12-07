@@ -105,6 +105,10 @@ So, the next step is just create a get request using postman, as the following i
 
 ![postman-response](./images/result-postman.png)
 
+When it create or modify a file in the bucket, it trigger the background function.
+
+![background-function-response](./images/result-background.png)
+
 ### Tests
 
 All tests can be run in console with the command in the path `samples/gcp-storage`
