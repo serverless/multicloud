@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const { CloudContextBuilder } = require("core");
+const { CloudContextBuilder } = require("@multicloud/sls-core");
 const mock = require("./streamToString");
 const { handler } = require("./storageHandler");
 

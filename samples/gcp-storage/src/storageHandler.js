@@ -1,5 +1,5 @@
-const { App, HTTPBindingMiddleware, StorageMiddleware } = require("core");
-const { GcpModule } = require("gcp");
+const { App, HTTPBindingMiddleware, StorageMiddleware } = require("@multicloud/sls-core");
+const { GcpModule } = require("@multicloud/sls-gcp");
 const { streamToString } = require("./streamToString");
 const { bucketName } = require("../config.google.json");
 
@@ -18,5 +18,15 @@ module.exports.handler = app.use(
     const readStream = await context.storage.read(opts);
     const result = await streamToString(readStream);
     context.send({ result }, 200);
-  }
+  },
 );
+
+module.exports.helloGCS = app.use([], async (context) => {
+  const file = context.event;
+  console.log(`  Bucket: ${file.bucket}`);
+  console.log(`  File: ${file.name}`);
+  console.log(`  Metageneration: ${file.metageneration}`);
+  console.log(`  Created: ${file.timeCreated}`);
+  console.log(`  Updated: ${file.updated}`);
+  console.log(`  EventId: ${context.id}`);
+});

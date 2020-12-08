@@ -13,10 +13,8 @@
   "author": "MultiCloud Team",
   "license": "ISC",
   "dependencies": {
-
-    "@multicloud/sls-core": "^0.1.1",
-    "core": "file:./src/multicloud-gcp/multicloud/core",
-    "gcp": "file:./src/multicloud-gcp/multicloud/gcp"
+    "@multicloud/sls-core": "github:southworks/multicloud#core",
+    "@multicloud/sls-gcp": "github:southworks/multicloud#gcp"
   },
   "devDependencies": {
     "eslint": "^7.12.1",

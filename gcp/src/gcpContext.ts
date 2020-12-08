@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { GcpRequest, GcpResponse } from ".";
 import { CloudContext, ComponentType, CloudStorage} from "@multicloud/sls-core";
 import { injectable, inject } from "inversify";
-import { GcpFunctionRuntime } from "./models/gcpCloudFunction";
+import { GcpFunctionRuntime, GcpBackgroundFunctionRuntime, GcpHttpFunctionRuntime } from "./models";
 
 /**
  * Implementation of Cloud Context for GCP Function
@@ -17,16 +17,21 @@ export class GcpContext implements CloudContext {
   public constructor(@inject(ComponentType.RuntimeArgs) args: any[]) {
     this.providerType = "gcp";
 
-    this.runtime = {
-      event: args[0],
-      context: args[1],
-      callback: args[2],
-    };
-
+    const isBackgroundFunction = args && args[1].eventId;
+    if (isBackgroundFunction) {
+      this.runtime = new GcpBackgroundFunctionRuntime();
+      this.runtime.callback = args[2];
+      this.id = isBackgroundFunction;
+      this.isHttpRequest = false;
+    } else {
+      this.runtime = new GcpHttpFunctionRuntime();
+      this.id = args[0].headers["x-appengine-request-log-id"];
+      this.isHttpRequest = true;
+    }
+    this.runtime.event = args[0];
+    this.runtime.context = args[1];
     // GCP has a single incoming event source
     this.event = this.runtime.event; // https://www.serverless.com/framework/docs/providers/google/guide/events/
-
-    this.id = this.event.headers["x-appengine-request-log-id"];
 
   }
   /** Google Cloud storage */
@@ -45,6 +50,8 @@ export class GcpContext implements CloudContext {
   public runtime: GcpFunctionRuntime;
   /** Signals to the framework that the request is complete */
   public done: () => void;
+  /** Identifies if we are in the context of a http request or not */
+  public isHttpRequest: boolean;
 
   /**
    * Send response from GCP Function

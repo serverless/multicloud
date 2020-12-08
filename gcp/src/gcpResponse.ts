@@ -14,7 +14,7 @@ import { injectable, inject } from "inversify";
 @injectable()
 export class GcpResponse implements CloudResponse {
   /** The GCP runtime callback */
-  private callback: any;
+  private runtime: any;
 
   /** The HTTP response body */
   public body: any;
@@ -31,7 +31,7 @@ export class GcpResponse implements CloudResponse {
    */
   public constructor(@inject(ComponentType.CloudContext) context: GcpContext) {
     this.headers.set(CloudProviderResponseHeader, "gcp");
-    this.callback = context.runtime.context;
+    this.runtime = context.runtime;
   }
 
   /**
@@ -80,7 +80,6 @@ export class GcpResponse implements CloudResponse {
   }
 
   public flush(): void {
-    this.callback.set(this.headers.toJSON());
-    this.callback.status(this.status).send(this.body);
+    this.runtime.flush(this);
   }
 }
