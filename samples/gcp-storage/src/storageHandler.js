@@ -1,5 +1,5 @@
-const { App, HTTPBindingMiddleware, StorageMiddleware } = require("core");
-const { GcpModule } = require("gcp");
+const { App, HTTPBindingMiddleware, StorageMiddleware } = require("@multicloud/sls-core");
+const { GcpModule } = require("@multicloud/sls-gcp");
 const { streamToString } = require("./streamToString");
 const { bucketName } = require("../config.google.json");
 
