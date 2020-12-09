@@ -1,0 +1,33 @@
+{
+  "name": "google-storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/storageHandler.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint . --ext .js",
+    "deploy:google": "serverless deploy --config serverless-google.yml",
+    "remove:google": "serverless remove --config serverless-google.yml",
+    "pre-push": "npm run lint && npm run test"
+  },
+  "author": "MultiCloud Team",
+  "license": "ISC",
+  "dependencies": {
+    "@multicloud/sls-core": "github:southworks/multicloud#core",
+    "@multicloud/sls-gcp": "github:southworks/multicloud#gcp"
+  },
+  "devDependencies": {
+    "eslint": "^7.12.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "husky": "^4.3.0",
+    "jest": "^26.6.3",
+    "serverless-google-cloudfunctions": "*",
+    "serverless-offline": "^6.8.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run pre-push"
+    }
+  }
+}

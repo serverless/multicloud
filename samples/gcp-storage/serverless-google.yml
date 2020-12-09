@@ -1,0 +1,46 @@
+service: test-storage
+provider:
+  name: google
+  stage: dev
+  runtime: nodejs10
+  region: us-central1
+  project: ${self:custom.config.project_id}
+  credentials: ./.gcloud/keyfile.json
+  environment:
+    gcpProjectId: ${self:custom.config.project_id}
+    gcpClientEmail: ${self:custom.config.client_email}
+    gcpPrivateKey: ${self:custom.config.private_key}
+custom:
+  config: ${file(./.gcloud/keyfile.json)}
+  bucket: ${file(./config.google.json)}
+
+frameworkVersion: "2"
+
+package:
+  exclude:
+    - node_modules/**
+    - .gitignore
+    - .git/**
+
+functions:
+  readFunction:
+    handler: handler
+    events:
+      - http: GET
+  backgroundFunction:
+    handler: helloGCS
+    events:
+      - event:
+          eventType: google.storage.object.finalize
+          resource: projects/${self:custom.config.project_id}/buckets/${self:custom.bucket.bucketName}
+
+plugins:
+  - serverless-google-cloudfunctions
+  - serverless-offline
+
+resources:
+  resources:
+    - type: storage.v1.bucket
+      name: ${self:custom.bucket.bucketName}
+      properties:
+        location: us-central1
