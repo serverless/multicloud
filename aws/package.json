@@ -34,7 +34,7 @@
   "license": "MIT",
   "dependencies": {
     "@multicloud/sls-core": "^0.1.1-13",
-    "aws-sdk": "2.476.0",
+    "aws-sdk": "2.814.0",
     "inversify": "5.0.1",
     "reflect-metadata": "0.1.13"
   },
