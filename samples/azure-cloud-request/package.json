@@ -12,7 +12,7 @@
   },
   "description": "",
   "dependencies": {
-    "@hapi/joi": "15.1.0",
+    "@hapi/joi": "15.1.1",
     "@multicloud/sls-azure": "0.0.2",
     "@multicloud/sls-core": "0.0.5"
   },
